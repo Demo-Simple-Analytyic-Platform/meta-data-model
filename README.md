@@ -20,8 +20,10 @@ To keep `Models` lean and easy deployable, it would be good practic to bundel re
 2. Clone this [repo](https://github.com/mehmetmisset/linkedin-article-1-data-ingestion-transformation-requirements.git) to the `\git\template\`-folder. remember, this repo is publicly accessiable and `readonly` for all but the `owners`.
 3. Create new git repository named `meta-data-model`, which under the `your` own control. pre-populate the git inore file with "*Visual Studio*"-stuff. If forgotten, not to worry, just copy-paste then `.gitinore`-file from the `template`.
 On github it should look something like this:
+
 ![new repo on github](.attachments/images/creating-repository-in-github-meta-def-example.png)
-*Image: screenshot from github.com*
+<br>*Image: screenshot from github.com*
+
 4. Clone `your` repo to `\git\`-folder, to make if locally aviable.
 5. Copy the content including subfolder and all files of folder `\git\template\meta-data-model` to `\git\meta-data-model`-folder, `.vs`-folder can be ignored if avialable.
 ````cmd
@@ -33,18 +35,18 @@ It up to you as a developer to create "*initizaltion*"-branch or something like 
 8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)
 
 ![Screen of dropdown menu with publish highlighted](.attachments/images/publish-visual-studio-project.png)
-*Image: Screen of dropdown menu with publish highlighted*
+<br>*Image: Screen of dropdown menu with publish highlighted*
 
 After the **build** completes successfull, the dialoog window below appears, provide the targat database credentials, if desirable *save* the profile.
 Folderpath to presaved Publish-profiles
 
 ![Publish Database dialog](.attachments/images/publish-database.png)
-*Image: Publish Database dialog*
+<br>*Image: Publish Database dialog*
 
 An example of a saved profile can be found in the folder `/9-Publish/2-Deployment/`.
 
 ![Folderpath to presaved Publish-profiles](.attachments/images/folder-structure-of-mdm-project.png)
-*Image: Folderpath to presaved Publish-profiles*
+<br>*Image: Folderpath to presaved Publish-profiles*
 
 The deployment- processing- logic has now be installed.
 
