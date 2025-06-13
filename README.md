@@ -31,13 +31,18 @@ xcopy "C:\git\template\meta-data-model" "\git\meta-data-model" /E /I /H /C /Y
 7. Commit the changes to the branch and push to the remote.<br>
 It up to you as a developer to create "*initizaltion*"-branch or something like it or just update the "*main*"-branch directly.
 8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)
+
 ![Screen of dropdown menu with publish highlighted](.attachments/images/publish-visual-studio-project.png)
 *Image: Screen of dropdown menu with publish highlighted*
+
 After the **build** completes successfull, the dialoog window below appears, provide the targat database credentials, if desirable *save* the profile.
 Folderpath to presaved Publish-profiles
+
 ![Publish Database dialog](.attachments/images/publish-database.png)
 *Image: Publish Database dialog*
+
 An example of a saved profile can be found in the folder `/9-Publish/2-Deployment/`.
+
 ![Folderpath to presaved Publish-profiles](.attachments/images/folder-structure-of-mdm-project.png)
 *Image: Folderpath to presaved Publish-profiles*
 
