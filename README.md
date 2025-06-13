@@ -1,32 +1,49 @@
 # meta-data-model
 
-This SQL Server Project will form the core of Meta-Data-Model for the deployment and processing logic. It works in Conjunction with "meta-data-definition"-repository which should hold the meta-data-definitions for model (project). This repositories holds both as a template to work/copy from. Below you`ll find instruction on to get started.
+This SQL Server Solution/Project will form the core of "***Meta-Data-Model***" for the deployment and processing logic. It works in Conjunction with "***Meta-Data-Def***"-repository which should hold the meta-data-definitions for model (project). This repository only holds "***Meta-Data-Model***".<br>
+The repository for the "***Meta-Data-Def***" can be found [here on git hub](https://github.com/Demo-Simple-Analytyic-Platform/meta-data-def).
 
 ## How to get Started
 
-To use this repository, new repositories must be created under you own control, surely for the model part. The `meta-data-model`-part can be used as is. But you won't have control over it, Better to make you own copy perhabs. The `meta-data-model`-part has all the database schemas, table, view, functions and procedures for `Deployment`- and internal data `Processing`- logic.
-To keep `Models` lean and easy deployable, it would be good practic bundel related `datasets` per `model` the framework allows for referencing other `Models` and reusing the `datasets`.
+
 
 To start using the framework the following step must be under taken.
 
-## 1. Meta-Data-Model
+### 1. Meta-Data-Model
 
-The "***Meta-Data-Model***" should go into separate repository, for it is the database logic and workings of the tooling/framework. it controls the deployment "**Datasets**" and processing "**Data Pipelines**". The steps below will assume your as engineer have access and deployment right to the target database.
+To use this repository, new repositories must be created under you own control, surely for the model part. The `meta-data-model`-part can be used as is. But you won't have control over it, better to make you own copy perhabs. The `meta-data-model`-part has all the database schemas, table, view, functions and procedures for `Deployment`- and internal data `Processing`- logic.
+To keep `Models` lean and easy deployable, it would be good practic to bundel related `datasets` per `model` the framework allows for referencing other `Models` and reusing the `datasets`.
 
-> ***Note:*** If you are content with the workings of the framework as is and have no intentions on modifying it, steps 3, 4, 5 and 6 can be skipped. The solution can be deployed from the *Visual Studio*-solution named "***meta-data-model.sln***" in the `\git\template\meta-data-model\`-folder.
+> ***Note:*** If you are content with the workings of the framework as is and have no intentions on modifying it, steps 3, 4, 5 and 6 can be skipped. The solution can be deployed from the *Visual Studio*-solution named "***meta-data-model.sln***" in the `\git\template\meta-data-model\`-folder after you have cloned it there.
 
 1. Create a local folder on the root, name it `git` with a subfolder named `template`. This where you'll be storing/cloning the local versions of repositories.
 2. Clone this [repo](https://github.com/mehmetmisset/linkedin-article-1-data-ingestion-transformation-requirements.git) to the `\git\template\`-folder. remember, this repo is publicly accessiable and `readonly` for all but the `owners`.
-3. Create new git repository named `meta-data-model`, which under the `your` own contro. pre-populate the git inore file with "*Visual Studio*"-stuff. If forgotten, not to worry, just copy-paste then `.gitinore`-file from the `template`.
+3. Create new git repository named `meta-data-model`, which under the `your` own control. pre-populate the git inore file with "*Visual Studio*"-stuff. If forgotten, not to worry, just copy-paste then `.gitinore`-file from the `template`.
+On github it should look something like this:
+![new repo on github](.attachments/images/creating-repository-in-github-meta-def-example.png)
+*Image: screenshot from github.com*
 4. Clone `your` repo to `\git\`-folder, to make if locally aviable.
-5. Copy the content including subfolder and all files of folder `\git\template\meta-data-model\` to `\git\meta-data-model\`-folder, `.vs`-folder can be ignored if avialable.
+5. Copy the content including subfolder and all files of folder `\git\template\meta-data-model` to `\git\meta-data-model`-folder, `.vs`-folder can be ignored if avialable.
+````cmd
+xcopy "C:\git\template\meta-data-model" "\git\meta-data-model" /E /I /H /C /Y
+````
 6. Open the *Visual Studio*-solution named "***meta-data-model.sln***" from the `\git\meta-data-model\`-folder.
-7. Commit the changes to the branch and push to the remote.
-8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database.
+7. Commit the changes to the branch and push to the remote.<br>
+It up to you as a developer to create "*initizaltion*"-branch or something like it or just update the "*main*"-branch directly.
+8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)
+![Screen of dropdown menu with publish highlighted](.attachments/images/publish-visual-studio-project.png)
+*Image: Screen of dropdown menu with publish highlighted*
+After the **build** completes successfull, the dialoog window below appears, provide the targat database credentials, if desirable *save* the profile.
+Folderpath to presaved Publish-profiles
+![Publish Database dialog](.attachments/images/publish-database.png)
+*Image: Publish Database dialog*
+An example of a saved profile can be found in the folder `/9-Publish/2-Deployment/`.
+![Folderpath to presaved Publish-profiles](.attachments/images/folder-structure-of-mdm-project.png)
+*Image: Folderpath to presaved Publish-profiles*
 
 The deployment- processing- logic has now be installed.
 
-## 2. Meta-Data-Definition for a Model
+### 2. Meta-Data-Definition for a Model
 
 Per `Model` a repository should be created, unlike the `meta-data-model`, these must be under you own control, for here the `meta-data-definitions` will be stored. The following steps should be taken to start utilizing the framework, we'll assume you have already executed steps 1 till up on 7 for the [1. Meta-Data-Model](#1-meta-data-model).
 
