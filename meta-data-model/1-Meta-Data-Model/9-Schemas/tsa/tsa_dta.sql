@@ -1,0 +1,2 @@
+﻿CREATE SCHEMA tsa_dta;
+GO
