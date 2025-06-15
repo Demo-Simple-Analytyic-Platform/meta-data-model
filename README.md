@@ -51,7 +51,7 @@ The deployment- processing- logic has now be installed.
 
 ### Meta-Data-Definition (MDD) for a Model
 
-As the [meta-data-model (MDM)](#meta-data-model-mdm) contains the database logic for deployment and processing datasets, The "***Meta-Data-Definition (MDD)***"-repository holds the definitions templates for the metadata of these "***Datasets***".
+As the [meta-data-model (MDM)](#meta-data-model-mdm) contains the database logic for deployment and processing datasets, The ["***Meta-Data-Definition (MDD)***"-repository](https://github.com/Demo-Simple-Analytyic-Platform/meta-data-def) holds the definitions templates for the metadata of these "***Datasets***".
 
 For the *maintainability* it would be good pratic to limit then "***Model***"-size in the scope and number of "***Datastes***". For this purpose one repository per model should be created under the control of you as a developer.
 
