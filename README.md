@@ -72,6 +72,6 @@ The deployment of your data solution should be done in few seconds, depending on
 
 > ***Note:*** Different `Models` can be deployed to the same target database. `Datasets` referenced from another `Model` which are deployed to the same dataset are NOT deployed double. If the referenced `Dataset` is deployed to a different target database, it will be treaded as if it were a "*Ingestion*"-dataset, the required paramateres will be extracted form de `Model`-information.
 
-> ***Note:*** The `meta-data-def`-project also contains a solution for `Screts`-database, by deploying this database scretes can be stored in `relative` safety, acccess to this database should be very limited.
+> ***Note:*** The `meta-data-def`-project also contains a solution for `Secrets`-database, by deploying this database secrets can be stored in `relative` safety, acccess to this database should be very limited.
 >> **Disclamer:** with a large scale (cloud) solution Azure Key Vault or simular should be implemented!
 
