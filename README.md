@@ -8,6 +8,7 @@ The repository for the "***Meta-Data-Def***" can be found [here on git hub](http
 ### Before starting
 
 The below will assume you as a developer (Data Engineer) has experiance with
+
 - Git (The step below will referecen github, but any other will do, if you have experiance with git you'll already know this)
 - Visual Studio (big brother of Visual Studio Code)
 - Visual Studio Code
@@ -28,24 +29,21 @@ To use this repository, new repositories must be created under you own control, 
 
 1. Create a local folder on the root, name it `git` with a subfolder named `template`. This where you'll be storing/cloning the local versions of repositories.
 
-2. Clone this [repo](https://github.com/mehmetmisset/linkedin-article-1-data-ingestion-transformation-requirements.git) to the `\git\template\`-folder. remember, this repo is publicly accessiable and `readonly` for all but the `owners`.
+2. Clone this [repo](https://github.com/Demo-Simple-Analytyic-Platform/meta-data-model.git) to the `\git\template\`-folder. remember, this repo is publicly accessiable and `readonly` for all but the `owners`.
 
 3. Create new git repository named `meta-data-model`, which under the `your` own control. pre-populate the git inore file with "*Visual Studio*"-stuff. If forgotten, not to worry, just copy-paste then `.gitinore`-file from the `template`.
-On github it should look something like this:<br> ![new repo on github](.attachments/images/creating-repository-in-github-meta-def-example.png)<br>*Image: screenshot from github.com*
+On github it should look something like this:<br> ![new repo on github](.attachments/images/meta-data-model/creating-repository-in-github-meta-def-example.png)<br>*Image: screenshot from github.com*
 4. Clone `your` repo to `\git\`-folder, to make if locally aviable.
 5. Copy the content including subfolder and all files of folder `\git\template\meta-data-model` to `\git\meta-data-model`-folder, `.vs`-folder can be ignored if avialable.
-````cmd
-xcopy "C:\git\template\meta-data-model" "\git\meta-data-model" /E /I /H /C /Y
-````
 6. Open the *Visual Studio*-solution named "***meta-data-model.sln***" from the `\git\meta-data-model\`-folder.
 7. Commit the changes to the branch and push to the remote.<br>
 It up to you as a developer to create "*initizaltion*"-branch or something like it or just update the "*main*"-branch directly.
 8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)<br> ![Screen of dropdown menu with publish highlighted](.attachments/images/publish-visual-studio-project.png)<br>*Image: Screen of dropdown menu with publish highlighted*
 
 After the **build** completes successfull, the dialoog window below appears, provide the targat database credentials, if desirable *save* the profile.
-Folderpath to presaved Publish-profiles.<br>![Publish Database dialog](.attachments/images/publish-database.png)<br>*Image: Publish Database dialog*
+Folderpath to presaved Publish-profiles.<br>![Publish Database dialog](.attachments/images/meta-data-model/publish-database.png)<br>*Image: Publish Database dialog*
 
-An example of a saved profile can be found in the folder `/9-Publish/2-Deployment/`.<br> ![Folderpath to presaved Publish-profiles](.attachments/images/folder-structure-of-mdm-project.png)<br>*Image: Folderpath to presaved Publish-profiles*
+An example of a saved profile can be found in the folder `/9-Publish/2-Deployment/`.<br> ![Folderpath to presaved Publish-profiles](.attachments/images/meta-data-model/folder-structure-of-mdm-project.png)<br>*Image: Folderpath to presaved Publish-profiles*
 
 The deployment- processing- logic has now be installed.
 
