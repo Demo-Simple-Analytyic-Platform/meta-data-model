@@ -38,7 +38,7 @@ On github it should look something like this:<br> ![new repo on github](.attachm
 6. Open the *Visual Studio*-solution named "***meta-data-model.sln***" from the `\git\meta-data-model\`-folder.
 7. Commit the changes to the branch and push to the remote.<br>
 It up to you as a developer to create "*initizaltion*"-branch or something like it or just update the "*main*"-branch directly.
-8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)<br> ![Screen of dropdown menu with publish highlighted](.attachments/images/publish-visual-studio-project.png)<br>*Image: Screen of dropdown menu with publish highlighted*
+8. Now you can "*publish*" the `Project` named `meta-data-model` to your target database. (If you are not provisiant in visual studio, educate you self first)<br> ![Screen of dropdown menu with publish highlighted](.attachments/images/meta-data-model/publish-visual-studio-project.png)<br>*Image: Screen of dropdown menu with publish highlighted*
 
 After the **build** completes successfull, the dialoog window below appears, provide the targat database credentials, if desirable *save* the profile.
 Folderpath to presaved Publish-profiles.<br>![Publish Database dialog](.attachments/images/meta-data-model/publish-database.png)<br>*Image: Publish Database dialog*
