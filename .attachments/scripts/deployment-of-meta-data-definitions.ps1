@@ -59,5 +59,7 @@ $accessApp.Quit()
 Remove-Variable accessApp
 
 echo "All Done git repository `$own` is initialized."
-echo "You can now start the Access Application and start to work with your meta-data-model."
-
+echo "The meta data editor tooling will be restated now."
+$accessApp = New-Object -ComObject Access.Application
+$dbPath    = "$msa\ms-access-frontend.accdb"
+$accessApp.OpenCurrentDatabase($dbPath)
