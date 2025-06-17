@@ -1,9 +1,15 @@
-﻿CREATE PROCEDURE deployment.usp_create_tmp AS BEGIN
+﻿CREATE PROCEDURE deployment.usp_create_tmp
+
+  /* Input PAramter(s) */
+  @ip_is_debugging BIT = 0
+  
+AS BEGIN
 
   DECLARE /* Local Variables */
     @nm_schema NVARCHAR(128),
     @nm_table  NVARCHAR(128),
-    @tx_sql    NVARCHAR(MAX);
+    @tx_sql    NVARCHAR(MAX),
+    @tx_msg    NVARCHAR(999);
 
   BEGIN TRY
 
@@ -17,8 +23,9 @@
 
     WHILE ((SELECT COUNT(*) FROM #schemas) > 0) BEGIN
       SELECT @nm_schema = nm_schema, @tx_sql = tx_sql FROM (SELECT TOP 1 * FROM #schemas) AS rec;
-      EXEC sp_executesql @tx_sql;
       DELETE FROM #schemas WHERE nm_schema = @nm_schema;
+      SET @tx_msg = 'Create Temp Table : "' + @nm_schema + '"';
+      EXEC gnc_commen.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
     END /* WHILE */
   
     DROP TABLE IF EXISTS ##def; SELECT nm_schema = TABLE_SCHEMA, nm_table  = TABLE_NAME INTO ##def FROM INFORMATION_SCHEMA.TABLES 
@@ -34,12 +41,12 @@
 
       /* Fetch next nm_schema and nm_table */
       SELECT @nm_schema = nm_schema, @nm_table  = nm_table FROM (SELECT TOP 1 * FROM ##def) AS rec;
+      EXEC gnc_commen.show_and_execute_sql @tx_msg, '', @ip_is_debugging;
 
-      PRINT('@nm_schema : "'+ @nm_schema + '.'+ @nm_table +'"');
       /* Create temp-table */
-      EXEC deployment.usp_create_tsa @nm_schema, @nm_table;
-      EXEC deployment.usp_create_get @nm_schema, @nm_table;
-      EXEC deployment.usp_create_usp @nm_schema, @nm_table;
+      EXEC deployment.usp_create_tsa @nm_schema, @nm_table, @ip_is_debugging;
+      EXEC deployment.usp_create_get @nm_schema, @nm_table, @ip_is_debugging;
+      EXEC deployment.usp_create_usp @nm_schema, @nm_table, @ip_is_debugging;
     
       /* Drop Record from temp-table. */
       DELETE FROM ##def WHERE nm_schema = @nm_schema AND nm_table = @nm_table;
@@ -48,24 +55,18 @@
 
   END TRY
   BEGIN CATCH
-    DECLARE
 
-      @tx_message NVARCHAR(MAX) = '';
+	  /* Build Text Message for Error info. */
+	  SET @tx_msg  = '=== Error Message ================================================'     + CHAR(10)
+	  SET @tx_msg += 'Procedure : ' + CONVERT(NVARCHAR(255), ISNULL(ERROR_PROCEDURE(),'n/a'))	+ CHAR(10)
+	  SET @tx_msg += 'Line      : ' + CONVERT(NVARCHAR(255), ERROR_LINE())				            + CHAR(10)
+	  SET @tx_msg += 'Numer     : ' + CONVERT(NVARCHAR(255), ERROR_NUMBER())			            + CHAR(10)
+	  SET @tx_msg += 'Message   : ' + CONVERT(NVARCHAR(255), ERROR_MESSAGE())			            + CHAR(10)
+	  SET @tx_msg += 'Severity  : ' + CONVERT(NVARCHAR(255), ERROR_SEVERITY())		            + CHAR(10)
+	  SET @tx_msg += 'State     : ' + CONVERT(NVARCHAR(255), ERROR_STATE())				            + CHAR(10)
+	  SET @tx_msg += '=================================================================='     + CHAR(10)
+    RAISERROR(@tx_msg, 16, 1);
 
-    BEGIN
-
-	    /* Build Text Message for Error info. */
-	    SET @tx_message += '=== Error Message ================================================'     + CHAR(10)
-	    SET @tx_message += 'Procedure : ' + CONVERT(NVARCHAR(255), ISNULL(ERROR_PROCEDURE(),'n/a'))	+ CHAR(10)
-	    SET @tx_message += 'Line      : ' + CONVERT(NVARCHAR(255), ERROR_LINE())				            + CHAR(10)
-	    SET @tx_message += 'Numer     : ' + CONVERT(NVARCHAR(255), ERROR_NUMBER())			            + CHAR(10)
-	    SET @tx_message += 'Message   : ' + CONVERT(NVARCHAR(255), ERROR_MESSAGE())			            + CHAR(10)
-	    SET @tx_message += 'Severity  : ' + CONVERT(NVARCHAR(255), ERROR_SEVERITY())		            + CHAR(10)
-	    SET @tx_message += 'State     : ' + CONVERT(NVARCHAR(255), ERROR_STATE())				            + CHAR(10)
-	    SET @tx_message += '=================================================================='     + CHAR(10)
-      RAISERROR(@tx_message, 16, 1);
-
-    END
   END CATCH
 END
 GO

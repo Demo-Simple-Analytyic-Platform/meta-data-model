@@ -1,7 +1,10 @@
 ﻿CREATE PROCEDURE deployment.usp_execute_all_usp 
 
   /* Input Parameters */
-  @ip_is_only_metadata BIT = 1
+  @ip_is_only_metadata BIT = 1,
+
+  /* Input Paramter(s) */
+  @ip_is_debugging BIT = 0
 
 AS BEGIN
   
@@ -15,7 +18,7 @@ AS BEGIN
 
     /* Extract a list of "procedure"  to be executed. */ 
     DROP TABLE IF EXISTS ##sql; SELECT 
-      tx_sql = 'BEGIN EXECUTE tsa_' + TABLE_SCHEMA + '.usp_' + TABLE_NAME + '; END' 
+      tx_sql = 'BEGIN EXECUTE tsa_' + TABLE_SCHEMA + '.usp_' + TABLE_NAME + ' @ip_is_debugging = ' + CONVERT(NVARCHAR(1), @ip_is_debugging) + '; END' 
     INTO ##sql FROM INFORMATION_SCHEMA.TABLES 
     WHERE TABLE_SCHEMA IN ('srd' , 'ohg', 'dta', 'dqm')
     AND   CASE 
@@ -39,12 +42,14 @@ AS BEGIN
             
             ELSE 0
 
-          END = 1
-    
-    ;
+          END = 1;
     
     /* Loop throught the "SQL"-statements, Show and EXECUTE them. */
-    WHILE ((SELECT COUNT(*) FROM ##sql) > 0) BEGIN SELECT @tx_sql = tx_sql FROM (SELECT TOP 1 * FROM ##sql) AS rec; PRINT(@tx_sql); EXEC sp_executesql @tx_sql; DELETE FROM ##sql WHERE tx_sql = @tx_sql; END /* WHILE */ DROP TABLE IF EXISTS ##sql; 
+    WHILE ((SELECT COUNT(*) FROM ##sql) > 0) BEGIN 
+      SELECT @tx_sql = tx_sql FROM (SELECT TOP 1 * FROM ##sql) AS rec; 
+      DELETE FROM ##sql WHERE tx_sql = @tx_sql; 
+      EXEC gnc_commen.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+    END /* WHILE */ DROP TABLE IF EXISTS ##sql; 
 
   END
 

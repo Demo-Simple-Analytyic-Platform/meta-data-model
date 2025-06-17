@@ -68,32 +68,32 @@ $xmlContent = @"
 # Save the file
 $xmlContent | Out-File -FilePath $profilePath -Encoding utf8
 
-echo "# 6. Build and Publish `Meta-Data-Model` to database."
+echo "# 6. Build `Meta-Data-Model`."
 
 # Search for SqlPackage.exe and store the first match in a variable
-$msbuild = Get-ChildItem -Path "C:\" -Filter "SqlPackMSBuildage.exe" -Recurse -ErrorAction SilentlyContinue -Force |
-    Where-Object { $_.FullName -match "MSBuild.exe" } |
-    Select-Object -First 1 -ExpandProperty FullName
-$msbuild = $msbuild -replace "msbuild.exe", ""
+$msbuild = Get-ChildItem -Path "C:\Program Files\Microsoft Visual Studio" -Recurse -Filter MSBuild.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+$msbuild = $msbuild #-replace "msbuild.exe", ""
+echo "$msbuild"
 
 # cahnge directory
-Set-Location -Path "$msbuild"
-msbuild.exe "$lcl\meta-data-model.sqlproj" `
+#Set-Location -Path "$msbuild"
+& "$msbuild" "$lcl\meta-data-model\meta-data-model.sqlproj" `
     /p:Configuration=Release `
     /p:DeployOnBuild=true `
     /p:PublishProfile="$profilePath"
 
-
+echo "# 7. Publish `Meta-Data-Model` to database."
 
 # Search for SqlPackage.exe and store the first match in a variable
-# $sqlPackagePath = Get-ChildItem -Path "C:\" -Filter "SqlPackage.exe" -Recurse -ErrorAction SilentlyContinue -Force |
-#     Where-Object { $_.FullName -match "SqlPackage.exe" } |
-#     Select-Object -First 1 -ExpandProperty FullName
-# 
-# & "$sqlPackagePath" `
-#     /Action:Publish `
-#     /SourceFile:"$lcl\meta-data-model\bin\Debug\meta-data-model.dacpac" `
-#     /Profile:"$profilePath"
+$sqlPackagePath = Get-ChildItem -Path "C:\" -Filter "SqlPackage.exe" -Recurse -ErrorAction SilentlyContinue -Force |
+    Where-Object { $_.FullName -match "SqlPackage.exe" } |
+    Select-Object -First 1 -ExpandProperty FullName
 
-
-
+& "$sqlPackagePath" `
+    /Action:Publish `
+    /SourceFile:"$lcl\meta-data-model\bin\Release\meta-data-model.dacpac" `
+    /Profile:"$profilePath"
+    
+echo "All done, the `Meta-Data-Model` is now deployed to the database `$nm_database` on server `$nm_server`."
+# End of script
+$WarningPreference = "Continue" # Reset warning preference  
