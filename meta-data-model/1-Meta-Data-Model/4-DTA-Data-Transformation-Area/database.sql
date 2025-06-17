@@ -6,6 +6,8 @@
     id_environment            CHAR(32)      NULL,
     nm_server                 NVARCHAR(128) NULL,
     nm_database               NVARCHAR(128) NULL,
+    nm_username               NVARCHAR(128) NULL,
+    nm_secret                 NVARCHAR(128) NULL,
 
     /* Metadata Attributes */
     meta_dt_valid_from DATETIME NOT NULL,

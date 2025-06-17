@@ -76,7 +76,7 @@ BEGIN
             ELSE 0 
         END AS is_next_word_alias_keyword,
         CASE /* AS is_prev_word_from_or_join_keyword */
-            WHEN tx_sql_next IN ('FROM', 'JOIN') 
+            WHEN tx_sql_prev IN ('FROM', 'JOIN') 
             AND  dst.id_dataset IS NOT NULL
             THEN 1 
             ELSE 0 
@@ -85,11 +85,14 @@ BEGIN
             WHEN UPPER(tx.tx_sql) IN ('INNER', 'CROSS', 'LEFT', 'RIGHT', 'FULL', 'JOIN', 'ON', 'FROM', 'WHERE', 'WHEN')
             THEN 1
             ELSE 0
-        END AS is_keyword
+        END AS is_keyword,
+        tx.tx_sql_next,
+        tx_sql_prev
         
       INTO #md FROM (
         SELECT ROW_NUMBER()    OVER (PARTITION BY tx.ni_dummy ORDER BY tx.ni_dummy) AS ni_ordering
              , LEAD(tx.tx_sql) OVER (PARTITION BY tx.ni_dummy ORDER BY tx.ni_dummy) AS tx_sql_next
+             , LAG(tx.tx_sql)  OVER (PARTITION BY tx.ni_dummy ORDER BY tx.ni_dummy) AS tx_sql_prev
              , tx.* 
         FROM #tx AS tx
       ) AS tx
