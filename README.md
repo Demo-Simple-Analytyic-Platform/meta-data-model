@@ -1,6 +1,8 @@
 <h1>Overview</h1>
 
-This SQL Server-based solution forms the foundation of the **Meta-Data Model**, designed to streamline deployment and data processing through automation. By handling the technical complexities behind the scenes, it enables Data Engineers to focus on delivering business value.
+This SQL Server-based solution forms the foundation of the **Meta-Data Model**, designed to streamline deployment and data processing through automation. By handling the technical complexities behind the scenes, it enables Data Engineers to focus on delivering business value. 
+
+> Note: currently it only works on Window OS, for most of the solution is based on Microsoft technology. However the idea is you can also build simular logic / programming on any other SQL oriented database.
 
 At its core, the solution provides:
 
@@ -43,6 +45,8 @@ As state before the framework has strived to limit the required technologies, we
 4. Python ([Download Python](https://www.python.org/getit/))
 5. SQL Server Management Studio ([Installeer SQL Server Management Studio](https://www.microsoft.com/sql-server/sql-server-downloads))
 6. Microsoft Office, in particular Access ([Runtime Only](https://support.microsoft.com/en-us/office/download-and-install-microsoft-365-access-runtime-185c5a32-8ba9-491e-ac76-91cbe3ea09c9))
+7. PowerShell (should run on windows)
+
 
 Now all these are installed or were already installed, the *Installation* of the Frameword can start.
 
