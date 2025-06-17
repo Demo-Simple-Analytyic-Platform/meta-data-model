@@ -232,6 +232,8 @@
     <Build Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa\tsa_dq_criteria.sql" />
     <Build Include="8-Commen-Features\Procedures\Deployment\3-Documentation\build_html_file_dataset_all.sql" />
     <Build Include="8-Commen-Features\Procedures\Deployment\deploy_datasets.sql" />
+    <Build Include="8-Commen-Features\Tables\sql_to_execute.sql" />
+    <Build Include="8-Commen-Features\Procedures\Run\process_sql_to_execute.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="9-Publish\2-Depolyment\1-meta-data-model.synology.publish.xml" />

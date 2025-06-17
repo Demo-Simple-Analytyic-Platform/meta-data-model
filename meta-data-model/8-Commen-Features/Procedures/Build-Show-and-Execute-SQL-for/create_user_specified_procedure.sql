@@ -64,20 +64,14 @@ DECLARE
   @tx_sql_main_where_statement  NVARCHAR(MAX),
 
   /* "Transformation"-parts */
-  @id_transformation_part       CHAR(32),
-  @ni_transformation_part       INT,
-  @tx_transformation_part       NVARCHAR(MAX),
-  @cd_union_type                NVARCHAR(32),
-  @tx_sql_attribute             NVARCHAR(MAX),
-  @tx_sql_where_and_or_group_by NVARCHAR(MAX),
-  @is_group_by_used             BIT,
-  @is_aggregate_function_used   BIT,
+--  @tx_sql_attribute             NVARCHAR(MAX),
+--  @is_aggregate_function_used   BIT,
         
   /* "Transformation"-datasets */
-  @id_transformation_dataset       CHAR(32),
-  @tx_sql_for_replace_from_dataset NVARCHAR(MAX),
-  @cd_alias_for_from               NVARCHAR(MAX),
-  @cd_alias_for_full_join          NVARCHAR(MAX),
+--  @id_transformation_dataset       CHAR(32),
+--  @tx_sql_for_replace_from_dataset NVARCHAR(MAX),
+--  @cd_alias_for_from               NVARCHAR(MAX),
+--  @cd_alias_for_full_join          NVARCHAR(MAX),
 
   /* Local Variables for "Timestamp/Epoch". */
   @dt_previous_stand NVARCHAR(32),
@@ -107,11 +101,12 @@ BEGIN
     SELECT @tsa = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @src = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @tgt = '[' +     dst.nm_target_schema + '].['     + dst.nm_target_table + ']',
-           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
+           --@ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
+           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Fullload' END,
            @is_ingestion = dst.is_ingestion,
            @nm_ingestion = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
            @tx_query_source = REPLACE(dst.tx_source_query, '<newline>', @nwl),
-           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Incremental')),
+           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Fullload')),
            @tx_sql_for_meta_dt_valid_from = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_from,'n/a'), @sqt, '"'),
            @tx_sql_for_meta_dt_valid_till = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_till,'n/a'), @sqt, '"')
     FROM dta.dataset AS dst LEFT JOIN dta.ingestion_etl AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = dst.id_dataset AND etl.id_model = dst.id_model
@@ -213,9 +208,10 @@ BEGIN
 
     END  
 
-    PRINT('@is_ingestion : ' + CONVERT(NVARCHAR(1), @is_ingestion));
+    IF (@ip_is_debugging=1) BEGIN PRINT('@is_ingestion : ' + CONVERT(NVARCHAR(1), @is_ingestion)); END;
     IF (@is_ingestion = 1 /* Extent the "Source"-query */) BEGIN
 
+      /* Build SQL Statment for "Ingestion"  to handle the "TSL"-table. in correct and desired way. */
       SET @qry = REPLACE(@tx_query_source, @nwl, @tb1);
       SET @idx = CHARINDEX('FROM', @tx_query_source, 1);
       SET @qry  = @emp + 'SELECT';
@@ -232,250 +228,250 @@ BEGIN
       SET @qry += @nwl + '  , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')';
       SET @qry += @nwl + '  ' + SUBSTRING(@tx_query_source, @idx, LEN(@tx_query_source));
       SET @qry += @nwl + ') AS [main]';
-      PRINT('processed as ingestion');
 
+      /* Show SQL Statement for "Ingestion" if in Debugging mode. */
+      IF (@ip_is_debugging=1) BEGIN 
+        PRINT('/* Extent the "Source"-query */');
+        EXEC gnc_commen.to_concol_window @qry;
+      END
     END
     IF (@is_ingestion = 0 /* Extent the "Transformation"-query */) BEGIN 
       
       IF (@ip_is_debugging=1) BEGIN PRINT('/* Extent the "Transformation"-query */'); END
-
-      IF (1=1 /* Determine if "FULL JOIN" or "UNION" is "used" for the "Transformations". */) BEGIN
-
-        SELECT @is_full_join_used = CASE WHEN (COUNT(*)>0) THEN 1 ELSE 0 END
-        FROM dta.transformation_dataset 
-        WHERE meta_is_active          = 1 
-        AND   id_model                = @ip_id_model
-        AND   cd_join_type            = 'FULL JOIN'
-        AND   id_transformation_part IN (
-          SELECT id_transformation_part 
-          FROM dta.transformation_part 
-          WHERE meta_is_active = 1 
-          AND id_dataset       = @id_dataset 
-          AND id_model         = @ip_id_model
-        );
-
-        SELECT @is_union_join_used = CASE WHEN (COUNT(*)>1) THEN 1 ELSE 0 END
-        FROM dta.transformation_part
-        WHERE meta_is_active   = 1
-        AND   id_model         = @ip_id_model
-        AND   id_dataset       = @id_dataset;
-        
-        SET @tx_sql_main_where_statement = CASE 
-          WHEN @is_full_join_used = 1 OR @is_union_join_used = 1 
-          THEN 'WHERE ([main].[meta_dt_valid_from] ' + @tx_sql_between + ') OR ([main].[meta_dt_valid_till] ' + @tx_sql_between + ')'
-          ELSE ''
-        END;
-
-      END        
+    
       IF (1=1 /* Extract "Parts" for the "Transformations". */) BEGIN
 
-        DROP TABLE IF EXISTS #transformation_part; SELECT 
-          id_transformation_part,
-          ni_transformation_part,
-          CASE /*  AS cd_union_type */
+        /* Add "Transformation"-parts to the "Source"-query. */
+        DROP TABLE IF EXISTS #prt; SELECT prt.* INTO #prt FROM (SELECT 
+          
+          /*  Model/Dataset and Source Query */
+          dst.id_model,
+          dst.id_dataset,
+          dst.tx_source_query,
 
-            WHEN ni_transformation_part > 1 
-            AND  UPPER(@tx_query_source) LIKE '%UNION%ALL%' 
-            THEN 'UNION ALL '
-            
-            WHEN ni_transformation_part > 1 
-            AND  UPPER(@tx_query_source) LIKE '%UNION%' 
-            THEN 'UNION '
+          /* ETL logic */
+          etl.nm_processing_type,
+          etl.tx_sql_for_meta_dt_valid_from,
+          etl.tx_sql_for_meta_dt_valid_till,
+          CASE -- AS is_aggregate_function_used_valid_from,
+            WHEN CHARINDEX('COUNT(',        UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('SUM(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('AVG(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('MAX(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('MIN(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('STDEV(',        UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('STDEVP(',       UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('VAR(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('VARP(',         UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('GROUPING(',     UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('CHECKSUM_AGG(', UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('STRING_AGG(',   UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('JSON_AGG(',     UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_from, ' ', '')), 1) > 0 THEN 1
+            ELSE 0 
+          END AS is_aggregate_function_used_valid_from,
+          CASE -- AS is_aggregate_function_used_valid_from,
+            WHEN CHARINDEX('COUNT(',        UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('SUM(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('AVG(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('MAX(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('MIN(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('STDEV(',        UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('STDEVP(',       UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('VAR(',          UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1 
+            WHEN CHARINDEX('VARP(',         UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('GROUPING(',     UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('CHECKSUM_AGG(', UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('STRING_AGG(',   UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            WHEN CHARINDEX('JSON_AGG(',     UPPER(REPLACE(etl.tx_sql_for_meta_dt_valid_till, ' ', '')), 1) > 0 THEN 1
+            ELSE 0 
+          END AS is_aggregate_function_used_valid_till,
 
+          /* Transformation Part(s) */
+          tpt.id_transformation_part,
+          tpt.ni_transformation_part,
+          tpt.tx_transformation_part,
+          tpt.is_aggregate_function_used,
+  
+          TRIM(SUBSTRING(tx_transformation_part, 1, (tpt.ni_pos_from - 1))) AS tx_sql_select,
+          CASE /* AS tx_sql_from */
+            WHEN tpt.ni_pos_from != 0 AND tpt.ni_pos_where    != 0  THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_from, (tpt.ni_pos_where       - tpt.ni_pos_from))
+            WHEN tpt.ni_pos_from != 0 AND tpt.ni_pos_group_by != 0  THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_from, (tpt.ni_pos_group_by    - tpt.ni_pos_from))
+            WHEN tpt.ni_pos_from != 0                               THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_from, (tpt.ni_length          - tpt.ni_pos_from))
+            ELSE '' 
+          END AS tx_sql_from,
+          CASE /* AS tx_sql_where */ 
+            WHEN tpt.ni_pos_where != 0 AND tpt.ni_pos_group_by != 0 THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_where, (tpt.ni_pos_group_by   - tpt.ni_pos_where))
+            WHEN tpt.ni_pos_where != 0 AND tpt.ni_pos_having   != 0 THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_where, (tpt.ni_pos_having     - tpt.ni_pos_where))
+            WHEN tpt.ni_pos_where != 0                              THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_where, (tpt.ni_length         - tpt.ni_pos_where))
             ELSE ''
-
-          END AS cd_union_type,
-          TRIM(SUBSTRING(tx_transformation_part, 1, CHARINDEX('FROM', tx_transformation_part, 1) - 1)) AS tx_sql_attribute,
-          CASE /* AS tx_sql_where_and_or_group_by */
-            
-            WHEN CHARINDEX('WHERE', tx_transformation_part, 1) != 0 
-            THEN SUBSTRING(tx_transformation_part, CHARINDEX('WHERE', tx_transformation_part, 1), LEN(tx_transformation_part))
-            
-            WHEN CHARINDEX('GROUP BY', tx_transformation_part, 1) != 0 
-            THEN SUBSTRING(tx_transformation_part, CHARINDEX('GROUP BY', tx_transformation_part, 1), LEN(tx_transformation_part))
-            
+          END AS tx_sql_where,
+          CASE /* AS tx_sql_group_by */
+            WHEN tpt.ni_pos_group_by != 0 AND tpt.ni_pos_having != 0 THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_group_by, (tpt.ni_pos_having - tpt.ni_pos_group_by))
+            WHEN tpt.ni_pos_group_by != 0                            THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_group_by, (tpt.ni_length     - tpt.ni_pos_group_by))
             ELSE ''
+          END AS tx_sql_group_by,
+          CASE /* AS tx_sql_having */
+            WHEN tpt.ni_pos_having != 0                              THEN SUBSTRING(tx_transformation_part, tpt.ni_pos_having, (tpt.ni_length       - tpt.ni_pos_having))
+            ELSE ''
+          END AS tx_sql_having
+        
+        FROM dta.dataset as dst JOIN ( -- Transformation Part
+          SELECT 
+            id_model,
+            id_dataset,
+            id_transformation_part,
+            ni_transformation_part,
+            tx_transformation_part,
+            is_aggregate_function_used = CASE
+                  WHEN CHARINDEX('COUNT(',        UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('SUM(',          UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1 
+                  WHEN CHARINDEX('AVG(',          UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1 
+                  WHEN CHARINDEX('MAX(',          UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1 
+                  WHEN CHARINDEX('MIN(',          UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1 
+                  WHEN CHARINDEX('STDEV(',        UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('STDEVP(',       UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('VAR(',          UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1 
+                  WHEN CHARINDEX('VARP(',         UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('GROUPING(',     UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('CHECKSUM_AGG(', UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('STRING_AGG(',   UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  WHEN CHARINDEX('JSON_AGG(',     UPPER(REPLACE(tx_transformation_part, ' ', '')), 1) > 0 THEN 1
+                  ELSE 0 
+            END,
+            /* Calculating postion on FROM, WHERE, GROUP BY and/or HAVING. */
+            ni_pos_from     = CHARINDEX('FROM',      tx_transformation_part, 1),
+            ni_pos_where    = CHARINDEX('WHERE',     tx_transformation_part, 1),
+            ni_pos_group_by = CHARINDEX('GROUP BY',  tx_transformation_part, 1),
+            ni_pos_having   = CHARINDEX('HAVING',    tx_transformation_part, 1),
+            ni_length       = LEN(tx_transformation_part) + 1 /* !!! Otherwise the substring at the end will miss 1 character !!! */
+          FROM dta.transformation_part
+          WHERE meta_is_active = 1 
+        ) AS tpt
+        ON  tpt.id_model   = dst.id_model
+        AND tpt.id_dataset = dst.id_dataset
+        
+        LEFT JOIN dta.ingestion_etl AS etl
+        ON  etl.meta_is_active = 1 
+        AND etl.id_model   = tpt.id_model
+        AND etl.id_dataset = tpt.id_dataset 
+        
+        WHERE dst.meta_is_active = 1
+        AND   dst.fn_dataset    != 'dummy'
+        AND   dst.is_ingestion  != 1 
 
-          END AS tx_sql_where_and_or_group_by
-        INTO #transformation_part
-        FROM dta.transformation_part
-        WHERE meta_is_active = 1 
-        AND   id_model       = @ip_id_model
-        AND   id_dataset     = @id_dataset
-        ORDER By ni_transformation_part;
+        /* Filtering the "Transformation"-parts by "Model" and "Dataset". */
+        AND   tpt.id_model     = @ip_id_model
+        AND   tpt.id_dataset   = @id_dataset
+        ) AS prt;
+  
+        /* Declare index part and max */
+        DECLARE @ni_prt INT = 1, @mx_prt INT = (SELECT MAX(ni_transformation_part) FROM #prt),
+
+          /* Declare "Transformation"-part variables. */
+          @is_aggregate_function_used            BIT,
+          @is_utilized_column_used_in_valid_from BIT,
+          @is_utilized_column_used_in_valid_till BIT,
+          @is_aggregate_function_used_valid_from BIT,
+          @is_aggregate_function_used_valid_till BIT,
+  
+          @tx_sql_select              NVARCHAR(MAX),
+          @tx_sql_from                NVARCHAR(MAX),
+          @tx_sql_where               NVARCHAR(MAX),
+          @tx_sql_group_by            NVARCHAR(MAX),
+          @tx_sql_having              NVARCHAR(MAX)
 
         /* If IN DEBUG mode, show the "Transformation"-parts. */
-        IF (@ip_is_debugging=1) BEGIN SELECT * FROM #transformation_part; END;
+        IF (@ip_is_debugging=1) BEGIN SELECT * FROM #prt; END;
 
       END
-      IF (1=1 /* Extract "Datasets" for the "Transformations". */) BEGIN
-        DROP TABLE IF EXISTS #transformation_dataset; SELECT 
-          tds.id_transformation_part,
-          tds.id_transformation_dataset,
-          tds.ni_transformation_dataset,
-          tds.cd_alias, 
-		      tds.cd_join_type,
-          CASE /* If the "Dataset" is DQ related and specificly the "Totals", which is "Generated", this is always "Fullload". */
-		        WHEN tds.cd_join_type                    = 'FROM'
-		        AND  @ip_nm_target_schema                = 'dq_totals'
-		        AND  SUBSTRING(@ip_nm_target_table, 1,3) = 'dqt'
-			      THEN '  ' + tds.cd_join_type+' ['+dst.nm_target_schema+'].['+dst.nm_target_table+'] AS [' + tds.cd_alias + ']' 
-               + IIF(LEN(ISNULL(tds.tx_join_criteria,'-')) > 1, ' ON ' + REPLACE(ISNULL(tds.tx_join_criteria, ' '), '''', '"'), '')
-		       
-			   /* Other "Datasets". */ 
-			   WHEN tds.cd_join_type    = 'FROM' 
-			   AND  @is_full_join_used  = 0 
-               THEN  '  FROM (' /* Convert "FROM@is_union_join_used"-dataset into "subquery" that is filter on BK that have "change" that will "poisiblily" effect the result of the "Transformation". */
-               +@nwl+'    SELECT * FROM ['+dst.nm_target_schema+'].['+dst.nm_target_table+'] AS ['+tds.cd_alias+'] WHERE ['+tds.cd_alias+'].[meta_ch_bk] IN (' 
-               +@nwl+'      SELECT [meta_ch_bk] FROM ['+dst.nm_target_schema+'].['+dst.nm_target_table+']'
-               +@nwl+'      WHERE ([meta_dt_valid_from] '+@tx_sql_between+')'
-               +@nwl+'         OR ([meta_dt_valid_till] '+@tx_sql_between+')'
-               +@nwl+'    )'
-               +@nwl+'  ) AS ['+tds.cd_alias+']'
 
-				/* If NOT From */
-				ELSE '  ' + tds.cd_join_type+' ['+dst.nm_target_schema+'].['+dst.nm_target_table+'] AS [' + tds.cd_alias + ']' + IIF(LEN(ISNULL(tds.tx_join_criteria,'-')) > 1, ' ON ' + REPLACE(ISNULL(tds.tx_join_criteria, ' '), '''', '"'), '')
+      IF (1=1 /* Build SQL Statement for the "Source" query. */) BEGIN
 
-          END AS tx_sql_for_replace_from_dataset
-        INTO #transformation_dataset 
-        FROM dta.transformation_dataset AS tds JOIN dta.dataset AS dst 
-        ON  dst.id_dataset     = tds.id_dataset 
-        AND dst.id_model       = tds.id_model
-        AND dst.meta_is_active = 1 
-        WHERE tds.meta_is_active          = 1 
-        AND   tds.id_model                = @ip_id_model
-        AND   tds.id_transformation_part IN (SELECT id_transformation_part FROM #transformation_part);
+        IF (1=1 /* Build SQL Statement for the "Source" query, relavant to the "main"-wrapper. */) BEGIN
+          SET @idx = CHARINDEX('FROM', @tx_query_source, 1);
+          SET @qry  = @emp + 'SELECT';
+          SET @qry += @nwl + '  ' + REPLACE(@att, @nwl, @tb1);
+          SET @qry += @emp +   '[main].[meta_dt_valid_from] AS [meta_dt_valid_from],';
+          SET @qry += @nwl + '  [main].[meta_dt_valid_till] AS [meta_dt_valid_till],';
+          SET @qry += @nwl + '  CONVERT(BIT, 1) AS [meta_is_active],';
+          SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @rwh + ', 2) AS [meta_ch_rh],';
+          SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @bks + ', 2) AS [meta_ch_bk],';
+          SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @pks + ', 2) AS [meta_ch_pk]';
+          SET @qry += @nwl + 'FROM ( -- "' + @nm_processing_type +'" processing mode.';
+        END 
 
-        /* If IN DEBUG mode, show the "Transformation"-datasets. */
-        IF (@ip_is_debugging=1) BEGIN SELECT * FROM #transformation_dataset; END;
+        IF (@nm_processing_type = 'Fullload') BEGIN
 
-      END
-        
-      /* Build SQL Statement for "main" */
-      SET @qry  = @emp + 'SELECT';
-      SET @qry += @nwl + '  ' + REPLACE(@att, @nwl, @tb1);
-      SET @qry += @emp +   '[main].[meta_dt_valid_from] AS [meta_dt_valid_from],';
-      SET @qry += @nwl + '  [main].[meta_dt_valid_till] AS [meta_dt_valid_till],';
-      SET @qry += @nwl + '  CONVERT(BIT, IIF([main].[meta_dt_valid_till] >= CONVERT(DATETIME, "9999-12-31"),1,0)) AS [meta_is_active],';
-      SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @rwh + ', 2) AS [meta_ch_rh],';
-      SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @bks + ', 2) AS [meta_ch_bk],';
-      SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @pks + ', 2) AS [meta_ch_pk]';
-      SET @qry += @nwl + 'FROM (';
+          /* Loop throught all the "Transformation"-parts and build the "Source"-query. */
+          WHILE (@ni_prt <= @mx_prt) BEGIN
+
+            /* Extract the "Transformation"-part */
+            SELECT @tx_sql_select                         = prt.tx_sql_select 
+                 , @tx_sql_from                           = prt.tx_sql_from 
+                 , @tx_sql_where                          = prt.tx_sql_where
+                 , @tx_sql_group_by                       = prt.tx_sql_group_by 
+                 , @tx_sql_having                         = prt.tx_sql_having
+                 , @is_aggregate_function_used            = prt.is_aggregate_function_used
+                 , @tx_sql_for_meta_dt_valid_from         = prt.tx_sql_for_meta_dt_valid_from
+                 , @tx_sql_for_meta_dt_valid_till         = prt.tx_sql_for_meta_dt_valid_till
+                 , @is_aggregate_function_used_valid_from = prt.is_aggregate_function_used_valid_from
+                 , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
+            FROM #prt AS prt
+            WHERE ni_transformation_part = @ni_prt;
+
+            /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
+            SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
+                 , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
+            FROM      dta.transformation_part      AS prt
+            LEFT JOIN dta.transformation_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
+            LEFT JOIN dta.transformation_attribute AS att ON att.meta_is_active = 1 AND att.id_transformation_mapping = map.id_transformation_mapping
+            LEFT JOIN dta.attribute                AS col ON col.meta_is_active = 1 AND col.id_attribute              = att.id_attribute
+            LEFT JOIN dta.ingestion_etl            AS etl ON etl.meta_is_active = 1 AND etl.id_dataset                = prt.id_dataset
+            WHERE prt.id_dataset             = @id_dataset
+            AND   PRT.id_model               = @ip_id_model
+            AND   PRT.ni_transformation_part = @ni_prt
+            AND   prt.meta_is_active = 1;
+
+            /* Build the "Source"-query for the "Transformation"-part. */
+            SET @qry += @nwl + '  ' + @tx_sql_select;
+            SET @qry += @nwl + '       , meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')';
+            SET @qry += @nwl + '       , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')';
             
-      WHILE ((SELECT COUNT(*) FROM #transformation_part)>0) BEGIN
-        
-        SELECT /* Fetch next Values */
-            @id_transformation_part       = nxt.id_transformation_part,
-            @cd_union_type                = nxt.cd_union_type,
-            @tx_sql_attribute             = REPLACE(nxt.tx_sql_attribute, '''', '"'),
-            @tx_sql_where_and_or_group_by = nxt.tx_sql_where_and_or_group_by
-        FROM (SELECT TOP 1 * FROM #transformation_part ORDER BY ni_transformation_part ASC) AS nxt;
-        DELETE FROM #transformation_part WHERE id_transformation_part = @id_transformation_part;
-        IF (@ip_is_debugging=1) BEGIN PRINT(CONCAT(' @id_transformation_part : ', @id_transformation_part)); END;
+            IF (@tx_sql_from     != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_from;  END;           
+            IF (@tx_sql_where    != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_where; END;
+            IF (@tx_sql_group_by != '') BEGIN 
+              SET @qry += @nwl + '  ' + @tx_sql_group_by;
+              IF (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')'; END;
+              IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; END;
+            END
+            IF (@tx_sql_group_by = '' AND @is_aggregate_function_used = 1) BEGIN
+              SET @qry += @nwl + IIF(@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0, '  GROUP BY CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')', '');
+              IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN 
+                SET @qry+=@nwl + IIF(@is_utilized_column_used_in_valid_from = 0 OR (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0), '  GROUP BY ', '         , ') + 'CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; 
+              END
+            END
+            IF (@tx_sql_having != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_having; END;
 
-        IF (1=1 /* Determine group by usage */ ) BEGIN
+            /* Add "UNION ALL" if there is a "Next" "Transformation"-part. */
+            IF ((@ni_prt + 1) <= @mx_prt) BEGIN SET @qry += @nwl + 'UNION ALL'; END
 
-          SET @is_group_by_used = CASE 
-              WHEN CHARINDEX('GROUP~BY', UPPER(REPLACE(@tx_sql_where_and_or_group_by, ' ', '~')), 1) > 0 THEN 1 
-              ELSE 0
-          END;
+            /* Next "Transformation"-part */
+            SET @ni_prt += 1; 
+          
+          END /* WHILE (@ni_prt < @mx_prt) */
 
-          SET @is_aggregate_function_used = CASE
+        END
 
-              /* Common SQL Aggregate Functions */
-              WHEN CHARINDEX('COUNT(', UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('SUM(',   UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1 
-              WHEN CHARINDEX('AVG(',   UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1 
-              WHEN CHARINDEX('MAX(',   UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1 
-              WHEN CHARINDEX('MIN(',   UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1 
+        IF (1=1 /* After all "Transformation"-part(s) sourcequeryies are added. */) BEGIN
+          SET @qry += @nwl + ') [main]';
+        END
 
-              /* Other Useful Aggregate Functions (SQL Server-specific and others) */
-              WHEN CHARINDEX('STDEV(',        UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('STDEVP(',       UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('VAR(',          UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1 
-              WHEN CHARINDEX('VARP(',         UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('GROUPING(',     UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('CHECKSUM_AGG(', UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('STRING_AGG(',   UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
-              WHEN CHARINDEX('JSON_AGG(',     UPPER(REPLACE(@tx_sql_attribute, ' ', '')), 1) > 0 THEN 1
+        IF (@ip_is_debugging=1) BEGIN 
+          PRINT('/* Build SQL Statement for the "Source" query */');
+          EXEC gnc_commen.to_concol_window @qry;
+        END
 
-              ELSE 0 
-          END;
-    
-        END;
-
-        /* Build SQL Statement of "Part" for "Attributes" / "Mappings". */
-        SET @qry += @tb1 + @cd_union_type + REPLACE(@tx_sql_attribute, @nwl, @tb1) + ',';
-
-        /* Build SQL Statement of "Part" for "meta_dt_valid_from". */       
-        SELECT @cd_alias_for_from      = '['+cd_alias+'].[meta_dt_valid_from]' FROM #transformation_dataset WHERE id_transformation_part = @id_transformation_part AND cd_join_type = 'FROM';
-        SELECT @cd_alias_for_full_join = '['+cd_alias+'].[meta_dt_valid_from]' FROM #transformation_dataset WHERE id_transformation_part = @id_transformation_part AND cd_join_type = 'FULL JOIN';
-        SET @qry += @nwl + '         ';
-        IF (@is_full_join_used = 0) BEGIN SET @qry += ''       +@cd_alias_for_from; END;
-        IF (@is_full_join_used = 1) BEGIN SET @qry += 'ISNULL('+@cd_alias_for_from+', '+@cd_alias_for_full_join+')'; END;
-        SET @qry += ' AS [meta_dt_valid_from],';
-
-        /* Build SQL Statement of "Part" for "meta_dt_valid_till", by replaceing `from` with `till`. */
-        SET @cd_alias_for_from      = REPLACE(@cd_alias_for_from     , 'from', 'till');
-        SET @cd_alias_for_full_join = REPLACE(@cd_alias_for_full_join, 'from', 'till');
-        SET @qry += @nwl + '         ';
-        IF (@is_full_join_used = 0) BEGIN SET @qry += ''       +@cd_alias_for_from; END;
-        IF (@is_full_join_used = 1) BEGIN SET @qry += 'ISNULL('+@cd_alias_for_from+', '+@cd_alias_for_full_join+')'; END;
-        SET @qry += ' AS [meta_dt_valid_till]';
-        
-        WHILE ((SELECT COUNT(*) FROM #transformation_dataset WHERE id_transformation_part = @id_transformation_part)>0) BEGIN
-
-          SELECT /* Fetch next Values */
-            @id_transformation_dataset       = nxt.id_transformation_dataset,
-            @tx_sql_for_replace_from_dataset = nxt.tx_sql_for_replace_from_dataset
-          FROM (SELECT TOP 1 * 
-                FROM #transformation_dataset 
-                WHERE id_transformation_part = @id_transformation_part 
-                ORDER BY ni_transformation_dataset ASC
-          ) AS nxt;
-          DELETE FROM #transformation_dataset WHERE id_transformation_dataset = @id_transformation_dataset;
-
-          /* If IN DEBUG mode, show the "Transformation"-datasets. */
-          IF (@ip_is_debugging=1) BEGIN 
-            PRINT(CONCAT(' @id_transformation_dataset : ', @id_transformation_dataset)); 
-          END;
-
-          /* Build SQL Statement of "Part" for "FROM/JON"-clause. */
-          SET @qry += @nwl + @tx_sql_for_replace_from_dataset;
-
-        END /* WHILE ((SELECT COUNT(*) FROM #transformation_dataset WHERE @id_transformation_part = @id_transformation_part)>0) */
-
-        /* Build SQL Statement of "Part" for "WHERE/GROUP BY"-clause. */
-        SET @qry += @tb1 + REPLACE(@tx_sql_where_and_or_group_by, @nwl, @tb1);
-
-        IF (@is_group_by_used = 1 OR @is_aggregate_function_used = 1 /* If GROUP By is Used of Aggregate Functions were used, extent the query from the Transformation part with (GROUP BY) meta_dt_valid_from/till. */) BEGIN
-        /* Build SQL Statement of "Part" for "meta_dt_valid_from". */
-
-          /* GROUP BY is already used. */
-          SET @qry += @tb1 + CASE WHEN @is_group_by_used = 1 THEN '       , ' ELSE 'GROUP BY ' END;
-
-          /* Build SQL Statement of "Part" for GROUP BY with "meta_dt_valid_from". */ 
-          SET @cd_alias_for_from      = REPLACE(@cd_alias_for_from     , 'till', 'from');
-          SET @cd_alias_for_full_join = REPLACE(@cd_alias_for_full_join, 'till', 'from');
-          IF (@is_full_join_used = 0) BEGIN SET @qry += ''       +@cd_alias_for_from; END;
-          IF (@is_full_join_used = 1) BEGIN SET @qry += 'ISNULL('+@cd_alias_for_from+', '+@cd_alias_for_full_join+')'; END;
-
-          /* Build SQL Statement of "Part" for GROUP BY with "meta_dt_valid_till", by replaceing `from` with `till`. */
-          SET @cd_alias_for_from      = REPLACE(@cd_alias_for_from     , 'from', 'till');
-          SET @cd_alias_for_full_join = REPLACE(@cd_alias_for_full_join, 'from', 'till');
-          IF (@is_full_join_used = 0) BEGIN SET @qry += @tb1 + '       , '       +@cd_alias_for_from; END;
-          IF (@is_full_join_used = 1) BEGIN SET @qry += @tb1 + '       , ISNULL('+@cd_alias_for_from+', '+@cd_alias_for_full_join+')'; END;
-      
-        END;
-
-      END /* WHILE ((SELECT COUNT(*) FROM #transformation_part)>0) */
-
-      /* finish up the "main"-subquery part. */
-      SET @qry += @nwl + ') AS [main]';
-
-      IF (@is_full_join_used = 1 /* OR @is_union_join_used = 1*/ /* then the "FROM"-dataset can NOT be filter on BK`s, thus the whole "main"-resultset must be filter afterwards. */) BEGIN
-        SET @qry += IIF(LEN(@tx_sql_main_where_statement)!=0, @nwl + @tx_sql_main_where_statement, @emp);
-      END
+     END
 
     END
     
@@ -616,7 +612,7 @@ BEGIN
     SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Transformations` needed, with `Ingestions` the `Run` is started via the `orchastration`-tool like `Azure Data Factory` for instance.)";'
     SET @tx_sql += @nwl + '    EXEC rdp.run_start "<id_model>", @id_dataset, @ip_ds_external_reference_id;'
     SET @tx_sql += @nwl + '  END'
-    SET @tx_sql += @nwl + '  '; END    
+    SET @tx_sql += @nwl + '  '; END
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
     SET @tx_sql += @nwl + '      '
     SET @tx_sql += @nwl + '      ' + REPLACE(@tx_query_calculation, @nwl, @tb2)
