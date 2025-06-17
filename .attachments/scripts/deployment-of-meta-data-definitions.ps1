@@ -52,9 +52,10 @@ $dbPath    = "$msa\ms-access-frontend.accdb"
 $accessApp.OpenCurrentDatabase($dbPath)
 $timeout = 100
 $elapsed = 0
-while ((Test-Path $wfl) -and ($elapsed -lt $timeout)) { Start-Sleep -Seconds 1 $elapsed++ } Start-Sleep -Seconds 1
-$accessApp.CloseCurrentDatabase()
-$accessApp.Quit()
+while ((Test-Path $wfl) -and ($elapsed -lt $timeout)) { 
+    Start-Sleep -Seconds 1 
+    $elapsed++ 
+}
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($accessApp) | Out-Null
 Remove-Variable accessApp
 
