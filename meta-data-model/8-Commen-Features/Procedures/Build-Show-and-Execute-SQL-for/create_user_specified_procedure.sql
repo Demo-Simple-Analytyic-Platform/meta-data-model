@@ -616,7 +616,12 @@ BEGIN
     SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Transformations` needed, with `Ingestions` the `Run` is started via the `orchastration`-tool like `Azure Data Factory` for instance.)";'
     SET @tx_sql += @nwl + '    EXEC rdp.run_start "<id_model>", @id_dataset, @ip_ds_external_reference_id;'
     SET @tx_sql += @nwl + '  END'
-    SET @tx_sql += @nwl + '  '; END    
+    SET @tx_sql += @nwl + '  '; END
+    IF (@is_ingestion = 1) BEGIN SET @tx_sql += @emp + ''; END; IF (@is_ingestion = 1) BEGIN /* In case of "Ingestion" */
+    SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Ingestions` needed, with `Ingestions` the `Run`-sql_statemen is loaded `Externally`)";'
+    SET @tx_sql += @nwl + '    EXEC rdp.process_sql_to_execute "<id_model>", @id_dataset;' 
+    SET @tx_sql += @nwl + '  END'
+    SET @tx_sql += @nwl + '  '; END
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
     SET @tx_sql += @nwl + '      '
     SET @tx_sql += @nwl + '      ' + REPLACE(@tx_query_calculation, @nwl, @tb2)
