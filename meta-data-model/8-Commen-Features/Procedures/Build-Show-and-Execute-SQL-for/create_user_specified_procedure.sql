@@ -107,11 +107,12 @@ BEGIN
     SELECT @tsa = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @src = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @tgt = '[' +     dst.nm_target_schema + '].['     + dst.nm_target_table + ']',
-           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
+           --@ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
+           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Fullload' END,
            @is_ingestion = dst.is_ingestion,
            @nm_ingestion = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
            @tx_query_source = REPLACE(dst.tx_source_query, '<newline>', @nwl),
-           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Incremental')),
+           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Fullload')),
            @tx_sql_for_meta_dt_valid_from = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_from,'n/a'), @sqt, '"'),
            @tx_sql_for_meta_dt_valid_till = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_till,'n/a'), @sqt, '"')
     FROM dta.dataset AS dst LEFT JOIN dta.ingestion_etl AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = dst.id_dataset AND etl.id_model = dst.id_model
@@ -323,9 +324,10 @@ BEGIN
                + IIF(LEN(ISNULL(tds.tx_join_criteria,'-')) > 1, ' ON ' + REPLACE(ISNULL(tds.tx_join_criteria, ' '), '''', '"'), '')
 		       
 			   /* Other "Datasets". */ 
-			   WHEN tds.cd_join_type    = 'FROM' 
-			   AND  @is_full_join_used  = 0 
-               THEN  '  FROM (' /* Convert "FROM@is_union_join_used"-dataset into "subquery" that is filter on BK that have "change" that will "poisiblily" effect the result of the "Transformation". */
+			   WHEN tds.cd_join_type     = 'FROM' 
+			   AND   @is_union_join_used = 1 
+
+               THEN  '  FROM (' /* Convert "FROM @is_union_join_used"-dataset into "subquery" that is filter on BK that have "change" that will "poisiblily" effect the result of the "Transformation". */
                +@nwl+'    SELECT * FROM ['+dst.nm_target_schema+'].['+dst.nm_target_table+'] AS ['+tds.cd_alias+'] WHERE ['+tds.cd_alias+'].[meta_ch_bk] IN (' 
                +@nwl+'      SELECT [meta_ch_bk] FROM ['+dst.nm_target_schema+'].['+dst.nm_target_table+']'
                +@nwl+'      WHERE ([meta_dt_valid_from] '+@tx_sql_between+')'
@@ -615,11 +617,6 @@ BEGIN
     SET @tx_sql += @nwl + '  SET @cd_procedure_step = "STR";'
     SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Transformations` needed, with `Ingestions` the `Run` is started via the `orchastration`-tool like `Azure Data Factory` for instance.)";'
     SET @tx_sql += @nwl + '    EXEC rdp.run_start "<id_model>", @id_dataset, @ip_ds_external_reference_id;'
-    SET @tx_sql += @nwl + '  END'
-    SET @tx_sql += @nwl + '  '; END
-    IF (@is_ingestion = 1) BEGIN SET @tx_sql += @emp + ''; END; IF (@is_ingestion = 1) BEGIN /* In case of "Ingestion" */
-    SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Ingestions` needed, with `Ingestions` the `Run`-sql_statemen is loaded `Externally`)";'
-    SET @tx_sql += @nwl + '    EXEC rdp.process_sql_to_execute "<id_model>", @id_dataset;' 
     SET @tx_sql += @nwl + '  END'
     SET @tx_sql += @nwl + '  '; END
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
