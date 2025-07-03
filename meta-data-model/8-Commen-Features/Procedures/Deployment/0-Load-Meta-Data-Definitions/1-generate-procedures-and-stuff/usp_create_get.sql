@@ -2,7 +2,10 @@
 
   /* Input Parameters */
   @ip_nm_schema NVARCHAR(128),
-  @ip_nm_table  NVARCHAR(128)
+  @ip_nm_table  NVARCHAR(128),
+
+  /* Input Paramter(s) */
+  @ip_is_debugging BIT = 0
 
 AS BEGIN
   
@@ -25,7 +28,7 @@ AS BEGIN
     ORDER BY ORDINAL_POSITION ASC;
 
     SET @tx_sql = 'DROP VIEW IF EXISTS tsa_' + @ip_nm_schema + '.get_' + @ip_nm_table;
-    EXEC sp_executesql @tx_sql;
+    EXEC gnc_commen.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
 
     SET @tx_sql  = @tx_emp + 'CREATE VIEW tsa_' + @ip_nm_schema + '.get_' + @ip_nm_table + ' AS SELECT *, ';
     SET @tx_sql += @tx_nwl + '  meta_dt_valid_from = CONVERT(DATETIME, "' + @tx_now     + '"),';        
@@ -53,7 +56,7 @@ AS BEGIN
 
     /* Execute SQL Statement */
     SET @tx_sql = REPLACE(@tx_sql,'"', '''');
-    PRINT(@tx_sql); EXEC sp_executesql @tx_sql;
+    EXEC gnc_commen.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
     
     /* All done. */
     DROP TABLE IF EXISTS ##columns; 

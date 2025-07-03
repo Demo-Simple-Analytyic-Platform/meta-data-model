@@ -1,4 +1,9 @@
-﻿CREATE PROCEDURE deployment.usp_clean_up AS BEGIN
+﻿CREATE PROCEDURE deployment.usp_clean_up
+
+  /* Input PAramter(s) */
+  @ip_is_debugging BIT = 0
+
+AS BEGIN
 
   DECLARE /* Local Variables */
     @tx_prc NVARCHAR(MAX),
@@ -28,12 +33,12 @@
 	    DELETE FROM ##tobe_dropped WHERE tx_tsa = @tx_tsa;
 
       /* Create temp-table */
-      PRINT(@tx_prc); EXEC sp_executesql @tx_prc;
-      PRINT(@tx_get); EXEC sp_executesql @tx_get;
-      PRINT(@tx_tsa); EXEC sp_executesql @tx_tsa;
+      EXEC gnc_commen.show_and_execute_sql '', @tx_prc, @ip_is_debugging;
+      EXEC gnc_commen.show_and_execute_sql '', @tx_get, @ip_is_debugging;
+      EXEC gnc_commen.show_and_execute_sql '', @tx_tsa, @ip_is_debugging;
 
       BEGIN TRY /* Drop Record from temp-table. */
-	      PRINT(@tx_shm); EXEC sp_executesql @tx_shm;
+        EXEC gnc_commen.show_and_execute_sql '', @tx_shm, @ip_is_debugging;
       END TRY
 	    BEGIN CATCH 
 		    /* Print error message */

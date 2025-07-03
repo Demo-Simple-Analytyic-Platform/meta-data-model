@@ -400,67 +400,61 @@ BEGIN
           SET @qry += @nwl + 'FROM ( -- "' + @nm_processing_type +'" processing mode.';
         END 
 
-        IF (@nm_processing_type = 'Fullload') BEGIN
+        /* Loop throught all the "Transformation"-parts and build the "Source"-query. */
+        WHILE (@ni_prt <= @mx_prt) BEGIN
 
-          /* Loop throught all the "Transformation"-parts and build the "Source"-query. */
-          WHILE (@ni_prt <= @mx_prt) BEGIN
+          /* Extract the "Transformation"-part */
+          SELECT @tx_sql_select                         = prt.tx_sql_select 
+                , @tx_sql_from                           = prt.tx_sql_from 
+                , @tx_sql_where                          = prt.tx_sql_where
+                , @tx_sql_group_by                       = prt.tx_sql_group_by 
+                , @tx_sql_having                         = prt.tx_sql_having
+                , @is_aggregate_function_used            = prt.is_aggregate_function_used
+                , @tx_sql_for_meta_dt_valid_from         = prt.tx_sql_for_meta_dt_valid_from
+                , @tx_sql_for_meta_dt_valid_till         = prt.tx_sql_for_meta_dt_valid_till
+                , @is_aggregate_function_used_valid_from = prt.is_aggregate_function_used_valid_from
+                , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
+          FROM #prt AS prt
+          WHERE ni_transformation_part = @ni_prt;
 
-            /* Extract the "Transformation"-part */
-            SELECT @tx_sql_select                         = prt.tx_sql_select 
-                 , @tx_sql_from                           = prt.tx_sql_from 
-                 , @tx_sql_where                          = prt.tx_sql_where
-                 , @tx_sql_group_by                       = prt.tx_sql_group_by 
-                 , @tx_sql_having                         = prt.tx_sql_having
-                 , @is_aggregate_function_used            = prt.is_aggregate_function_used
-                 , @tx_sql_for_meta_dt_valid_from         = prt.tx_sql_for_meta_dt_valid_from
-                 , @tx_sql_for_meta_dt_valid_till         = prt.tx_sql_for_meta_dt_valid_till
-                 , @is_aggregate_function_used_valid_from = prt.is_aggregate_function_used_valid_from
-                 , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
-            FROM #prt AS prt
-            WHERE ni_transformation_part = @ni_prt;
+          /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
+          SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
+                , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
+          FROM      dta.transformation_part      AS prt
+          LEFT JOIN dta.transformation_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
+          LEFT JOIN dta.transformation_attribute AS att ON att.meta_is_active = 1 AND att.id_transformation_mapping = map.id_transformation_mapping
+          LEFT JOIN dta.attribute                AS col ON col.meta_is_active = 1 AND col.id_attribute              = att.id_attribute
+          LEFT JOIN dta.ingestion_etl            AS etl ON etl.meta_is_active = 1 AND etl.id_dataset                = prt.id_dataset
+          WHERE prt.id_dataset             = @id_dataset
+          AND   PRT.id_model               = @ip_id_model
+          AND   PRT.ni_transformation_part = @ni_prt
+          AND   prt.meta_is_active = 1;
 
-            /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
-            SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
-                 , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
-            FROM      dta.transformation_part      AS prt
-            LEFT JOIN dta.transformation_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
-            LEFT JOIN dta.transformation_attribute AS att ON att.meta_is_active = 1 AND att.id_transformation_mapping = map.id_transformation_mapping
-            LEFT JOIN dta.attribute                AS col ON col.meta_is_active = 1 AND col.id_attribute              = att.id_attribute
-            LEFT JOIN dta.ingestion_etl            AS etl ON etl.meta_is_active = 1 AND etl.id_dataset                = prt.id_dataset
-            WHERE prt.id_dataset             = @id_dataset
-            AND   PRT.id_model               = @ip_id_model
-            AND   PRT.ni_transformation_part = @ni_prt
-            AND   prt.meta_is_active = 1;
-
-            /* Build the "Source"-query for the "Transformation"-part. */
-            SET @qry += @nwl + '  ' + @tx_sql_select;
-            SET @qry += @nwl + '       , meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')';
-            SET @qry += @nwl + '       , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')';
+          /* Build the "Source"-query for the "Transformation"-part. */
+          SET @qry += @nwl + '  ' + @tx_sql_select;
+          SET @qry += @nwl + '       , meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')';
+          SET @qry += @nwl + '       , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')';
             
-            IF (@tx_sql_from     != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_from;  END;           
-            IF (@tx_sql_where    != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_where; END;
-            IF (@tx_sql_group_by != '') BEGIN 
-              SET @qry += @nwl + '  ' + @tx_sql_group_by;
-              IF (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')'; END;
-              IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; END;
+          IF (@tx_sql_from     != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_from;  END;           
+          IF (@tx_sql_where    != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_where; END;
+          IF (@tx_sql_group_by != '') BEGIN 
+            SET @qry += @nwl + '  ' + @tx_sql_group_by;
+            IF (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')'; END;
+            IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN SET @qry += @nwl + '         , CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; END;
+          END
+          IF (@tx_sql_group_by = '' AND @is_aggregate_function_used = 1) BEGIN
+            SET @qry += @nwl + IIF(@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0, '  GROUP BY CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')', '');
+            IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN 
+              SET @qry+=@nwl + IIF(@is_utilized_column_used_in_valid_from = 0 OR (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0), '  GROUP BY ', '         , ') + 'CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; 
             END
-            IF (@tx_sql_group_by = '' AND @is_aggregate_function_used = 1) BEGIN
-              SET @qry += @nwl + IIF(@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0, '  GROUP BY CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')', '');
-              IF (@is_utilized_column_used_in_valid_till = 1 AND @is_aggregate_function_used_valid_till = 0) BEGIN 
-                SET @qry+=@nwl + IIF(@is_utilized_column_used_in_valid_from = 0 OR (@is_utilized_column_used_in_valid_from = 1 AND @is_aggregate_function_used_valid_from = 0), '  GROUP BY ', '         , ') + 'CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')'; 
-              END
-            END
-            IF (@tx_sql_having != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_having; END;
+          END
+          IF (@tx_sql_having != '') BEGIN SET @qry += @nwl + '  ' + @tx_sql_having; END;
 
-            /* Add "UNION ALL" if there is a "Next" "Transformation"-part. */
-            IF ((@ni_prt + 1) <= @mx_prt) BEGIN SET @qry += @nwl + 'UNION ALL'; END
+          /* Add "UNION ALL" if there is a "Next" "Transformation"-part. */
+          IF ((@ni_prt + 1) <= @mx_prt) BEGIN SET @qry += @nwl + 'UNION ALL'; END
 
-            /* Next "Transformation"-part */
-            SET @ni_prt += 1; 
-          
-          END /* WHILE (@ni_prt < @mx_prt) */
-
-        END
+        /* Next "Transformation"-part */
+        SET @ni_prt += 1; END /* WHILE (@ni_prt < @mx_prt) */
 
         IF (1=1 /* After all "Transformation"-part(s) sourcequeryies are added. */) BEGIN
           SET @qry += @nwl + ') [main]';
