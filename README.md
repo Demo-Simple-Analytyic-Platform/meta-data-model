@@ -47,7 +47,7 @@ With minimal technology dependencies, this solution is easy to implement and wor
   - [Installation](#installation)
     - [Installing the ***Meta-Data-Model*** (deployment and processing logic)](#installing-the-meta-data-model-deployment-and-processing-logic)
     - [Installing the ***Meta-Data-Definitions*** for Model](#installing-the-meta-data-definitions-for-model)
-  - [Tutorial](#tutorial)
+  - [Tutorials](#tutorials)
 
 ---
 
@@ -632,7 +632,7 @@ We have provide various Tutorials, see list below, where we will take you step b
 
 ### Tutorials: Ingestions
 
-#### [1. Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](.attachments/tutorials/1-Ingestions/1-Ingestion-of-Stock-Trade-Information.md)
+#### [1. Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](.attachments/tutorials/1-Ingestions/1-Stock-Trade-Information.md)
 
 #### [2. Ingestion of ***Currency Exchange Rares*** (webtable from Yahoo)](.attachments/tutorials/1-Ingestions/2-Currency-Exchange-Rates.md)
 
@@ -653,3 +653,11 @@ We have provide various Tutorials, see list below, where we will take you step b
 #### [4. Transformation ***Recieved Devidends on EOM (Converted to EUR)***](.attachments/tutorials/2-Transformations/4-Recieved-Devidends-on-EOM.md)
 
 #### [5. Transformation ***Performance of Shares in EUR***](.attachments/tutorials/2-Transformations/5-Performance-of-Shares-in-EUR.md)
+
+### Tutorials: Updating Software
+
+#### [1. Updating the Meta-Data-Model](.attachments/tutorials/3-Software-Updates/1-Updating-Meta-Data-Model.md)
+
+#### [2. Updating the Frontend Tooling](.attachments/tutorials/3-Software-Updates/2-Updating-Frontend-Tooling.md)
+
+[test](#tutorials-ingestions)

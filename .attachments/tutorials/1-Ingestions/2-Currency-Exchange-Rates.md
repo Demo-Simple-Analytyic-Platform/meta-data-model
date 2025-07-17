@@ -1,4 +1,4 @@
-Back to [Readme](../../../README.md)
+Back to [Readme](../../../README.md#tutorials-ingestions)
 
 # 2. Ingestion of **Currency Exchange Rares** (webtable from Yahoo)
 
