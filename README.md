@@ -630,6 +630,15 @@ $WarningPreference = "Continue"
 
 We have provide various Tutorials, see list below, where we will take you step by step throught the process of creating dataset for ingestion and transformations.
 
+#### Tutorials: Secrets Database
+
+This solution is using as SQL Database to store `Secrets`, in combination with the python function to add, remove and read secrets which are stored in hashed string and password protected independent of the access to the database. The tutorial will walk you throught the various steps to implement the database and how to use the add, read and remove functions.
+
+#### [1. Implementing Secrets Database](.attachments/tutorials/0-Secrets-Database/1-Implementing-a-Secrets-Database.md)
+ 
+> NOTE: should you are planning a large scale data platform, better tools like [Azure Key Vault](https://azure.microsoft.com/nl-nl/products/key-vault), [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/), [Keeper](https://www.keepersecurity.com/) or [HashiCorp Valutr](https://www.hashicorp.com/en/products/vault).
+
+
 ### Tutorials: Ingestions
 
 #### [1. Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](.attachments/tutorials/1-Ingestions/1-Stock-Trade-Information.md)
@@ -660,4 +669,3 @@ We have provide various Tutorials, see list below, where we will take you step b
 
 #### [2. Updating the Frontend Tooling](.attachments/tutorials/3-Software-Updates/2-Updating-Frontend-Tooling.md)
 
-[test](#tutorials-ingestions)

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "meta-data-model", "meta-data-model\meta-data-model.sqlproj", "{C13E563D-F468-487F-886D-1D09C201B6F7}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Secrets-Database", "meta-data-model\0-secrets\Secrets-Database.sqlproj", "{5932E09D-8A1A-4A60-8BA7-4FB246504154}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Secrets-Database", "secrets-database\Secrets-Database.sqlproj", "{5932E09D-8A1A-4A60-8BA7-4FB246504154}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
