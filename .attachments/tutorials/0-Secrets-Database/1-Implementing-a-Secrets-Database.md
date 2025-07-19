@@ -82,14 +82,78 @@ To validate if the `Secrets`-database has been deploy lets open SSMS (SQL Server
 
 ## Adding, Reading and Removing Secrets
 
-Now that we have a `secrets`-database we would like to place some `secrets` in it. This can be done with the python code from the `meta-data-definitions`-repository, the code is also copied into `your`-model and could be found in the local path of `..\<the-name-of-your-model>\4-processing-python\modules\secrets.py`.
+Now that we have a `secrets`-database we would like to place some `secrets` in it. This can be done with the python code from the `meta-data-definitions`-repository, the code is also copied into `your`-model and could be found in the local path of `..\<the-name-of-your-model>\4-processing-python\modules\secrets.py`, in the markdown file `secrets.md` functional docuementation can be found. However for this tutorial the function `add_secret`, `read_secret` and `del_secret` are of relavants. The `read_secret` is used in de `data_pipeline`- and `export_documentation`-procedures.
+
 
 
 ### Adding a Secret
 
+This function we will use to store the `AccessKey` for the `Azure Storage Account` where we will "host" our static web service to make documentation accessible.
+
+##### Example: Adding AccessKey for Azure Storage Account
+````python
+
+# Add the directory containing the file to sys.path
+import getpass
+import sys
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
+fp_modules    = f"{fp_git_folder}}/{nm_your_repo}/4-processing-python/modules"
+sys.path.insert(0, fp_modules) 
+
+# Import the module
+from secrets import add_secret, read_secret, get_current_file_folder
+
+# Use the module
+nm_secrets = "Your-Secret"
+ds_secrets = getpass.getpass(f"Please enter your Secret: ") # enter secret
+add_secret(nm_secrets, ds_secrets)
+
+````
+
+To validate the if the `Secret` was inserted into the SQL Server Database, please logon and execute the SQL statement below.
+
+````SQL
+SELECT * 
+FROM dbo.secrets 
+WHERE nm_secret = 'Your-Secret'
+````
+
+The result should be something like this
+| nm_secret |	ds_secret |
+|---|---|
+| Your-Secret | gAAAAABoe9p_0N7WnD7BH-8eIOxb8BlgmeggBaNZXn8Pf2VRBy949E5Lpq82Zru_UlpK65X0Kzg3Y7CzGH2qNMWVGhStelm34A== | 
+
+> Note the `ds_secret`-value is hashed, and can be cracked with suffient processing power or the password stored in the encryption_key-file. The encryption_key is also hashed and only accessible bij de user how created the file. By removing the file the python secret-function will prompt the user to provide the password, so make it available for other users.
 
 ### Reading a Secret
 
+Storing a secret somewhere is usefull, however there must be away te extract the secret again so it can be used to gain access to a resource. In the same python module `secrets` the function  `read_secret` performance this task. In the exampl code below .
+
+````python
+
+# Add the directory containing the file to sys.path
+import getpass
+import sys
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
+fp_modules    = f"{fp_git_folder}}/{nm_your_repo}/4-processing-python/modules"
+sys.path.insert(0, fp_modules) 
+
+# Import the module
+from secrets import add_secret, read_secret, get_current_file_folder
+
+# Validate add `Accesskey`
+nm_secrets = "Your-Secret"
+tx_secrets_extract = read_secret(nm_secrets)
+ds_secrets = getpass.getpass(f"Please enter your Secret: ")
+if (tx_secrets_extract == ds_secrets):
+    print(f"Stored Accesskey is Valid!")
+else:
+    print(f"Stored Accesskey is Invalid!")  
+
+````
 
 ### Remove a Secret
 
+It would be good practice to clean up secret that are nolonger in use, there for the function `remove_secret` was created. with the code below the previous `secret` can be removed.
