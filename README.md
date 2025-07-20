@@ -630,6 +630,17 @@ $WarningPreference = "Continue"
 
 We have provide various Tutorials, see list below, where we will take you step by step throught the process of creating dataset for ingestion and transformations.
 
+##### Assumtions (no need to have jedi-master skills)
+
+- Some understanding of `Visual Studio` Solution, assumtion is that you can `publish` a project in visual studio.
+- Some understanding of `Visual Studio Code` 
+- Some understanding of `SQL Server Management Studio` 
+- Some understanding of `PowerShell` 
+- Some understanding of `Python` 
+- Some understanding of `Git`
+- Good understanding of `SQL` (master jedi skill, if you want to understand the coding, able to write solid queries if you only using the tooling)
+- Some understanding of `Azure Storage Account`\`s
+
 #### Tutorials: Secrets Database
 
 This solution is using as SQL Database to store `Secrets`, in combination with the python function to add, remove and read secrets which are stored in hashed string and password protected independent of the access to the database. The tutorial will walk you throught the various steps to implement the database and how to use the add, read and remove functions.

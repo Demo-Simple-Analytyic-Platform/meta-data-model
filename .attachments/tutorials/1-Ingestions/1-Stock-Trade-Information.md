@@ -43,7 +43,7 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
    - With Visual Studio
    - With button in Tool
    - powershell script (Tooling maybe block by virus/malware protection programs)
-4. Test Run and Validate Results
+4. [Test Run and Validate Results](#test-run-and-validate-results-back-to-top)
    - First Test Run
    - Manipilate the "Target" to simulate "Incremental" loading.
 
@@ -369,17 +369,5 @@ On the "***detail***"-form for `dataset` on the right-side of the button-bar, an
 
 > Important: the local virus/malware scanner may dislike this action, so you must make a exception for this.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Test Run and Validate Results ([back to top](#implement-this-userstory))
 
