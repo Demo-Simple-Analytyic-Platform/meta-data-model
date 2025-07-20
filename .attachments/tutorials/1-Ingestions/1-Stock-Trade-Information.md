@@ -34,11 +34,15 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
 
 ---
 
-## An Approach to implement this Userstory
+## Implement this Userstory
 
 1. Investication of structure of the dataset
 2. Determine if Incremental loading is possible
 3. Design dataset in `meta-data-editor`
+4. Deployment of Model
+   - With Visual Studio
+   - With button in Tool
+   - powershell script (Tooling maybe block by virus/malware protection programs)
 4. Test Run and Validate Results
    - First Test Run
    - Manipilate the "Target" to simulate "Incremental" loading.
@@ -194,6 +198,8 @@ This would look soimething like the image below.
 
 > We can NOT yet "***Save***" the information, we`ll still need to provide the "***Attributes*** and "***Source Query***".
 
+On the "***Description***"-tab (highlighted in blue before) a functional description of the dataset can be provided, we\`ll leave it empty for now. However the business should provide this, remember `Engineeging` is mearly to party that builds the `datapaltform`.
+
 ### Attributes
 
 In our exploration with python of the dataset the **Columns** were determined, see [list of columns](#table-1-columns). Ingestion of Dataset where alle columns are set to ***Datatype*** NVARCHAR(999) are less likely to fail on some datatype conversion, thus we will set everthing to NVARCHAR(999). Of course if the datatypes are known then setting them is better. However here the dataset is a webtable the NVARCHAR(999) option is best.
@@ -310,9 +316,26 @@ the sql-file for the dataset should be update as wel with the paramater informat
   INSERT INTO tsa_dta.tsa_parameter_value (id_model, id_parameter_value, id_dataset, id_parameter, tx_parameter_value, ni_parameter_value) VALUES ('5f5640501f5751571f564c505f435854', '06010b09000d0d050e0d0d0203031506', '0104080501030d050302000303190907', '00040c060f030a040007090507190d05', '0', '3');
   INSERT INTO tsa_dta.tsa_parameter_value (id_model, id_parameter_value, id_dataset, id_parameter, tx_parameter_value, ni_parameter_value) VALUES ('5f5640501f5751571f564c505f435854', '0e01000002040d0401000c0703190e08', '0104080501030d050302000303190907', '030001030306000407070b001b020001', 'https://finance.yahoo.com/quote/', '1');
   INSERT INTO tsa_dta.tsa_parameter_value (id_model, id_parameter_value, id_dataset, id_parameter, tx_parameter_value, ni_parameter_value) VALUES ('5f5640501f5751571f564c505f435854', '02020f010e06090803020b0504190e04', '0104080501030d050302000303190907', '06060e030f000b0104070b080f0c1503', 'RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>', '2');
-  
+
 ````
 
+### SQL for Meta-Attributes
+
+With the "***parameters***" we are almost complete, the framework/data processing need to known how to handle the increment of the dataset. It need to known which attributes will determine if a records is still valid. This informations is provided on the "***SQL for Meta-Attributes***"-tab. There are three field ***Processing Type***, ***SQL for "meta_dt_valid_from"*** and ***SQL for "meta_dt_valid_till"***. In our example we should set these values as follows.
+
+| Field | Value | Description |
+|:---   |:---   |:---         |
+| Processing Type | Incremental | This dataset set can be loaded incrementally, otherwise the framework will expect the full dataset evertime. |
+| SQL for "meta_dt_valid_from" | tsl.[Date] | The "*Date*"-attribute holds the value for the trading day, in combination with the other businesskeys will make/should be unique. |
+| SQL for "meta_dt_valid_till" | '9999-12-31' | The data in this dataset is sort of transactional and thus there is not real `end` date. |
+
+the result would look something like the image below.
+
+![ETL-Ingestion](../../images/meta-data-def/menu/menue-show-detail-form-dataset-etl-ingestion.png)
+
+### Other tabs
+
+The other tabs ***Related Groups*** and ***DQ Controls** can by ignored for now.
 
 
 
