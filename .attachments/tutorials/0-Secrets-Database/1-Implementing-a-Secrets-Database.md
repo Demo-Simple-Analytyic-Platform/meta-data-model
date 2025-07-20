@@ -84,8 +84,6 @@ To validate if the `Secrets`-database has been deploy lets open SSMS (SQL Server
 
 Now that we have a `secrets`-database we would like to place some `secrets` in it. This can be done with the python code from the `meta-data-definitions`-repository, the code is also copied into `your`-model and could be found in the local path of `..\<the-name-of-your-model>\4-processing-python\modules\secrets.py`, in the markdown file `secrets.md` functional docuementation can be found. However for this tutorial the function `add_secret`, `read_secret` and `del_secret` are of relavants. The `read_secret` is used in de `data_pipeline`- and `export_documentation`-procedures.
 
-
-
 ### Adding a Secret
 
 This function we will use to store the `AccessKey` for the `Azure Storage Account` where we will "host" our static web service to make documentation accessible.
