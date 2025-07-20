@@ -36,10 +36,10 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
 
 ## Implement this Userstory
 
-1. Investication of structure of the dataset
-2. Determine if Incremental loading is possible
-3. Design dataset in `meta-data-editor`
-4. Deployment of Model
+1. [Investication of structure of the dataset](#investication-of-structure-of-the-dataset-back-to-top)
+2. [Determine if Incremental loading is possible](#determine-if-incremental-loading-is-possible-back-to-top)
+3. [Design dataset in `meta-data-editor`](#design-dataset-in-meta-data-editor-back-to-top)
+4. [Deployment of Model](#deployment-of-model-back-to-top)
    - With Visual Studio
    - With button in Tool
    - powershell script (Tooling maybe block by virus/malware protection programs)
@@ -47,7 +47,7 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
    - First Test Run
    - Manipilate the "Target" to simulate "Incremental" loading.
 
-## Investication of structure of the dataset
+## Investication of structure of the dataset ([back to top](#implement-this-userstory))
 
 What you see, is not always what you get. The python data pipeline is basically a web-scrapper and de `table` we want to extract may presentated differently on the webpage and is in html. So the first step is to fetch the file manually. We can do this by reusing the existing python code.
 
@@ -128,7 +128,7 @@ We now have identified all the `return` columns from the dataset.
 | Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions |
 
 
-## Determine if Incremental loading is possible
+## Determine if Incremental loading is possible ([back to top](#implement-this-userstory))
 
 Loading incrementally is great for NOT loading the same data over and over gain, it give control over what is loaden and what is left out. Let continue exaiming the URL information. As we heve learn there were two periodes in the URL, both followed by number. investicator learn that these are enpoch-formatted datatimes. This give us the means to control was `period` is loaded. The user/developer has the abbility to use `placeholders`, more info on this you can find [here](additional/placeholder.md).
 
@@ -139,7 +139,7 @@ The `parameter` named `wtb_2_any_ds_path` must be populated with the value
 "RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>"
 ````
 
-## Design dataset in `meta-data-editor`
+## Design dataset in `meta-data-editor` ([back to top](#implement-this-userstory))
 
 If the `meta-data-editor` access application is not open yet start it by finding `Start-Meta-Data-Editor.bat` for the `Model` you want to add the Dataset. If found execute the bat-file.
 
@@ -336,6 +336,43 @@ the result would look something like the image below.
 ### Other tabs
 
 The other tabs ***Related Groups*** and ***DQ Controls** can by ignored for now.
+
+## Deployment of Model ([back to top](#implement-this-userstory))
+
+There are basically 3 way to deploy your changes in your model to the database.
+
+- Old school `Visual Studio`, the underlay project and solutions are a `Visual Studio Solution`.
+- Running a `powershell` script that automated all the manual steps you would do in `Visual Studio`. 
+- Via the `meta-data-editor`, the button on the detail-form of `dataset` basically start option 2.
+
+### 1. Old school `Visual Studio`
+
+The following step should be taken:
+
+1. Find the `solution`-file of your model, the relative path should be sopmething like `<path-to-your-repository-folder>\<name-of-model>\meta-data-definitions.sln`, start the `solution`. Ones opened you\`ll notice it pritty empty, that because all of the deployment logic is in the `meta-data-model`.
+2. Open the properties of the Project and ensure the database version is correct.
+3. Right-click the project and build the project.
+4. Right-click the project and Publish the project
+   1. Setup the Database connect
+   2. save to profile for later reusability
+   3. Publish.
+
+### 2. Powershell
+
+with *powershell* all of these steps can be automated, thes script `deployment-of-model.ps1` can be found in the `<path-to-your-repository-folder>\<name-of-model>\2-meta-data-definitions\9-Publish\1-Scripts`, some documentation about the script can be found in de `deployment-of-model.md`-file.
+
+The script will prompt the user for database credentials, which will be stored locally in a secure manner.
+
+### 3. Via the `meta-data-editor`
+
+On the "***detail***"-form for `dataset` on the right-side of the button-bar, an button with the text "*Deloy to Development*". By clicking on this butten the *pwershell*-script from point 2 will be executed on de background, the tooling will show waiting window.
+
+> Important: the local virus/malware scanner may dislike this action, so you must make a exception for this.
+
+
+
+
+
 
 
 
