@@ -1,0 +1,32 @@
+# Add the directory containing the file to sys.path
+import sys
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
+# if you don't want type in the folder/file path on runtime.
+#fp_git_folder = "path/to/your/git/folder"
+#nm_your_repo  = "name_of_your_repo"
+
+# Import Custom Modules
+import modules.credentials as crd # type: ignore
+import modules.run         as run # type: ignore
+import modules.sql         as sql # type: ignore
+
+# Set Debugging to "1" => true
+is_debugging = "1"
+
+# initialize the run module, If this is the first time running this script on this machine, the user will be prompted to enter the credentials for the secrets database and the target database.
+# If the credentials are already stored, the user will not be prompted and the credentials will be loaded from the secure files.
+# The credentials are stored in the secure files in the modules
+run.initialize(is_debugging)
+
+# Assumtions: stuff a overarching procedure shoudl extract, but for our example we will hardcode it
+id_model          = "<id_model>" # was id_model was updated by the initialization
+nm_target_scehme  = '<nm_target_schema>'
+nm_target_table   = '<nm_target_table>'    
+
+# Extraction of metadata for the desired model + dataset
+run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
+
+# Extract dataset from SQL database
+df = sql.query(crd.target_db, f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
+df.head()

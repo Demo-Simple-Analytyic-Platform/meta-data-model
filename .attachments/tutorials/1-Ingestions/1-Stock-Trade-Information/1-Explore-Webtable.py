@@ -1,10 +1,10 @@
 # Add the directory containing the file to sys.path
 import sys
-#fp_git_folder = input(f"Git-Folderpath  : ")
-#nm_your_repo  = input(f"Repository Name : ")
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
 # if you don't want type in the folder/file path on runtime.
-fp_git_folder = "D:/git/Demo-Simple-Analytic-Platform"
-nm_your_repo  = "meta-data-def"
+#fp_git_folder = "path/to/your/git/folder"
+#nm_your_repo  = "name_of_your_repo"
 
 # Set the path to the modules directory
 fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python"

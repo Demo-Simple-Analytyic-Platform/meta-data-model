@@ -36,16 +36,31 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
 
 ## Implement this Userstory
 
-1. [Investication of structure of the dataset](#investication-of-structure-of-the-dataset-back-to-top)
-2. [Determine if Incremental loading is possible](#determine-if-incremental-loading-is-possible-back-to-top)
-3. [Design dataset in `meta-data-editor`](#design-dataset-in-meta-data-editor-back-to-top)
-4. [Deployment of Model](#deployment-of-model-back-to-top)
-   - With Visual Studio
-   - With button in Tool
-   - powershell script (Tooling maybe block by virus/malware protection programs)
-4. [Test Run and Validate Results](#test-run-and-validate-results-back-to-top)
-   - First Test Run
-   - Manipilate the "Target" to simulate "Incremental" loading.
+- [Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](#ingestion-of-stock-trade-infromation-webtable-from-yahoo)
+  - [**User Story:**](#user-story)
+  - [Implement this Userstory](#implement-this-userstory)
+  - [Investication of structure of the dataset (back to top)](#investication-of-structure-of-the-dataset-back-to-top)
+    - [goto website](#goto-website)
+    - [Mapping](#mapping)
+    - [Lets doe the mapping:](#lets-doe-the-mapping)
+        - [table 1: Columns](#table-1-columns)
+  - [Determine if Incremental loading is possible (back to top)](#determine-if-incremental-loading-is-possible-back-to-top)
+  - [Design dataset in `meta-data-editor` (back to top)](#design-dataset-in-meta-data-editor-back-to-top)
+    - [Adding first a ***Group***](#adding-first-a-group)
+      - [Let validate the metadata was updated:](#let-validate-the-metadata-was-updated)
+    - [Adding first ***Ingestion***-dataset](#adding-first-ingestion-dataset)
+      - [Dataset (general info)](#dataset-general-info)
+    - [General Information](#general-information)
+    - [Attributes](#attributes)
+    - [Source Query](#source-query)
+    - [Parameters](#parameters)
+    - [SQL for Meta-Attributes](#sql-for-meta-attributes)
+    - [Other tabs](#other-tabs)
+  - [Deployment of Model (back to top)](#deployment-of-model-back-to-top)
+    - [1. Old school `Visual Studio`](#1-old-school-visual-studio)
+    - [2. Powershell](#2-powershell)
+    - [3. Via the `meta-data-editor`](#3-via-the-meta-data-editor)
+  - [Test Run and Validate Results (back to top)](#test-run-and-validate-results-back-to-top)
 
 ## Investication of structure of the dataset ([back to top](#implement-this-userstory))
 
@@ -75,14 +90,14 @@ The python procedure that extract the web-table is found `<your-git-folder>\<nam
 
 ### Lets doe the mapping:
 
-python: ***[example](1-Stock-Trade-Information.py) script to get same*** 
+python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable*** 
 
 ````python
 
 # Add the directory containing the file to sys.path
 import sys
-#fp_git_folder = input(f"Git-Folderpath  : ")
-#nm_your_repo  = input(f"Repository Name : ")
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
 # if you don't want type in the folder/file path on runtime.
 #fp_git_folder = "path-to-your-git-folder"
 #nm_your_repo  = "name-of-your-repository"
@@ -107,7 +122,8 @@ print(df.columns)
 ````
 
 The result:
-````
+
+````text
 Index(['Date', 'Open', 'High', 'Low', 'Close Close price adjusted for splits.',
        'Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions.',
        'Volume'],
@@ -371,3 +387,49 @@ On the "***detail***"-form for `dataset` on the right-side of the button-bar, an
 
 ## Test Run and Validate Results ([back to top](#implement-this-userstory))
 
+To test if the `dataset` is set correctly, the python data-pipeline can be run with the following code.
+
+python: ***[example](1-Stock-Trade-Information/2-Test-and-Validate.py) Test and Validata***
+
+````python
+
+# Add the directory containing the file to sys.path
+import sys
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
+# if you don't want type in the folder/file path on runtime.
+#fp_git_folder = "path/to/your/git/folder"
+#nm_your_repo  = "name_of_your_repo"
+
+# Import Custom Modules
+import modules.credentials as crd
+import modules.run         as run
+import modules.sql         as sql
+
+# Set Debugging to "1" => true
+is_debugging = "1"
+
+# initialize the run module, If this is the first time running this script on this machine, the user will be prompted to enter the credentials for the secrets database and the target database.
+# If the credentials are already stored, the user will not be prompted and the credentials will be loaded from the secure files.
+# The credentials are stored in the secure files in the modules
+run.initialize(is_debugging)
+
+# Assumtions: stuff a overarching procedure shoudl extract, but for our example we will hardcode it
+id_model          = "<id_model>"         # this you can find `<name_of_your_repo>\2-meta-data-definitions\2-Definitions\3-Data-Transformation-Area\model.sql`
+nm_target_scehme  = '<nm_target_schema>'
+nm_target_table   = '<nm_target_table>'
+
+# Extraction of metadata for the desired model + dataset
+run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
+
+# Extract dataset from SQL database
+df = sql.query(crd.target_db, f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
+df.head()
+
+````
+
+After `python`code has finisched, the database can be check.
+
+````SQL
+SELECT * FROM nm_target_schema.nm_target_table
+````
