@@ -402,9 +402,9 @@ nm_your_repo  = input(f"Repository Name : ")
 #nm_your_repo  = "name_of_your_repo"
 
 # Import Custom Modules
-import modules.credentials as crd
-import modules.run         as run
-import modules.sql         as sql
+import modules.credentials as crd # type: ignore
+import modules.run         as run # type: ignore
+import modules.sql         as sql # type: ignore
 
 # Set Debugging to "1" => true
 is_debugging = "1"
