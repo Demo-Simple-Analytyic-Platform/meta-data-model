@@ -61,10 +61,10 @@ if ($true) { Write-Output "# 0. Setting local user specific variables.";
 
 if ($true) { Write-Output "# 1. Create a folder structure: for example `C:\Git\` with subfolder `template`."; 
 
-  if (-Not (Test-Path -Path $fp_fldr_git)) { New-Item -Path $fp_fldr_git -ItemType Directory -Force }
-  if (-Not (Test-Path -Path $fp_your_mdm)) { New-Item -Path $fp_your_mdm -ItemType Directory -Force }
-  if (-Not (Test-Path -Path $fp_temp_fld)) { New-Item -Path $fp_temp_fld -ItemType Directory -Force }
-  if (-Not (Test-Path -Path $fp_temp_mdm)) { New-Item -Path $fp_temp_mdm -ItemType Directory -Force }
+  if (-Not (Test-Path -Path $fp_fldr_git | Out-Null)) { New-Item -Path $fp_fldr_git -ItemType Directory -Force }
+  if (-Not (Test-Path -Path $fp_your_mdm | Out-Null)) { New-Item -Path $fp_your_mdm -ItemType Directory -Force }
+  if (-Not (Test-Path -Path $fp_temp_fld | Out-Null)) { New-Item -Path $fp_temp_fld -ItemType Directory -Force }
+  if (-Not (Test-Path -Path $fp_temp_mdm | Out-Null)) { New-Item -Path $fp_temp_mdm -ItemType Directory -Force }
 
 
 }
