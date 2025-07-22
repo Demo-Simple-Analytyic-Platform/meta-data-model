@@ -1,53 +1,41 @@
-Back to [Readme](../../../README.md#tutorials-ingestions)
+# Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo) [Back to readme](../../../README.md#tutorials-ingestions)
 
-<h4>Languages:</h4>
+This tutorial will help you design an `ingestion`-dataset which will incrementally load `stock tradaing information` from the [Yahoo Finance](https://finance.yahoo.com/quote/RF/history)-website for a specific `share` of `Regions Financial Corporation (RF)`. We\`ll be making use of the following languages, Technologies adn Tooling.
+
+**Languages:**
 
 ![T-SQL](https://img.shields.io/badge/TSQL-purple?style=for-the-badge&labelColor=black&logo=TSQL&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-darkgreen?style=for-the-badge&labelColor=black&logo=powershell&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&labelColor=black&logo=python&logoColor=white)
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&labelColor=black&logo=html5&logoColor=white)
 
-<h4>Technologies:</h4>
+**Technologies:**
 
 ![SQL-Server](https://img.shields.io/badge/SQL_Server-blue?style=for-the-badge&labelColor=black&logo=T-SQL&logoColor=white)
+![Access](https://img.shields.io/badge/Microsoft%20Access-red?style=for-the-badge&labelColor=black&logo=microsoftaccess&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&labelColor=black&logo=git&logoColor=white)
 
-<h4>Tooling:</h4>
+**Tooling:**
 
 ![SSMS](https://img.shields.io/badge/SSMS-SQL%20Tools-darkblue?style=for-the-badge&labelColor=black&logo=microsoftsqlserver&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-Editor-007ACC?style=for-the-badge&labelColor=black&logo=visualstudiocode&logoColor=white)
 
-# Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)
-
-This tutorial will help you design an `ingestion`-dataset which will incrementally load `stock tradaing information` from the [Yahoo Finance](https://finance.yahoo.com/quote/RF/history)-website for a specific `share` of `Regions Financial Corporation (RF)`.
-
 ---
 
-## **User Story:**
+***Table of Content***
 
-As an **analyst**,  
-I want to access **historical stock trading data** for **Regions Financial Corporation (RF)**,  
-So that I can **analyze the share’s behavior** and **calculate trading performance metrics** such as **losses, gains, and yield (rendement)**.
-
-Additionals Infomation:
-Loading trade information for the last 5 year should give a good inpression of what is happing with the share. 
-next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V. (KPN.AS)*** aviablable.
-
----
-
-## Implement this Userstory
-
-- [Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](#ingestion-of-stock-trade-infromation-webtable-from-yahoo)
-  - [**User Story:**](#user-story)
-  - [Implement this Userstory](#implement-this-userstory)
-  - [Investication of structure of the dataset (back to top)](#investication-of-structure-of-the-dataset-back-to-top)
+- [Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo) Back to readme](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme)
+  - [User Story](#user-story)
+    - [Additionals Infomation](#additionals-infomation)
+  - [Exploration of the dataset structure (back to top)](#exploration-of-the-dataset-structure-back-to-top)
     - [goto website](#goto-website)
     - [Mapping](#mapping)
-    - [Lets doe the mapping:](#lets-doe-the-mapping)
+    - [Lets do the mapping:](#lets-do-the-mapping)
         - [table 1: Columns](#table-1-columns)
   - [Determine if Incremental loading is possible (back to top)](#determine-if-incremental-loading-is-possible-back-to-top)
   - [Design dataset in `meta-data-editor` (back to top)](#design-dataset-in-meta-data-editor-back-to-top)
     - [Adding first a ***Group***](#adding-first-a-group)
-      - [Let validate the metadata was updated:](#let-validate-the-metadata-was-updated)
+      - [Lets validate the metadata was updated](#lets-validate-the-metadata-was-updated)
     - [Adding first ***Ingestion***-dataset](#adding-first-ingestion-dataset)
       - [Dataset (general info)](#dataset-general-info)
     - [General Information](#general-information)
@@ -62,16 +50,29 @@ next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V
     - [3. Via the `meta-data-editor`](#3-via-the-meta-data-editor)
   - [Test Run and Validate Results (back to top)](#test-run-and-validate-results-back-to-top)
 
-## Investication of structure of the dataset ([back to top](#implement-this-userstory))
+---
 
-What you see, is not always what you get. The python data pipeline is basically a web-scrapper and de `table` we want to extract may presentated differently on the webpage and is in html. So the first step is to fetch the file manually. We can do this by reusing the existing python code.
+## User Story
+
+As an **analyst**, I want to access **historical stock trading data** for **Regions Financial Corporation (RF)**, So that I can **analyze the share’s behavior** and **calculate trading performance metrics** such as **losses, gains, and yield (rendement)**.
+
+### Additionals Infomation
+
+Loading trade data for the last 5 year should give a good impression of what is happing with the share. Next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V. (KPN.AS)*** aviablable.
+
+## Exploration of the dataset structure ([back to top](#table-of-content))
+
+Before we start designing the dataset, we must understand what the structure of the dataset is. For this purpose we\`ll be reusing various existing python procedures.
+
+With webpages, what you see, is not always what you get. The python data pipeline is basically a web-scrapper and the `table` we want to extract maybe presentated differently on the webpage and is in html. So the first step is to fetch the dataset manually.
 
 ### goto website
-The historical tade information can be found on the website of [yahoo](https://finance.yahoo.com/) here we can search for the desitred share.
 
-our first result is "https://finance.yahoo.com/quote/RF/", however these are not historcal data. Exploring the website further, we`ll find link/button "Historical Data". By clicking this the website load a table with trade infromation on a daily basis for the past year. More exploration of the website reviels that specific periodes can be selected. Let doe only the last 5 Days.
+The historical trade information can be found on the website of [yahoo](https://finance.yahoo.com/) here we can search for the desired information.
 
-the url is now : "https://finance.yahoo.com/quote/RF/history/?period1=1752577325&period2=1753008901"
+Our first result is `https://finance.yahoo.com/quote/RF/`, however these are not historcal data. Exploring the website further, we`ll find link/button "Historical Data". By clicking this the website load a table with trade infromation on a daily basis for the past year. More exploration of the website reviels that specific periodes can be selected. Let do only the last 5 Days.
+
+The url is now : "https://finance.yahoo.com/quote/RF/history/?period1=1752577325&period2=1753008901"
 
 Let desect the URL
 - https://finance.yahoo.com/quote/ (this seems fixed)
@@ -79,7 +80,7 @@ Let desect the URL
 - history/ (seems to indicate the retrieved info is historical)
 - ?period1=1752577325&period2=1753008901 (This show there are 2 periods-parameters both followed by number, deeper investication learns the these numbers are in the epoch-format and thus represent 2 point in time)
 
-### Mapping 
+### Mapping
 
 The python procedure that extract the web-table is found `<your-git-folder>\<name-of-your-model>\4-processing-python\modules\`-folder and the `source.py`-file. The procedure is named `web_table_anonymous_web` and hase 4 input parameters.
 
@@ -88,7 +89,7 @@ The python procedure that extract the web-table is found `<your-git-folder>\<nam
 - wtb_3_any_ni_index (Index of the Tables on the webpage)
 - is_debugging (if set to true more detailed information is printed to consul window)
 
-### Lets doe the mapping:
+### Lets do the mapping:
 
 python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable*** 
 
@@ -144,38 +145,40 @@ We now have identified all the `return` columns from the dataset.
 | Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions |
 
 
-## Determine if Incremental loading is possible ([back to top](#implement-this-userstory))
+## Determine if Incremental loading is possible ([back to top](#table-of-content))
 
-Loading incrementally is great for NOT loading the same data over and over gain, it give control over what is loaden and what is left out. Let continue exaiming the URL information. As we heve learn there were two periodes in the URL, both followed by number. investicator learn that these are enpoch-formatted datatimes. This give us the means to control was `period` is loaded. The user/developer has the abbility to use `placeholders`, more info on this you can find [here](additional/placeholder.md).
+Incremental loading is advantageous as it prevents the repeated loading of the same data, providing control over what is loaded and what is omitted. Let us continue to examine the URL information. As we have learned, there are two periods in the URL, each followed by a number. 
+
+Investigation will learn that these represent epoch-formatted datetimes. This enables us to control which `period` is loaded. 
+
+Users and developers have the capability to utilize `placeholders`; further information on this topic can be found [here](additional/placeholder.md).
 
 In this case we will need the epoch-placeholder `ni_previous_epoch` and ` ni_current_epoch`. by replacing the number in URL we can make the data-pipeline run incremental.
 
-The `parameter` named `wtb_2_any_ds_path` must be populated with the value
-````python
-"RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>"
-````
+The `parameter` named `wtb_2_any_ds_path` must be populated with the value 
+`RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>`
 
-## Design dataset in `meta-data-editor` ([back to top](#implement-this-userstory))
+## Design dataset in `meta-data-editor` ([back to top](#table-of-content))
 
-If the `meta-data-editor` access application is not open yet start it by finding `Start-Meta-Data-Editor.bat` for the `Model` you want to add the Dataset. If found execute the bat-file.
+If the `meta-data-editor` access application is not open yet start it by finding `Start-Meta-Data-Editor.bat` for the `Model` you want to add the Dataset too, when found execute the bat-file to start the `meta-data=editor`.
 
 ### Adding first a ***Group***
 
-If you have only a few dataset in your model, maintaining overview is easy, however as you will learn/known it is seldon a few. So let create a Group for the 2 dataset with "***Stock Trading Infromation***". Let name it "PSA-001-Yahoo-Stock-Info" with a description of "Stock Trading information from Yahoo Finance".
+When you have only a small number of datasets in your model, keeping track of everything is straightforward. However, as you may know, it is rarely just a few. Therefore, let's create a group for the two datasets. We will name it "PSA-001-Yahoo-Stock-Info" and describe it as "Stock Trading information from Yahoo Finance".
 
-Navigate to the List of Groups, see image below, clicking the "Organization, Hierarchy and Group"-tab, then click the sub tab "Groups".
+To find the List of Groups, refer to the image below, click on the "Organization, Hierarchy and Group" tab, and then select the sub-tab "Groups".
 
 ![menu-show-group-list](../../images/meta-data-def/menu/menu-show-groups-list.png)
 
-#### Let validate the metadata was updated:
+#### Lets validate the metadata was updated
 
-Open Visual Studio Code, if it was not already open, find your repository (model), since this is the first "Group" the sql-file should look something like this
+Open Visual Studio Code, if it was not already open, find your repository (model), the `SQL`-file can be found `your_git_folder\your_model_name\2-meta-data-definitions\2-Definitions\2-Organization-Hierarchies-and-Groups\group.sql`. Since this is the first "Group" the sql-file should look something like this
 
 ![vs-code-show-group-sql](../../images/meta-data-def/vs-code/vs-code-show-group-sql-file.png)
 
 ### Adding first ***Ingestion***-dataset
 
-To design a new dataset you must click on the "*Dataset*"-tab and then select the sub tab "*Dataset*", see screen shot below.
+To design a new dataset we must return to the `meta-data-editor`, here click on the "*Dataset*"-tab and then select the sub tab "*Dataset*", see screen shot below.
 
 ![menu-show-group-list](../../images/meta-data-def/menu/menu-show-empy-list-of-dataset.png)
 
@@ -185,7 +188,7 @@ To add new "***Dataset***" click on the new-dataset-buttn, see image below with 
 
 #### Dataset (general info)
 
-The tool will open een detail form for "Dataset", the image below wil hight various part of the form which will be explain, per highlighted part. 
+The tool will open een detail form for "Dataset", the image below wil hight various part of the form which will be explain, per highlighted part.
 
 ![detail-form-dataset-with-highlightinhg](../../images/meta-data-def/menu/menu-show-empty-detail-form-dataset-with-highting.png)
 
@@ -193,25 +196,25 @@ The tool will open een detail form for "Dataset", the image below wil hight vari
 |:---         |:---         |
 | Red         | General Dataset information, like **Group**, **Functionalname**, **Schema** anb **Table**. |
 | Green       | List form for the **Attributes** of the dataset, like **Ordering**, **Columnname**, **Datatype**, **Nullable**, **Functionalname** and **Description**. |
-| Pink        | Scheduling Infromation (metadata aviable, but not yet implementate in seleectin what datasets need refreshing, or data-pipeline need to be run). | 
-| Yellow      | Development Status, these buttons control the development status of the **Dataset**, this is usefull when running in production and you get updated requirements. | 
+| Pink        | Scheduling Infromation (metadata aviable, but not yet implementate in seleectin what datasets need refreshing, or data-pipeline need to be run). |
+| Yellow      | Development Status, these buttons control the development status of the **Dataset**, this is usefull when running in production and you get updated requirements. |
 | Orange      | Action button for **Copying** or **Unioning** datasets. |
 | Blue        | Tabs to related meta-data infromation for the Dataset. |
 
 ### General Information
 
-Let add the general infromation about this dataset. The first we thing we must set correct is the "*check-box* named "*Is Ingestion*", this must be set to `true`. Now we can start setting the general information.
-- Set the `Group` to the "PSA-001-Yahoo-Stock-Info", created in the previous step, see [above](#adding-first-a-group).
-- Set the `Name` (of the dataset) to the name of the share we want te load historical information from, thus "*Regions Financial Corporation (RF)*".
-- For `Schema` a good name must be set, the naming convention enforce by "checks" during deployment, state it should be all lower case with underscore to separated words. the `Schema` will also automically given a prefix of "psa_". Example for a name could be : "psa_yahoo_stock_info" reflecting the name of the group. In the schema in the database the table will be created.
-- Set then `Table` to "***rf***" for the code of the share.
+Let's include the general information regarding this dataset. The first thing we need to ensure is that the "*check-box*" labelled "*Is Ingestion*" is set to `true`. After that, we can proceed to configure the general information.
+
+- Assign the `Group` to "PSA-001-Yahoo-Stock-Info", which was created in the previous step, refer to [above](#adding-first-a-group).
+- Set the `Name` (of the dataset) to the name of the share from which we want to load historical information, specifically "*Regions Financial Corporation (RF)*".
+- For the `Schema`, a suitable name should be chosen, adhering to the naming convention enforced by "checks" during deployment, which requires it to be all lower case with underscores separating words. The `Schema` will also automatically receive a prefix of "psa_". An example of a name could be: "psa_yahoo_stock_info", which reflects the name of the group. The table will be created in the schema within the database.
+- Finally, set the `Table` to "***rf***" for the share's code.
 
 This would look soimething like the image below.
 
 ![set-dataset-general-info](../../images/meta-data-def/menu/menue-show-detail-form-dataset-general-info.png)
 
 > **Note:** PSA stand for **P**resistent **S**taging **A**rea.
-
 > We can NOT yet "***Save***" the information, we`ll still need to provide the "***Attributes*** and "***Source Query***".
 
 On the "***Description***"-tab (highlighted in blue before) a functional description of the dataset can be provided, we\`ll leave it empty for now. However the business should provide this, remember `Engineeging` is mearly to party that builds the `datapaltform`.
@@ -353,7 +356,7 @@ the result would look something like the image below.
 
 The other tabs ***Related Groups*** and ***DQ Controls** can by ignored for now.
 
-## Deployment of Model ([back to top](#implement-this-userstory))
+## Deployment of Model ([back to top](#table-of-content))
 
 There are basically 3 way to deploy your changes in your model to the database.
 
@@ -381,13 +384,13 @@ The script will prompt the user for database credentials, which will be stored l
 
 ### 3. Via the `meta-data-editor`
 
-On the "***detail***"-form for `dataset` on the right-side of the button-bar, an button with the text "*Deloy to Development*". By clicking on this butten the *pwershell*-script from point 2 will be executed on de background, the tooling will show waiting window.
+On the "***detail***"-form for `dataset` on the right-side of the button-bar, an button with the text "*Deploy to Development*". By clicking on this butten the *powershell*-script from point 2 will be executed on de background, the tooling will show waiting window.
 
 > Important: the local virus/malware scanner may dislike this action, so you must make a exception for this.
 
-## Test Run and Validate Results ([back to top](#implement-this-userstory))
+## Test Run and Validate Results ([back to top](#table-of-content))
 
-To test if the `dataset` is set correctly, the python data-pipeline can be run with the following code.
+To test if the `dataset` is set correctly designed, the python data-pipeline can be run with the following code.
 
 python: ***[example](1-Stock-Trade-Information/2-Test-and-Validate.py) Test and Validata***
 
@@ -426,10 +429,4 @@ run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
 df = sql.query(crd.target_db, f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
 df.head()
 
-````
-
-After `python`code has finisched, the database can be check.
-
-````SQL
-SELECT * FROM nm_target_schema.nm_target_table
 ````

@@ -1,54 +1,31 @@
 # Meta-Data-Model
 
-## Code Base
+**Languages:**
 
-![SQL-Server](https://img.shields.io/badge/SQL_Server-blue?style=for-the-badge&labelColor=black&logo=T-SQL&logoColor=white)
 ![T-SQL](https://img.shields.io/badge/TSQL-purple?style=for-the-badge&labelColor=black&logo=TSQL&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-darkgreen?style=for-the-badge&labelColor=black&logo=powershell&logoColor=white)
-![Access](https://img.shields.io/badge/Microsoft%20Access-red?style=for-the-badge&labelColor=black&logo=microsoftaccess&logoColor=white)
 ![VBA](https://img.shields.io/badge/Microsoft%20VBA-lightgreen?style=for-the-badge&labelColor=black&logo=microsoftaccess&logoColor=white)
-![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&labelColor=black&logo=git&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-Programming-3776AB?style=for-the-badge&labelColor=black&logo=python&logoColor=white)
 ![Markdown](https://img.shields.io/badge/Markdown-000000?style=for-the-badge&labelColor=black&logo=markdown&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&labelColor=black&logo=html5&logoColor=white)
 
-## Useful Tooling
+**Technologies**
+
+![SQL-Server](https://img.shields.io/badge/SQL_Server-blue?style=for-the-badge&labelColor=black&logo=T-SQL&logoColor=white)
+![Access](https://img.shields.io/badge/Microsoft%20Access-red?style=for-the-badge&labelColor=black&logo=microsoftaccess&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&labelColor=black&logo=git&logoColor=white)
+
+**Useful Tooling**
 
 ![SSMS](https://img.shields.io/badge/SSMS-SQL%20Tools-darkblue?style=for-the-badge&labelColor=black&logo=microsoftsqlserver&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-Editor-007ACC?style=for-the-badge&labelColor=black&logo=visualstudiocode&logoColor=white)
 ![Github Desktop](https://img.shields.io/badge/GitHub%20Desktop-Git%20Client-24292E?style=for-the-badge&labelColor=black&logo=github&logoColor=white)
 ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-IDE-5C2D91?style=for-the-badge&labelColor=black&281001logo=visualstudio&logoColor=white)
 
-
-## Overview
-
-This SQL Server-based solution forms the foundation of the **Meta-Data-Model**, designed to streamline deployment and data processing through automation. By handling the technical complexities behind the scenes, it enables Data Engineers to focus on delivering value with and for the business. 
-
-> ***Note:*** currently it only works on Window OS, for most of the solution is based on Microsoft technology. However the idea is you can also build simular logic / programming on any other SQL oriented database.
-
-At its core, the solution provides:
-
-- A clear and structured **Meta-Data Model** to describe datasets and register parameters for accessing external sources.
-- The ability to reference other models
-- SQL-based transformations using `SELECT` queries, making logic transparent and easy to maintain.
-- Standardized historization for both **Ingestion** and **Transformation** processes.
-- A **Model**-driven organization of datasets to maintain clarity and control.
-- A clean separation between metadata, deployment, and processing logic, ensuring scalability and maintainability.
-- Minimal use of seprated technologies, limiting the need for integration of verious tooling/technologies.
-- example code for python data pipeline call.
-
-With minimal technology dependencies, this solution is easy to implement and works **out-of-the-box** on both **on-premises** and **cloud-based** SQL Server environments. Included Python scripts and procedures offer a solid starting point to get up and running quickly.
-
-<!-- TOC END -->
-
----
-
-### Table of Content
+***Table of Content***
 
 - [Meta-Data-Model](#meta-data-model)
-  - [Code Base](#code-base)
-  - [Useful Tooling](#useful-tooling)
   - [Overview](#overview)
-    - [Table of Content](#table-of-content)
   - [Getting Started](#getting-started)
     - [Pre-requirements](#pre-requirements)
     - [Installation](#installation)
@@ -79,6 +56,25 @@ With minimal technology dependencies, this solution is easy to implement and wor
       - [2. Updating the Frontend Tooling](#2-updating-the-frontend-tooling)
 
 ---
+
+## Overview
+
+This SQL Server-based solution forms the foundation of the **Meta-Data-Model**, designed to streamline deployment and data processing through automation. By handling the technical complexities behind the scenes, it enables Data Engineers to focus on delivering value with and for the business. 
+
+> ***Note:*** currently it only works on Window OS, for most of the solution is based on Microsoft technology. However the idea is you can also build simular logic / programming on any other SQL oriented database.
+
+At its core, the solution provides:
+
+- A clear and structured **Meta-Data Model** to describe datasets and register parameters for accessing external sources.
+- The ability to reference other models
+- SQL-based transformations using `SELECT` queries, making logic transparent and easy to maintain.
+- Standardized historization for both **Ingestion** and **Transformation** processes.
+- A **Model**-driven organization of datasets to maintain clarity and control.
+- A clean separation between metadata, deployment, and processing logic, ensuring scalability and maintainability.
+- Minimal use of seprated technologies, limiting the need for integration of verious tooling/technologies.
+- example code for python data pipeline call.
+
+With minimal technology dependencies, this solution is easy to implement and works **out-of-the-box** on both **on-premises** and **cloud-based** SQL Server environments. Included Python scripts and procedures offer a solid starting point to get up and running quickly.
 
 ## Getting Started
 
@@ -666,6 +662,7 @@ We have provide various Tutorials, see list below, where we will take you step b
 - Some understanding of `Visual Studio Code`
 - Some understanding of `SQL Server Management Studio`
 - Some understanding of `PowerShell`
+- Some understanding of `Command Prompt` (you should be able to execute bat-file)
 - Some understanding of `Python`
 - Some understanding of `Git`
 - Some understanding of `Azure Storage Account`\`s
