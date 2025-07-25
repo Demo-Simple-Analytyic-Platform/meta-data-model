@@ -33,9 +33,9 @@ For now or `Demo` / `Tutorial` we use our simple `secrets`-database.
         - [image: *Validation check if `secrets`-database was deployed.*](#image-validation-check-if-secrets-database-was-deployed)
   - [Adding, Reading and Removing Secrets](#adding-reading-and-removing-secrets)
     - [Adding a Secret](#adding-a-secret)
-        - [Example Script: Adding AccessKey for Azure Storage Account](#example-script-adding-accesskey-for-azure-storage-account)
+      - [Example Script: Adding AccessKey for Azure Storage Account](#example-script-adding-accesskey-for-azure-storage-account)
     - [Reading a Secret](#reading-a-secret)
-        - [Example Script: Reading AccessKey for Azure Storage Account](#example-script-reading-accesskey-for-azure-storage-account)
+      - [Example Script: Reading AccessKey for Azure Storage Account](#example-script-reading-accesskey-for-azure-storage-account)
   - [All Done](#all-done)
 
 ---
@@ -65,9 +65,11 @@ The `meta-data-model`-repository has a `visual studio`-solution with a `project`
 
 #### PowerShell-script
 
-Step 1 is to copy the full path to [1-Implementing-a-Secrets-Database.ps1](1-Implementing-a-Secrets-Database/PowerShell-Script.ps1) on **`your` local** repository.<br>
-Step 2 open command prompt.<br>
-Step 3 execute the command below.<br>
+Steps:
+
+1. Is to copy the full path to [1-Implementing-a-Secrets-Database.ps1](1-Implementing-a-Secrets-Database/PowerShell-Script.ps1) on **'your'-local** repository.
+2. Open command prompt.
+3. Execute the command below.
 
 ````cmd
 powershell -ExecutionPolicy Bypass -File "<copy-paste-the-full-path-to-this-script.ps1>"
@@ -91,7 +93,7 @@ Now that we have a `secrets`-database we would like to place some `secrets` in i
 
 This function we will use to store the `AccessKey` for the `Azure Storage Account` where we will "host" our static web service to make documentation accessible.
 
-##### [Example Script](1-Implementing-a-Secrets-Database/add-scret.py): Adding AccessKey for Azure Storage Account
+#### [Example Script](1-Implementing-a-Secrets-Database/add-scret.py): Adding AccessKey for Azure Storage Account
 
 ````python
 # Add the directory containing the file to sys.path
@@ -131,7 +133,7 @@ The result should be something like this.
 
 Storing a secret somewhere is usefull, however there must be away te extract the secret again so it can be used to gain access to a resource. In the same python module `secrets` the function  `read_secret` performance this task. In the exampl code below .
 
-##### [Example Script](1-Implementing-a-Secrets-Database/read-secret.py): Reading AccessKey for Azure Storage Account
+#### [Example Script](1-Implementing-a-Secrets-Database/read-secret.py): Reading AccessKey for Azure Storage Account
 
 ````python
 # Add the directory containing the file to sys.path
@@ -139,7 +141,7 @@ import getpass
 import sys
 fp_git_folder = input(f"Git-Folderpath  : ")
 nm_your_repo  = input(f"Repository Name : ")
-fp_modules    = f"{fp_git_folder}}/{nm_your_repo}/4-processing-python/modules"
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python/modules"
 sys.path.insert(0, fp_modules) 
 
 # Import the module
@@ -153,7 +155,6 @@ if (tx_secrets_extract == ds_secrets):
     print(f"Stored Accesskey is Valid!")
 else:
     print(f"Stored Accesskey is Invalid!")  
-
 ````
 
 ## All Done
