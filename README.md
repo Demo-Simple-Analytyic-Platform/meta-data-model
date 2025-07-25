@@ -37,7 +37,7 @@
           - [PowerShell Script](#powershell-script)
   - [Tutorials](#tutorials)
     - [Assumtions (no need to have jedi-master skills)](#assumtions-no-need-to-have-jedi-master-skills)
-      - [Tutorials: Secrets Database](#tutorials-secrets-database)
+    - [Tutorials: Secrets Database](#tutorials-secrets-database)
       - [1. Implementing Secrets Database](#1-implementing-secrets-database)
     - [Tutorials: Ingestions](#tutorials-ingestions)
       - [1. Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo)](#1-ingestion-of-stock-trade-infromation-webtable-from-yahoo)
@@ -667,7 +667,7 @@ We have provide various Tutorials, see list below, where we will take you step b
 - Some understanding of `Git`
 - Some understanding of `Azure Storage Account`\`s
 
-#### Tutorials: Secrets Database
+### Tutorials: Secrets Database
 
 This solution is using as SQL Database to store `Secrets`, in combination with the python function to add, remove and read secrets which are stored in hashed string and password protected independent of the access to the database. The tutorial will walk you throught the various steps to implement the database and how to use the add, read and remove functions.
 
