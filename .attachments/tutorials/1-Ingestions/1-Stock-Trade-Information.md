@@ -402,6 +402,10 @@ nm_your_repo  = input(f"Repository Name : ")
 #fp_git_folder = "path/to/your/git/folder"
 #nm_your_repo  = "name_of_your_repo"
 
+# Set the path to the modules directory
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python"
+sys.path.insert(0, fp_modules) 
+
 # Import Custom Modules
 import modules.credentials as crd # type: ignore
 import modules.run         as run # type: ignore
