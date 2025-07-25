@@ -33,9 +33,10 @@ For now or `Demo` / `Tutorial` we use our simple `secrets`-database.
         - [image: *Validation check if `secrets`-database was deployed.*](#image-validation-check-if-secrets-database-was-deployed)
   - [Adding, Reading and Removing Secrets](#adding-reading-and-removing-secrets)
     - [Adding a Secret](#adding-a-secret)
-        - [Example: Adding AccessKey for Azure Storage Account](#example-adding-accesskey-for-azure-storage-account)
+        - [Example Script: Adding AccessKey for Azure Storage Account](#example-script-adding-accesskey-for-azure-storage-account)
     - [Reading a Secret](#reading-a-secret)
-    - [Remove a Secret](#remove-a-secret)
+        - [Example Script: Reading AccessKey for Azure Storage Account](#example-script-reading-accesskey-for-azure-storage-account)
+  - [All Done](#all-done)
 
 ---
 
@@ -64,7 +65,7 @@ The `meta-data-model`-repository has a `visual studio`-solution with a `project`
 
 #### PowerShell-script
 
-Step 1 is to copy the full path to [1-Implementing-a-Secrets-Database.ps1](1-Implementing-a-Secrets-Database.ps1) on **`your` local** repository.<br>
+Step 1 is to copy the full path to [1-Implementing-a-Secrets-Database.ps1](1-Implementing-a-Secrets-Database/PowerShell-Script.ps1) on **`your` local** repository.<br>
 Step 2 open command prompt.<br>
 Step 3 execute the command below.<br>
 
@@ -90,15 +91,15 @@ Now that we have a `secrets`-database we would like to place some `secrets` in i
 
 This function we will use to store the `AccessKey` for the `Azure Storage Account` where we will "host" our static web service to make documentation accessible.
 
-##### Example: Adding AccessKey for Azure Storage Account
-````python
+##### [Example Script](1-Implementing-a-Secrets-Database/add-scret.py): Adding AccessKey for Azure Storage Account
 
+````python
 # Add the directory containing the file to sys.path
 import getpass
 import sys
 fp_git_folder = input(f"Git-Folderpath  : ")
 nm_your_repo  = input(f"Repository Name : ")
-fp_modules    = f"{fp_git_folder}}/{nm_your_repo}/4-processing-python/modules"
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python/modules"
 sys.path.insert(0, fp_modules) 
 
 # Import the module
@@ -108,7 +109,6 @@ from secrets import add_secret, read_secret, get_current_file_folder
 nm_secrets = "Your-Secret"
 ds_secrets = getpass.getpass(f"Please enter your Secret: ") # enter secret
 add_secret(nm_secrets, ds_secrets)
-
 ````
 
 To validate the if the `Secret` was inserted into the SQL Server Database, please logon and execute the SQL statement below.
@@ -119,7 +119,8 @@ FROM dbo.secrets
 WHERE nm_secret = 'Your-Secret'
 ````
 
-The result should be something like this
+The result should be something like this.
+
 | nm_secret |	ds_secret |
 |---|---|
 | Your-Secret | gAAAAABoe9p_0N7WnD7BH-8eIOxb8BlgmeggBaNZXn8Pf2VRBy949E5Lpq82Zru_UlpK65X0Kzg3Y7CzGH2qNMWVGhStelm34A== | 
@@ -130,8 +131,9 @@ The result should be something like this
 
 Storing a secret somewhere is usefull, however there must be away te extract the secret again so it can be used to gain access to a resource. In the same python module `secrets` the function  `read_secret` performance this task. In the exampl code below .
 
-````python
+##### [Example Script](1-Implementing-a-Secrets-Database/read-secret.py): Reading AccessKey for Azure Storage Account
 
+````python
 # Add the directory containing the file to sys.path
 import getpass
 import sys
@@ -154,6 +156,6 @@ else:
 
 ````
 
-### Remove a Secret
+## All Done
 
-It would be good practice to clean up secret that are nolonger in use, there for the function `remove_secret` was created. with the code below the previous `secret` can be removed.
+You now have `Secrets`-database and python scripts/functions to add and read secrets to/form the database, which can be used in data-pipelines.

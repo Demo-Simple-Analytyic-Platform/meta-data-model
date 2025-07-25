@@ -27,7 +27,7 @@ if ($true) { Write-Output "# 0. Setting local user specific variables.";
 if ($true) { Write-Output "# 5. Updating PublishProfiel for `Database`.";
 
   # When de project will be deployed (build/published) it will require access to the database, therefor server, databaser, username and password is needed, these will be stored in save mammer.
-  $secure_nm_sql_server   = Read-Host "SQL Server" -AsSecureString # Example: "localhost\sqlexpress" or "your-server.database.windows.net"
+  $secure_nm_sql_server   = Read-Host "SQL Server"   -AsSecureString # Example: "localhost\sqlexpress" or "your-server.database.windows.net"
   $secure_nm_sql_database = Read-Host "SQL Database" -AsSecureString # Example: "your_database_name"
   $secure_nm_sql_username = Read-Host "SQL Username" -AsSecureString # Example: "your_username" (if you use SQL Authentication)
   $secure_nm_sql_password = Read-Host "SQL Password" -AsSecureString # Example: "your_password" (if you use SQL Authentication)
