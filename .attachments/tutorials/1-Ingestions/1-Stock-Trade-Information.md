@@ -20,8 +20,6 @@ This tutorial will help you design an `ingestion`-dataset which will incremental
 ![SSMS](https://img.shields.io/badge/SSMS-SQL%20Tools-darkblue?style=for-the-badge&labelColor=black&logo=microsoftsqlserver&logoColor=white)
 ![VS Code](https://img.shields.io/badge/VS%20Code-Editor-007ACC?style=for-the-badge&labelColor=black&logo=visualstudiocode&logoColor=white)
 
----
-
 ***Table of Content***
 
 - [Ingestion of ***Stock Trade Infromation*** (webtable from Yahoo) Back to readme](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme)
@@ -30,8 +28,8 @@ This tutorial will help you design an `ingestion`-dataset which will incremental
   - [Exploration of the dataset structure (back to top)](#exploration-of-the-dataset-structure-back-to-top)
     - [goto website](#goto-website)
     - [Mapping](#mapping)
-    - [Lets do the mapping:](#lets-do-the-mapping)
-        - [table 1: Columns](#table-1-columns)
+    - [Lets do the mapping](#lets-do-the-mapping)
+      - [table 1: Columns](#table-1-columns)
   - [Determine if Incremental loading is possible (back to top)](#determine-if-incremental-loading-is-possible-back-to-top)
   - [Design dataset in `meta-data-editor` (back to top)](#design-dataset-in-meta-data-editor-back-to-top)
     - [Adding first a ***Group***](#adding-first-a-group)
@@ -72,10 +70,11 @@ The historical trade information can be found on the website of [yahoo](https://
 
 Our first result is `https://finance.yahoo.com/quote/RF/`, however these are not historcal data. Exploring the website further, we`ll find link/button "Historical Data". By clicking this the website load a table with trade infromation on a daily basis for the past year. More exploration of the website reviels that specific periodes can be selected. Let do only the last 5 Days.
 
-The url is now : "https://finance.yahoo.com/quote/RF/history/?period1=1752577325&period2=1753008901"
+The url is now : `https://finance.yahoo.com/quote/RF/history/?period1=1752577325&period2=1753008901`
 
 Let desect the URL
-- https://finance.yahoo.com/quote/ (this seems fixed)
+
+- `https://finance.yahoo.com/quote/` (this seems fixed)
 - RF/ (This correlates with the Stock/Share we have requested information on)
 - history/ (seems to indicate the retrieved info is historical)
 - ?period1=1752577325&period2=1753008901 (This show there are 2 periods-parameters both followed by number, deeper investication learns the these numbers are in the epoch-format and thus represent 2 point in time)
@@ -89,7 +88,7 @@ The python procedure that extract the web-table is found `<your-git-folder>\<nam
 - wtb_3_any_ni_index (Index of the Tables on the webpage)
 - is_debugging (if set to true more detailed information is printed to consul window)
 
-### Lets do the mapping:
+### Lets do the mapping
 
 python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable*** 
 
@@ -133,19 +132,18 @@ Index(['Date', 'Open', 'High', 'Low', 'Close Close price adjusted for splits.',
 
 We now have identified all the `return` columns from the dataset.
 
-##### table 1: Columns
+#### table 1: Columns
 
 | Column |
-|:--- | 
-| Date | 
-| Open | 
-| High | 
-| Low | 
-| Close Close price adjusted for splits. | 
+|:--- |
+| Date |
+| Open |
+| High |
+| Low |
+| Close Close price adjusted for splits. |
 | Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions |
 
-
-## Determine if Incremental loading is possible ([back to top](#table-of-content))
+## Determine if Incremental loading is possible ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
 Incremental loading is advantageous as it prevents the repeated loading of the same data, providing control over what is loaded and what is omitted. Let us continue to examine the URL information. As we have learned, there are two periods in the URL, each followed by a number. 
 
@@ -158,7 +156,7 @@ In this case we will need the epoch-placeholder `ni_previous_epoch` and ` ni_cur
 The `parameter` named `wtb_2_any_ds_path` must be populated with the value 
 `RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>`
 
-## Design dataset in `meta-data-editor` ([back to top](#table-of-content))
+## Design dataset in `meta-data-editor` ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
 If the `meta-data-editor` access application is not open yet start it by finding `Start-Meta-Data-Editor.bat` for the `Model` you want to add the Dataset too, when found execute the bat-file to start the `meta-data=editor`.
 
@@ -356,7 +354,7 @@ the result would look something like the image below.
 
 The other tabs ***Related Groups*** and ***DQ Controls** can by ignored for now.
 
-## Deployment of Model ([back to top](#table-of-content))
+## Deployment of Model ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
 There are basically 3 way to deploy your changes in your model to the database.
 

@@ -125,9 +125,9 @@ if ($true) { Write-Output "# 6. Updating PublishProfiel for `Database`.";
   $secure_nm_sql_username = Read-Host "SQL Username : " -AsSecureString # Example: "your_username" (if you use SQL Authentication)
   $secure_nm_sql_password = Read-Host "SQL Password : " -AsSecureString # Example: "your_password" (if you use SQL Authentication)
   # if you don`t want to type all of these credentials every time you run the script, you can replace the above lines with the following:
-  # $secure_nm_sql_server   = ConvertTo-SecureString "misset.synology.me,1433" -AsPlainText -Force
-  # $secure_nm_sql_database = ConvertTo-SecureString "demo" -AsPlainText -Force
-  # $secure_nm_sql_username = ConvertTo-SecureString "sa" -AsPlainText -Force
+  # $secure_nm_sql_server   = ConvertTo-SecureString "your-server-name" -AsPlainText -Force
+  # $secure_nm_sql_database = ConvertTo-SecureString "your-database-name" -AsPlainText -Force
+  # $secure_nm_sql_username = ConvertTo-SecureString "your-username" -AsPlainText -Force
 
   # Setting local variables
   $fp_project = "$fp_your_mdd\2-meta-data-definitions\9-Publish\2-Depolyment"
