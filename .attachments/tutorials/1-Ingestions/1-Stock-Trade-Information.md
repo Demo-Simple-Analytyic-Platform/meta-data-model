@@ -47,6 +47,7 @@ This tutorial will help you design an `ingestion`-dataset which will incremental
     - [2. Powershell](#2-powershell)
     - [3. Via the `meta-data-editor`](#3-via-the-meta-data-editor)
   - [Test Run and Validate Results (back to top)](#test-run-and-validate-results-back-to-top)
+    - [python: ***example Test and Validata***](#python-example-test-and-validata)
 
 ---
 
@@ -386,14 +387,13 @@ On the "***detail***"-form for `dataset` on the right-side of the button-bar, an
 
 > Important: the local virus/malware scanner may dislike this action, so you must make a exception for this.
 
-## Test Run and Validate Results ([back to top](#table-of-content))
+## Test Run and Validate Results ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
 To test if the `dataset` is set correctly designed, the python data-pipeline can be run with the following code.
 
-python: ***[example](1-Stock-Trade-Information/2-Test-and-Validate.py) Test and Validata***
+### python: ***[example](1-Stock-Trade-Information/2-Test-and-Validate.py) Test and Validata***
 
 ````python
-
 # Add the directory containing the file to sys.path
 import sys
 fp_git_folder = input(f"Git-Folderpath  : ")
@@ -401,6 +401,10 @@ nm_your_repo  = input(f"Repository Name : ")
 # if you don't want type in the folder/file path on runtime.
 #fp_git_folder = "path/to/your/git/folder"
 #nm_your_repo  = "name_of_your_repo"
+
+# Set the path to the modules directory
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python"
+sys.path.insert(0, fp_modules) 
 
 # Import Custom Modules
 import modules.credentials as crd # type: ignore
@@ -416,9 +420,9 @@ is_debugging = "1"
 run.initialize(is_debugging)
 
 # Assumtions: stuff a overarching procedure shoudl extract, but for our example we will hardcode it
-id_model          = "<id_model>"         # this you can find `<name_of_your_repo>\2-meta-data-definitions\2-Definitions\3-Data-Transformation-Area\model.sql`
-nm_target_scehme  = '<nm_target_schema>'
-nm_target_table   = '<nm_target_table>'
+id_model         = "5f5640501f5751571f564c505f435854" # this you can find `<name_of_your_repo>\2-meta-data-definitions\2-Definitions\3-Data-Transformation-Area\model.sql`
+nm_target_scehme = 'psa_yahoo_stock_info'
+nm_target_table  = 'rf'
 
 # Extraction of metadata for the desired model + dataset
 run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
@@ -426,5 +430,11 @@ run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
 # Extract dataset from SQL database
 df = sql.query(crd.target_db, f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
 df.head()
-
 ````
+
+The result should look like something like the tabel below.
+
+| asd | s   |
+|:--- |:--- |
+|     |     |
+
