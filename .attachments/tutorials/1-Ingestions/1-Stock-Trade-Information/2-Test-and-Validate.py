@@ -18,11 +18,6 @@ import modules.sql         as sql # type: ignore
 # Set Debugging to "1" => true
 is_debugging = "1"
 
-# initialize the run module, If this is the first time running this script on this machine, the user will be prompted to enter the credentials for the secrets database and the target database.
-# If the credentials are already stored, the user will not be prompted and the credentials will be loaded from the secure files.
-# The credentials are stored in the secure files in the modules
-run.initialize(is_debugging)
-
 # Assumtions: stuff a overarching procedure shoudl extract, but for our example we will hardcode it
 id_model          = "<id_model>" # was id_model was updated by the initialization
 nm_target_scehme  = '<nm_target_schema>'
