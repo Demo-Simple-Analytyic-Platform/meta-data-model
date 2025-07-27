@@ -51,6 +51,7 @@ This tutorial will help you design an `ingestion`-dataset which will incremental
     - [All Done for 'Regions Financial Corporation (RF)' Back to readme](#all-done-for-regions-financial-corporation-rf-back-to-readme)
   - [Implementing the ingestion of 'Koninklijke KPN N.V. (KPN.AS)' Back to readme](#implementing-the-ingestion-of-koninklijke-kpn-nv-kpnas-back-to-readme)
     - [Copy and Paste](#copy-and-paste)
+  - [All Done](#all-done)
 
 ---
 
@@ -62,7 +63,7 @@ As an **analyst**, I want to access **historical stock trading data** for **Regi
 
 Loading trade data for the last 5 year should give a good impression of what is happing with the share. Next to **Regions Financial Corporation (RF)**, also make ***Koninklijke KPN N.V. (KPN.AS)*** aviablable.
 
-## Exploration of the dataset structure ([back to top](#table-of-content))
+## Exploration of the dataset structure ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
 Before we start designing the dataset, we must understand what the structure of the dataset is. For this purpose we\`ll be reusing various existing python procedures.
 
@@ -94,7 +95,7 @@ The python procedure that extract the web-table is found `<your-git-folder>\<nam
 
 ### Lets do the mapping
 
-python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable*** 
+python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable***
 
 ````python
 
@@ -149,16 +150,15 @@ We now have identified all the `return` columns from the dataset.
 
 ## Determine if Incremental loading is possible ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
-Incremental loading is advantageous as it prevents the repeated loading of the same data, providing control over what is loaded and what is omitted. Let us continue to examine the URL information. As we have learned, there are two periods in the URL, each followed by a number. 
+Incremental loading is advantageous as it prevents the repeated loading of the same data, providing control over what is loaded and what is omitted. Let us continue to examine the URL information. As we have learned, there are two periods in the URL, each followed by a number.
 
-Investigation will learn that these represent epoch-formatted datetimes. This enables us to control which `period` is loaded. 
+Investigation will learn that these represent epoch-formatted datetimes. This enables us to control which `period` is loaded.
 
-Users and developers have the capability to utilize `placeholders`; further information on this topic can be found [here](additional/placeholder.md).
+Users and developers have the capability to utilize `placeholders`; further information on this topic can be found in [the placeholders documentation](.additional/placeholder.md).
 
-In this case we will need the epoch-placeholder `ni_previous_epoch` and ` ni_current_epoch`. by replacing the number in URL we can make the data-pipeline run incremental.
+In this case we will need the epoch-placeholder `ni_previous_epoch` and `ni_current_epoch`. by replacing the number in URL we can make the data-pipeline run incremental.
 
-The `parameter` named `wtb_2_any_ds_path` must be populated with the value 
-`RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>`
+The `parameter` named `wtb_2_any_ds_path` must be populated with the value `RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>`
 
 ## Design dataset in `meta-data-editor` ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
@@ -231,7 +231,7 @@ After adding the Attribute information, the result must look something like the 
 
 ### Source Query
 
-After adding the Column information, the "***Source Query***-tab can be open, on the right-side of the form next to text-field, there is a button with the text "*create source query from attributes*", by clicking this button the " ***source query*** is automatically write for you. 
+After adding the Column information, the "***Source Query***-tab can be open, on the right-side of the form next to text-field, there is a button with the text "*create source query from attributes*", by clicking this button the " ***source query*** is automatically write for you.
 
 The "***Source Query***" will look like something of the SQL below.
 
@@ -363,7 +363,7 @@ The other tabs ***Related Groups*** and ***DQ Controls** can by ignored for now.
 There are basically 3 way to deploy your changes in your model to the database.
 
 - Old school `Visual Studio`, the underlay project and solutions are a `Visual Studio Solution`.
-- Running a `powershell` script that automated all the manual steps you would do in `Visual Studio`. 
+- Running a `powershell` script that automated all the manual steps you would do in `Visual Studio`.
 - Via the `meta-data-editor`, the button on the detail-form of `dataset` basically start option 2.
 
 ### 1. Old school `Visual Studio`
@@ -469,7 +469,7 @@ The `dataset` is copied, some fields are appended with `Copy`, these we must upd
 | Attribute         | Copied Values| Change it to |
 |:---               |:---       |:---       |
 | Name              | `Regions Financial Corporation (RF) - Copy` | `Koninklijke KPN N.V. (KPN.AS)` |
-| Table             | `RF_copy` | `kpnas` | 
+| Table             | `RF_copy` | `kpnas` |
 | wtb_2_any_ds_path | `RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>` | `KPN.AS/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>` |
 
 ![Copied-to-update](../..//images/meta-data-def/menu/menu-show-detail-form-dataset-highlighted-Fields-dataset.png)
@@ -480,4 +480,23 @@ After the `Table` and `Name` are changed into the desired values, we must re-bui
 
 After the `Source Query` is updated, the `Dataset` can be saved and deployed to the database.
 
-By using the `deploy`-script `your-model-name\2-meta-data-definitions\9-Publish\1-Scripts\deployment-of-model.ps1`. or using the `Deploy to Development`-button in the `meta-data-editor`.
+By using the `deploy`-script `your-model-name\2-meta-data-definitions\9-Publish\1-Scripts\deployment-of-model.ps1`. or using the `Deploy to Development`-button in the `meta-data-editor`. By reusing the `python`-script of the previous dataset of `Regions Financial Corporation (RF)`.
+
+The result after deployment and running the data pipeline should look something like the resultset below.
+
+| Date         | Open  | High  | Low   | Close Close price adjusted for splits. | Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions. |
+|:---          |:---   |:---   |:---   |:---   |:---   |
+| Jul 25, 2025 | 26.28 | 26.46 | 25.86 | 26.42 | 26.42 |
+| Jul 24, 2025 | 26.48 | 26.66 | 26.24 | 26.30 | 26.30 |
+| Jul 23, 2025 | 26.38 | 26.46 | 26.19 | 26.37 | 26.37 |
+| Jul 22, 2025 | 26.05 | 26.45 | 25.96 | 26.20 | 26.20 |
+| Jul 21, 2025 | 26.16 | 26.42 | 25.87 | 26.05 | 26.05 |
+| Jul 18, 2025 | 25.50 | 26.16 | 25.45 | 26.01 | 26.01 |
+| Jul 17, 2025 | 24.04 | 24.61 | 23.96 | 24.51 | 24.51 |
+| Jul 16, 2025 | 24.17 | 24.21 | 23.68 | 24.08 | 24.08 |
+| Jul 15, 2025 | 24.64 | 24.73 | 23.96 | 24.03 | 24.03 |
+| Jul 14, 2025 | 24.64 | 24.80 | 24.52 | 24.70 | 24.70 |
+
+## All Done
+
+With the Run and Validation of the `Koninklijke KPN N.V. (KPN.AS)`-ingestion dataset this tutorial is concluded. You now known how to add dataset where the source data comes from a web table.
