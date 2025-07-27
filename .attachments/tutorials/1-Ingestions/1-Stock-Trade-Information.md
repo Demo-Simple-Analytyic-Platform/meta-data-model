@@ -481,4 +481,3 @@ After the `Table` and `Name` are changed into the desired values, we must re-bui
 After the `Source Query` is updated, the `Dataset` can be saved and deployed to the database.
 
 By using the `deploy`-script `your-model-name\2-meta-data-definitions\9-Publish\1-Scripts\deployment-of-model.ps1`. or using the `Deploy to Development`-button in the `meta-data-editor`.
-
