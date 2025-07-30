@@ -190,7 +190,6 @@ ds_secrets   = getpass.getpass(f"Secret    : ") # enter secret
 add_secret("my-abs-documentation-account",   nm_account)
 add_secret("my-abs-documentation-accesskey", nm_container)
 add_secret("my-abs-documentation-container", ds_secrets)
-
 ````
 
 ## All Done
