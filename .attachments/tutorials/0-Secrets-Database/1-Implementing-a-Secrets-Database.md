@@ -36,6 +36,7 @@ For now or `Demo` / `Tutorial` we use our simple `secrets`-database.
       - [Example Script: Adding AccessKey for Azure Storage Account](#example-script-adding-accesskey-for-azure-storage-account)
     - [Reading a Secret](#reading-a-secret)
       - [Example Script: Reading AccessKey for Azure Storage Account](#example-script-reading-accesskey-for-azure-storage-account)
+  - [Secret to the Azure Blob Storage (Static Web Server)](#secret-to-the-azure-blob-storage-static-web-server)
   - [All Done](#all-done)
 
 ---
@@ -67,9 +68,10 @@ The `meta-data-model`-repository has a `visual studio`-solution with a `project`
 
 Steps:
 
-1. Is to copy the full path to [1-Implementing-a-Secrets-Database.ps1](1-Implementing-a-Secrets-Database/PowerShell-Script.ps1) on **'your'-local** repository.
-2. Open command prompt.
-3. Execute the command below.
+1. Is too open the folder location to [1-Implementing-a-Secrets-Database.bat](1-Implementing-a-Secrets-Database/PowerShell-Script.bat) on **'your'-local** repository. 
+2. Execute the `bat`-file by double clicking on it.
+
+or Open a command prompt window and excute the command below, you must first copy the full path to the `bat`-file. 
 
 ````cmd
 powershell -ExecutionPolicy Bypass -File "<copy-paste-the-full-path-to-this-script.ps1>"
@@ -155,6 +157,40 @@ if (tx_secrets_extract == ds_secrets):
     print(f"Stored Accesskey is Valid!")
 else:
     print(f"Stored Accesskey is Invalid!")  
+````
+
+## Secret to the Azure Blob Storage (Static Web Server)
+
+The following assumes your have already configured Azure Storage Account with `$web`-containter the in configuared as a `static web server`. The already avialable python code in the data-pipeline procedure will also update the `documentation` by uploading a html-page to this `static web server`. What we\`ll need is the `Account`, `AccessKey` and `Container`. In the `export_documentation`-procedure the secrets are retrived form the secrets database with the following `Secret`-names:
+
+- my-abs-documentation-account
+- my-abs-documentation-accesskey
+- my-abs-documentation-container
+
+with the `python`-code below we can set the `secrets`:
+
+````python
+# Add the directory containing the file to sys.path
+import getpass
+import sys
+fp_git_folder = input(f"Git-Folderpath  : ")
+nm_your_repo  = input(f"Repository Name : ")
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python/modules"
+sys.path.insert(0, fp_modules) 
+
+# Import the module
+from secrets import add_secret, read_secret, get_current_file_folder
+
+# Retrive the information by prompting the user
+nm_account   = input(f"Account   : ")
+nm_container = input(f"Container : ")
+ds_secrets   = getpass.getpass(f"Secret    : ") # enter secret
+
+# Setting my-documentation-... secrets.
+add_secret("my-abs-documentation-account",   nm_account)
+add_secret("my-abs-documentation-accesskey", nm_container)
+add_secret("my-abs-documentation-container", ds_secrets)
+
 ````
 
 ## All Done
