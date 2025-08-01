@@ -146,7 +146,7 @@ We now have identified all the `return` columns from the dataset.
 | High |
 | Low |
 | Close Close price adjusted for splits. |
-| Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions |
+| Adj Close Adjusted close price adjusted for splits and dividend and/or capital gain distributions. |
 
 ## Determine if Incremental loading is possible ([back to top](#ingestion-of-stock-trade-infromation-webtable-from-yahoo-back-to-readme))
 
