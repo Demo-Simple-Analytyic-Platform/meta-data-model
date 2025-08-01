@@ -18,5 +18,3 @@ df = src.web_table_anonymous_web (
     wtb_3_any_ni_index = "0",
     is_debugging       = "1"
 )
-
-print(df.columns)
