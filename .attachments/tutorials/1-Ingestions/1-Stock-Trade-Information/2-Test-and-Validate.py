@@ -1,10 +1,8 @@
 # Add the directory containing the file to sys.path
 import sys
-fp_git_folder = input(f"Git-Folderpath  : ")
-nm_your_repo  = input(f"Repository Name : ")
 # if you don't want type in the folder/file path on runtime.
-#fp_git_folder = "path/to/your/git/folder"
-#nm_your_repo  = "name_of_your_repo"
+fp_git_folder = "path/to/your/git/folder"
+nm_your_repo  = "name_of_your_repo"
 
 # Set the path to the modules directory
 fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python"
@@ -27,5 +25,5 @@ nm_target_table   = '<nm_target_table>'
 run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
 
 # Extract dataset from SQL database
-df = sql.query(crd.target_db, f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
+df = sql.query(crd.target_db(), f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
 df.head()

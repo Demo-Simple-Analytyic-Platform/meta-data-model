@@ -1,6 +1,6 @@
 # Ingestion of **Currency Exchange Rates** (webtable from Yahoo) [Back to readme](../../../README.md#tutorials-ingestions)
 
-This tutorial will help you design an `ingestion`-dataset which will incrementally load `Exchange Rate for USD x EUR` from the [Yahoo Finance](https://finance.yahoo.com/quote/EURUSD%3DX/history)-website for a specific `Currency` of `US Dollar`. We\`ll be making use of the following languages, Technologies adn Tooling.
+This tutorial will help you design an `ingestion`-dataset which will incrementally load `Exchange Rates` from the [Yahoo Finance](https://finance.yahoo.com/quote/EURUSD%3DX/history)-website for a specific `Currency` of `US Dollar`. We\`ll be making use of the following languages, Technologies adn Tooling. Assumtions are made that the reader is familair and has some experience with the below mentioned *Languages*, *Technologies* and *Tooling*.
 
 **Languages:**
 
@@ -43,6 +43,10 @@ As an **analyst**, I want to access **historical Exchange Rates** for **US Dolla
 ### Additionals Infomation
 
 Loading trade data for the last 5 year should give a good impression of what is happing with the share. Next to **US Dollar (USD)**, also make ***Canadian Dollar (CAD)*** aviablable.
+
+### Implentation
+
+As in the previous tutorial of [Stock Trading Information](1-Stock-Trade-Information.md) we\`ll start with a Exploration of the dataset structure, do the mapping in the `meta-data-editor` and Deploy the new dataset, Run the data pipeline and validate. Repeat for the `Canadian Dollar`.
 
 ## Exploration of the dataset structure ([back to top](#ingestion-of-currency-exchange-rates-webtable-from-yahoo-back-to-readme))
 
@@ -124,7 +128,6 @@ As before while reusing the `copy`-feature in the `meta-data-editor`-tooling we 
 | Table             | `RF_copy` | `eur_x_usd` |
 | wtb_2_any_ds_path | `RF/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>` | `EURUSD%3DX/history/?period1=<@ni_previous_epoch>&period2=<@ni_current_epoch>` |
 
-
 ## Deployemnt
 
 After `copying` and `adjusing` the metadata defintions for `US Dollar x Euro (EURUSD=X)` we can "update" the `source query` by using the `create source query from attribute`-button. We can Save the definitions to the repository and `Deploy` to the `Development` by clicking `Deploy to Development`-button.
@@ -149,6 +152,8 @@ After running the script the result should give a dataset that would look someth
 | Jul 15, 2025 | 1.1666 | 1.1692 | 1.1602 | 1.1666 | 1.1666 |
 
 ## Implementing EUR x CAD
+
+It would be save to conclude that most, if not all webtable on the yahoo finance website have the same structure. This Is very nice of them, so for now if we\`ll need more `trading`-information we can use the `copy`-feature in the `meta-dat-editor`.
 
 For the `Exchange Rates` for `EUR x CAD` would should use the `copy`-feature and adjust the `metadata`-definitions accorddenly. We should replace `US Dollar` with `Canadian Dollar` and `USD` with `CAD`.
 
