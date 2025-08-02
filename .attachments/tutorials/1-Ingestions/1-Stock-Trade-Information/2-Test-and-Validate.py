@@ -24,6 +24,7 @@ nm_target_table   = '<nm_target_table>'
 # Extraction of metadata for the desired model + dataset
 run.data_pipeline(id_model, nm_target_scehme, nm_target_table, is_debugging)
 
-# Extract dataset from SQL database
-df = sql.query(crd.target_db(), f"SELECT * FROM {nm_target_scehme}.{nm_target_table}")
-df.head()
+# Extract dataset from SQL database and display the first 10 rows in markdown format for table
+df = sql.query(crd.target_db(), f"SELECT TOP 10 * FROM {nm_target_scehme}.{nm_target_table}")
+df.to_csv('test-asnd-validate.csv', index=False)
+print(df.head().to_markdown())
