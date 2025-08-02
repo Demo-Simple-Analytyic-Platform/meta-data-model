@@ -36,7 +36,6 @@ For now or `Demo` / `Tutorial` we use our simple `secrets`-database.
       - [Example Script: Adding AccessKey for Azure Storage Account](#example-script-adding-accesskey-for-azure-storage-account)
     - [Reading a Secret](#reading-a-secret)
       - [Example Script: Reading AccessKey for Azure Storage Account](#example-script-reading-accesskey-for-azure-storage-account)
-  - [Secret to the Azure Blob Storage (Static Web Server)](#secret-to-the-azure-blob-storage-static-web-server)
   - [All Done](#all-done)
 
 ---
