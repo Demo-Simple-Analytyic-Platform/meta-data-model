@@ -1,6 +1,6 @@
 # Ingestion of ***Transactions of Trade Account*** (Azure Blob Storage - Excel) [Back to readme](../../../README.md#tutorials-ingestions)
 
-This tutorial will help you design an `ingestion`-dataset which will incremental load `transactions` from  [Azure Storage Account](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview, thge data will come from a ` blob`-container and has `transaction` information storeed in excel fromat. The turorial will be making use of the following languages, Technologies and Tooling. Assumtions are made that the reader is familair and has some experience with the below mentioned *Languages*, *Technologies* and *Tooling*. Next to this, the tutorial will assume you have access to `Azure Blob Container` via the `Accesskey` (Security wish this accesskey should be rotate on a perioding basis).
+This tutorial will help you design an `ingestion`-dataset which will full load `transactions` from  [Azure Storage Account](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview), thge data will come from a ` blob`-container and has `transaction` information storeed in excel fromat. The turorial will be making use of the following languages, Technologies and Tooling. Assumtions are made that the reader is familair and has some experience with the below mentioned *Languages*, *Technologies* and *Tooling*. Next to this, the tutorial will assume you have access to `Azure Blob Container` via the `Accesskey` (Security wish this accesskey should be rotate on a perioding basis).
 
 **Languages:**
 
@@ -44,6 +44,27 @@ In the `4-Transactions-of-Trade-Account`-folder the example `Excel`-file is stor
 
 1. On the `Container` create a folder named `transactions`
 2. Store the [`Excel`-file](4-Transactions-of-Trade-Account/transactions.xlsx) in this folder on the `Blob`-container folder.
+3. make sure yu have the accesskey avialable.
+3. Validate if you stored the accesskey in the secrets-database, secret-name should be `Yahoo-Blob-SAS-Token'. With the python code below you can ensure it is there.
+
+````python
+# Add the directory containing the file to sys.path
+import getpass
+import sys
+fp_git_folder = 'path/to/git/folder'
+nm_your_repo  = 'name-of-model'
+fp_modules    = f"{fp_git_folder}/{nm_your_repo}/4-processing-python/modules"
+sys.path.insert(0, fp_modules) 
+
+# Import the module
+from secrets import add_secret
+
+# Retrive the information by prompting the user
+ds_secrets = getpass.getpass(f"Secret : ") # enter secret
+
+# Setting my-documentation-... secrets.
+add_secret("Yahoo-Blob-SAS-Token", nm_container)
+````
 
 ## User Story
 
@@ -58,30 +79,38 @@ As in the previous tutorial of [Stock Trading Information](1-Stock-Trade-Informa
 
 Before we start designing the dataset, we must understand what the structure of the dataset is. For this purpose we\`ll be reusing various existing python procedures. As before in tutorial of [Stock-Trade-Information](1-Stock-Trade-Information.md) We\`ll perform the same steps, only we\`ll not explian in the same level of detail. Remember, with webpages, what you see, is not always what you get. The python data pipeline is basically a web-scrapper and the `table` we want to extract maybe presentated differently on the webpage and is in html. So the first step is to fetch the dataset manually.
 
-### goto website
+### goto blob container
 
-The historical exchange rates for US Dollar can be found on the website of [wikipedia](https://en.wikipedia.org/wiki/List_of_circulating_currencies) here we find various list related to currencies. We can us the browser to `inspect` the apparent 2nd table, and coutn the number of `<table` strings that appeer in the html-code, till arriving at the desired table, the number is 3, with this information lets look more carfully at the url.
+we must determine the structure of the file, here for we must locate the file on the blob container and which azure storage aacount is used, container and possible folder(s) the file is stored (*For this demo you should have you own storage account, see preparation of the required information*). 
 
-Let desect the URL
+When the file is located it can be downloaded and explored, see image below for a impression of the content.
 
-- `https://en.wikipedia.org/wiki/List_of_circulating_currencies` (this seems fixed)
-- `List_of_circulating_currencies` seems to point to the page `list of currencies`
-- no informatione which can be used to filter for incremental loading
-- information is in the 3rd table, since the python code start counit from 0, 2 would be the likely candidate for hte index.
+![impressiong of transaction content](../../images/meta-data-def/sample-data/sample-data-excel-transactions.png)
+
+While exploring the file, we see the name of the sheet is `Transactions`, there is also column named `Date`, `Stock` and `Mutation Type`, there three are good condidates for `Businesskeys`. We have now the required information to start mapping.
 
 ### Mapping
 
-The python procedure that extract the web-table is found `<your-git-folder>\<name-of-your-model>\4-processing-python\modules\`-folder and the `source.py`-file. The procedure is named `web_table_anonymous_web` and hase 4 input parameters.
+The `meta-data-editor` has parameter-groups : (tab) Setting-table ->  (subtab) Parameter group, we need `abs_sas_url_xls`, this one has 9 paramters that require a value.
 
-- wtb_1_any_ds_url  (Base URL, the part that does not change)
-- wtb_2_any_ds_path (Path, then dynamic part of URL that detemines the filtering of what information is loaded onto the webpage.)
-- wtb_3_any_ni_index (Index of the Tables on the webpage)
-- is_debugging (if set to true more detailed information is printed to consul window)
+| Parameter | Value | Comment |
+|:---       |:---   |:---     |
+| abs_1_xls_nm_account           | demoasawedev         | |
+| abs_2_xls_nm_secret            | Yahoo-Blob-SAS-Token | |
+| abs_3_xls_nm_container         | yahoo                | |
+| abs_1_xls_nm_account           | demoasawedev         | |
+| abs_4_xls_ds_folderpath        | \yahoo\transkaction\ | |
+| abs_5_xls_ds_filename          | transactions.xlsx    | |
+| abs_6_xls_nm_sheet             | Transactions         | |
+| abs_7_xls_is_first_header      | 1                    | 1 = true and 0 = false
+| abs_8_xls_cd_top_left_cell     |                      | can be left empty, if there is a specific range then provide. |
+| abs_9_xls_cd_bottom_right_cell |                      | can be left empty, if there is a specific range then provide. |
+
+The python procedure that extract the web-table is found `<your-git-folder>\<name-of-your-model>\4-processing-python\modules\`-folder and the `source.py`-file. The procedure is named `abs_sas_url_xls` and hase 9 input parameters, see list above.
 
 ### Lets do the mapping
 
-python: ***[example](1-Stock-Trade-Information/1-Explore-Webtable.py) Explore Webtable***
-
+python: ***[example](./4-Transactions-of-Trade-Account/Explore-Excel-from-Blob.py) Explore Webtable***
 ````python
 
 # Add the directory containing the file to sys.path
@@ -99,40 +128,56 @@ from modules import source as src  # type: ignore
 
 # Extract web table
 df = src.web_table_anonymous_web (
-    wtb_1_any_ds_url   = "https://en.wikipedia.org/wiki/",
-    wtb_2_any_ds_path  = "List_of_circulating_currencies",
-    wtb_3_any_ni_index = "2",
-    is_debugging       = "1"
+    # Input Parameters
+    abs_1_xls_nm_account           = "demoasawedev",
+    abs_2_xls_nm_secret            = "Yahoo-Blob-SAS-Token",
+    abs_3_xls_nm_container         = "yahoo",
+    abs_4_xls_ds_folderpath        = "transactions",
+    abs_5_xls_ds_filename          = "transactions.xlsx",
+    abs_6_xls_nm_sheet             = "Transactions",
+    abs_7_xls_is_first_header      = "1",
+    abs_8_xls_cd_top_left_cell     = "",
+    abs_9_xls_cd_bottom_right_cell = "",
+    is_debugging                   = "1"
 )
 
 ````
 
-As we can seen the result below, the column names seem to consist of two part, exploring the html-code wil confirm this, the header of the table has two row were some column are spanned. Regardless the pyhone prepared code will handle this.
-
+***Results***
 ````
 Column Name:
 ------------------------------------
-Currency_Currency
-Symbol_or_abbrev_Symbol_or_abbrev
-ISO_code_ISO_code
-Fractional_unit_Name
-Fractional_unit_No
-Countries_territories_No
-Countries_territories_Formal_users
+Date
+Currency
+Amount
+Stock
+Stock_Name
+Mutation_Type
+Volume
+Traded_Value
+Withholding_Taxs
+Fee
+Total
+Ordering
 ------------------------------------
 
-# Columns : 7
-# Records : 22
+# Columns : 12
+# Records : 12
 
 ------------------------------------
 ````
 
-As before while reusing the `copy`-feature in the `meta-data-editor`-tooling we need to find a `dataset`, any `webtable`-dataset will do, the structure of the parameters is needed, not information. For the Grouping a new one would be approiated.
-So let\`s select one and use the `copy`-feature and start editing the `new`-dataset.
+In the previous tutorials we did load/ingested webtable, this is Excel file from Blob Container on the Azure Platform. So starting with `new` dataset would be the best option, in case we\`ll be loading more excel files form Blob Storages we can re-use this dataset as a template.
+
+So let`s open the ` meta-data-editor` if not already open and open a new `dataset`.
+
+> Main Menu -> Dataset -> Dataset -> New-button. ![new-dataset](../../images/meta-data-def/menu/menu-show-list-of-dataset-add-button-highlighted.png)
+
+> ***Best Practis*** : A new source, a new **Group**
 
 ### Adding new ***Group***
 
-As said before a new ***Group*** would be best, this information coms from a different source being `Wikipedia`. Let open the list of ***Groups*** and add one named `PSA-002-Wikipedia`, for description `Wikipedia` will do, feel free to make it more suittable for your own needs. After You are done go back to the `detail`-form for `Dataset`, you may need th use the `F5`-button to refesch the list of ***Groups***.
+A new ***Group*** would be best, since this information comes from a different source being `Demo Blob Container`. Let open the list of ***Groups*** and add one named `PSA-003-Transaction`, for description `Transactions` will do, feel free to make it more suittable for your own needs. After You are done go back to the `detail`-form for `Dataset`, you may need th use the `F5`-button to refesch the list of ***Groups***.
 
 ![menu-show-group-list](../../images/meta-data-def/menu/menu-show-groups-list.png)
 
@@ -140,41 +185,52 @@ As said before a new ***Group*** would be best, this information coms from a dif
 
 | Attribute          | Set to Value |
 |:---                |:---       |
-| Name               | `List of Currencies` |
-| Schema             | `psa_wikipedia` |
-| Table              | `currencies` |
+| Name               | `Trade Account Transactions` |
+| Schema             | `psa_trade_account` |
+| Table              | `transaction` |
 
 ### Change Attribute Information
 
 | #   | BK  | Column Name                        | Datatype      | Nullable | Attribute (Name)               | Attribute (Description) |
 |:--- |:--- |:---                                |:---           |:---      |:---                            |:---                     |
-| 1   |     | Currency_Currency                  | NVARCHAR(999) | 🗸        | Currency                       | Currency |
-| 2   |     | Symbol_or_abbrev_Symbol_or_abbrev  | NVARCHAR(999) | 🗸        | Symbol                         | Symbol |
-| 3   | 🗸   | ISO_code_ISO_code                  | NVARCHAR(999) | 🗸        | ISO Code                      | ISO Code |
-| 4   |     | Fractional_unit_Name               | NVARCHAR(999) | 🗸        | Factional Unit Name            | Factional Unit Name |
-| 5   |     | Fractional_unit_No                 | NVARCHAR(999) | 🗸        | Factional Unit Number          | Factional Unit Number |
-| 6   |     | Countries_territories_No           | NVARCHAR(999) | 🗸        | # Countries / Territories      | # Countries / Territories |
-| 7   |     | Countries_territories_Formal_users | NVARCHAR(999) | 🗸        | Formal Countries / Territories | Formal Countries / Territories |
+| 1   |  V  | Date                               | NVARCHAR(999) | V        | Datetime Transaction           | Datetime of Transaction |
+| 2   |     | Currency                           | NVARCHAR(999) | V        | Currency                       | ISO Currency of Transaction |
+| 3   |     | Amount                             | NVARCHAR(999) | V        | Amount                         | Price per Stock/Share, this also can be the amount of dividence paid out. |
+| 4   |  V  | Stock                              | NVARCHAR(999) | V        | Stock Code                     | Code of the Stock on the trading platform |
+| 5   |     | Stock_Name                         | NVARCHAR(999) | V        | Stock Name                     | Stock Name              |
+| 6   |  V  | Mutation_Type                      | NVARCHAR(999) | V        | Mutation Type                  | Mutation Types (Koop, Verkoop, Divident) |
+| 7   |     | Volume                             | NVARCHAR(999) | V        | Volume                         | # Number of Stock involved |
+| 8   |     | Traded_Value                       | NVARCHAR(999) | V        | Traded Value                   | Trade Value (before Fee and/or Taxes) |
+| 9   |     | Withholding_Taxs                   | NVARCHAR(999) | V        | Withholding Taxs               | Taxes that were Witheld  |
+| 10  |     | Fee                                | NVARCHAR(999) | V        | Fee                            | Fee for the Trading platform |
+| 11  |     | Total                              | NVARCHAR(999) | V        | Total                          | Mutation Amount of the transaction, this is what will be subtracted of subplemented to the Trade Accoutn Balance |
+| 12  |     | Ordering                           | NVARCHAR(999) | V        | # Ordering                     | # Original Order of the Mutations |
 
 ### Change Parameter Information
 
 | Parameter | Value |
 |:--- |:--- |
-| wtb_1_any_ds_url   | `https://en.wikipedia.org/wiki/` |
-| wtb_2_any_ds_path  | `List_of_circulating_currencies` |
-| wth_3_any_ni_index | `2` | 
+| abs_1_xls_nm_account            | `demoasawedev` |
+| abs_2_xls_nm_secret             | `Yahoo-Blob-SAS-Token` |
+| abs_3_xls_nm_container          | `yahoo` |
+| abs_4_xls_ds_folderpath         | `transactions` |
+| abs_5_xls_ds_filename           | `transactions.xlsx` |
+| abs_6_xls_nm_sheet              | `Transactions` |
+| abs_7_xls_is_first_header       | `1` |
+| abs_8_xls_cd_top_left_cell      | |
+| abs_9_xls_cd_bottom_right_cell  | |
 
 ### SQL for Metadata-Attributes
 
 | Attribute                    | Value |
 |:---                          |:--- |
 | Processing Type              | `Fullload` |
-| SQL for `meta_dt_valid_from` | `GETDATE()` |
+| SQL for `meta_dt_valid_from` | `tsl.[Date]` |
 | SQL for `meta_dt_valid_till` | `'9999-12-31'` | 
 
 ### Source Query
 
-After `copying` and `adjusing` the metadata defintions for `List of Currencies` we can "update" the `source query` by using the `create source query from attribute`-button. 
+After `Saving` the metadata defintions for `Trade Account Transactions` we can "add" the `source query` by using the `create source query from attribute`-button. 
 
 ## Deployment
 
