@@ -68,7 +68,7 @@ add_secret("Yahoo-Blob-SAS-Token", nm_container)
 
 ## User Story
 
-As an **analyst**, I want to access the **transactions** that were made with the `trade account`, So that I can calculate **trading performance metrics** such as **losses, gains, and yield (rendement)** all in **EURO** currency. This information is stored on `Azure Blob Container`. The  account is named `demoasawedev`, the container is named `yahoo` with a `transactions`-folder and file ``
+As an **analyst**, I want to access the **transactions** that were made with the `trade account`, So that I can calculate **trading performance metrics** such as **losses, gains, and yield (rendement)** all in **EURO** currency. This information is stored on `Azure Blob Container`. The  account is named `demoasawedev`, the container is named `yahoo` with a `transactions`-folder and file `transactions.xlsx`.
 
 
 ### Implentation
@@ -110,7 +110,7 @@ The python procedure that extract the web-table is found `<your-git-folder>\<nam
 
 ### Lets do the mapping
 
-python: ***[example](./4-Transactions-of-Trade-Account/Explore-Excel-from-Blob.py) Explore Webtable***
+python: ***[example](./4-Transactions-of-Trade-Account/Explore-Excel-from-Blob.py) Explore Excel***
 ````python
 
 # Add the directory containing the file to sys.path
@@ -127,7 +127,7 @@ sys.path.insert(0, fp_modules)
 from modules import source as src  # type: ignore
 
 # Extract web table
-df = src.web_table_anonymous_web (
+df = src.abs_sas_url_xls (
     # Input Parameters
     abs_1_xls_nm_account           = "demoasawedev",
     abs_2_xls_nm_secret            = "Yahoo-Blob-SAS-Token",
@@ -191,20 +191,20 @@ A new ***Group*** would be best, since this information comes from a different s
 
 ### Change Attribute Information
 
-| #   | BK  | Column Name                        | Datatype      | Nullable | Attribute (Name)               | Attribute (Description) |
-|:--- |:--- |:---                                |:---           |:---      |:---                            |:---                     |
-| 1   |  V  | Date                               | NVARCHAR(999) | V        | Datetime Transaction           | Datetime of Transaction |
-| 2   |     | Currency                           | NVARCHAR(999) | V        | Currency                       | ISO Currency of Transaction |
-| 3   |     | Amount                             | NVARCHAR(999) | V        | Amount                         | Price per Stock/Share, this also can be the amount of dividence paid out. |
-| 4   |  V  | Stock                              | NVARCHAR(999) | V        | Stock Code                     | Code of the Stock on the trading platform |
-| 5   |     | Stock_Name                         | NVARCHAR(999) | V        | Stock Name                     | Stock Name              |
-| 6   |  V  | Mutation_Type                      | NVARCHAR(999) | V        | Mutation Type                  | Mutation Types (Koop, Verkoop, Divident) |
-| 7   |     | Volume                             | NVARCHAR(999) | V        | Volume                         | # Number of Stock involved |
-| 8   |     | Traded_Value                       | NVARCHAR(999) | V        | Traded Value                   | Trade Value (before Fee and/or Taxes) |
-| 9   |     | Withholding_Taxs                   | NVARCHAR(999) | V        | Withholding Taxs               | Taxes that were Witheld  |
-| 10  |     | Fee                                | NVARCHAR(999) | V        | Fee                            | Fee for the Trading platform |
-| 11  |     | Total                              | NVARCHAR(999) | V        | Total                          | Mutation Amount of the transaction, this is what will be subtracted of subplemented to the Trade Accoutn Balance |
-| 12  |     | Ordering                           | NVARCHAR(999) | V        | # Ordering                     | # Original Order of the Mutations |
+| #   | BK | Column Name      | Datatype      | Nullable | Attribute (Name)     | Attribute (Description) |
+|:--- |:---|:---              |:---           |:---      |:---                  |:---                     |
+| 1   |  V | Date             | NVARCHAR(999) | V        | Datetime Transaction | Datetime of Transaction |
+| 2   |    | Currency         | NVARCHAR(999) | V        | Currency             | ISO Currency of Transaction |
+| 3   |    | Amount           | NVARCHAR(999) | V        | Amount               | Price per Stock/Share, this also can be the amount of dividence paid out. |
+| 4   |  V | Stock            | NVARCHAR(999) | V        | Stock Code           | Code of the Stock on the trading platform |
+| 5   |    | Stock_Name       | NVARCHAR(999) | V        | Stock Name           | Stock Name |
+| 6   |  V | Mutation_Type    | NVARCHAR(999) | V        | Mutation Type        | Mutation Types (Koop, Verkoop, Divident) |
+| 7   |    | Volume           | NVARCHAR(999) | V        | Volume               | # Number of Stock involved |
+| 8   |    | Traded_Value     | NVARCHAR(999) | V        | Traded Value         | Trade Value (before Fee and/or Taxes) |
+| 9   |    | Withholding_Taxs | NVARCHAR(999) | V        | Withholding Taxs     | Taxes that were Witheld  |
+| 10  |    | Fee              | NVARCHAR(999) | V        | Fee                  | Fee for the Trading platform |
+| 11  |    | Total            | NVARCHAR(999) | V        | Total                | Mutation Amount of the transaction, this is what will be subtracted of subplemented to the Trade Accoutn Balance |
+| 12  |    | Ordering         | NVARCHAR(999) | V        | # Ordering           | # Original Order of the Mutations |
 
 ### Change Parameter Information
 

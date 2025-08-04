@@ -136,15 +136,15 @@ As said before a new ***Group*** would be best, this information coms from a dif
 
 ### Change Attribute Information
 
-| #   | BK  | Column Name                        | Datatype      | Nullable | Attribute (Name)               | Attribute (Description) |
-|:--- |:--- |:---                                |:---           |:---      |:---                            |:---                     |
-| 1   |     | Currency_Currency                  | NVARCHAR(999) | 🗸        | Currency                       | Currency |
-| 2   |     | Symbol_or_abbrev_Symbol_or_abbrev  | NVARCHAR(999) | 🗸        | Symbol                         | Symbol |
-| 3   | 🗸   | ISO_code_ISO_code                  | NVARCHAR(999) | 🗸        | ISO Code                      | ISO Code |
-| 4   |     | Fractional_unit_Name               | NVARCHAR(999) | 🗸        | Factional Unit Name            | Factional Unit Name |
-| 5   |     | Fractional_unit_No                 | NVARCHAR(999) | 🗸        | Factional Unit Number          | Factional Unit Number |
-| 6   |     | Countries_territories_No           | NVARCHAR(999) | 🗸        | # Countries / Territories      | # Countries / Territories |
-| 7   |     | Countries_territories_Formal_users | NVARCHAR(999) | 🗸        | Formal Countries / Territories | Formal Countries / Territories |
+| #   | BK | Column Name                        | Datatype      | Nullable | Attribute (Name)               | Attribute (Description) |
+|:--- |:---|:---                                |:---           |:---      |:---                            |:---                     |
+| 1   |    | Currency_Currency                  | NVARCHAR(999) | V        | Currency                       | Currency |
+| 2   |    | Symbol_or_abbrev_Symbol_or_abbrev  | NVARCHAR(999) | V        | Symbol                         | Symbol |
+| 3   | V  | ISO_code_ISO_code                  | NVARCHAR(999) | V        | ISO Code                       | ISO Code |
+| 4   |    | Fractional_unit_Name               | NVARCHAR(999) | V        | Factional Unit Name            | Factional Unit Name |
+| 5   |    | Fractional_unit_No                 | NVARCHAR(999) | V        | Factional Unit Number          | Factional Unit Number |
+| 6   |    | Countries_territories_No           | NVARCHAR(999) | V        | # Countries / Territories      | # Countries / Territories |
+| 7   |    | Countries_territories_Formal_users | NVARCHAR(999) | V        | Formal Countries / Territories | Formal Countries / Territories |
 
 ### Change Parameter Information
 
