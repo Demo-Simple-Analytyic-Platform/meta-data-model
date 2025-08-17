@@ -138,6 +138,12 @@ The `meta-data-model` contains all database schemas, tables, views, functions, a
 <h4>PowerShell Script: </h4><br>
 
 ````PowerShell
+#
+# Save this script as "inital-setup-meta-data-model.ps1" in 
+# local folder (not in any git-folder) # and execute with
+# command `powershell -ExecutionPolicy Bypass -File "inital-setup-meta-data-model.ps1"`
+# fron cmd-line window.
+#
 
 # Suppress warning
 $WarningPreference = "SilentlyContinue"
@@ -397,6 +403,12 @@ While much of the setup process is automated, the script will prompt you for som
 ###### PowerShell Script
 
 ````PowerShell
+#
+# Save this script as "inital-setup-<name-of-your-model>.ps1" in 
+# local folder (not in any git-folder) # and execute with
+# command `powershell -ExecutionPolicy Bypass -File "inital-setup-<name-of-your-model>.ps1"`
+# fron cmd-line window.
+#
 
 # Suppress warning
 $WarningPreference = "SilentlyContinue"
