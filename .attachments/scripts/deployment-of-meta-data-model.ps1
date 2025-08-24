@@ -10,6 +10,13 @@
 # 7. Build your `Meta-Data-Model` (dacpac).
 # 8. Publish `Meta-Data-Model` to database.
 
+#
+# Save this script as "inital-setup-meta-data-model.ps1" in 
+# local folder (not in any git-folder) # and execute with
+# command `powershell -ExecutionPolicy Bypass -File "inital-setup-meta-data-model.ps1"`
+# fron cmd-line window.
+#
+
 # Suppress warning
 $WarningPreference = "SilentlyContinue"
 

@@ -31,6 +31,10 @@ BEGIN
       
       /* Minify "Query" and "escape"  the "<newline>". */
       SET @tx_sql_statement = gnc_commen.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
+      IF (SUBSTRING(@tx_sql_statement, 1, len('--- Warning ')) = '--- Warning ') BEGIN
+        EXEC gnc_commen.to_concol_window @tx_sql_statement;
+        RAISERROR('Error in SQL Statement. Please check "Transformation"-part.', 16, 1);
+      END
 
       /* Find " Beginning" of the "FROM/JOIN"-clause. */ 
       SET @ni_position_begin = CHARINDEX('FROM', UPPER(@tx_sql_statement), 1);
@@ -209,15 +213,16 @@ BEGIN
         ROW_NUMBER() OVER ( /*                   AS ni_transformation_dataset */
           PARTITION BY 1 ORDER BY ds.ni_ordering_from
         ) AS ni_transformation_dataset, 
-        ds.cd_join_type                          AS cd_join_type,
-        ds.id_source_model                       AS id_source_model,
-        ds.id_dataset                             AS id_dataset,
-        ds.nm_target_schema                      AS nm_target_schema,
-        ds.nm_target_table                       AS nm_target_table,
-        ds.cd_alias                               AS cd_alias, 
-        STRING_AGG(ISNULL(md.tx_sql,''), ' ') /* AS tx_join_criteria */ 
-            WITHIN GROUP (ORDER BY ISNULL(md.ni_ordering, 0) ASC
-        ) AS tx_join_criteria
+        ds.cd_join_type     AS cd_join_type,
+        ds.id_source_model  AS id_source_model,
+        ds.id_dataset       AS id_dataset,
+        ds.nm_target_schema AS nm_target_schema,
+        ds.nm_target_table  AS nm_target_table,
+        ds.cd_alias         AS cd_alias, 
+        CASE /*             AS tx_join_criteria */ 
+          WHEN ds.cd_join_type = 'FROM' THEN NULL 
+          ELSE STRING_AGG(ISNULL(md.tx_sql,''), ' ') WITHIN GROUP (ORDER BY ISNULL(md.ni_ordering, 0) ASC) 
+        END AS tx_join_criteria
       INTO #tsa_transformation_dataset
       FROM #ds AS ds LEFT JOIN #ni AS md 
       ON  md.ni_ordering BETWEEN ds.ni_ordering_from AND ds.ni_ordering_till

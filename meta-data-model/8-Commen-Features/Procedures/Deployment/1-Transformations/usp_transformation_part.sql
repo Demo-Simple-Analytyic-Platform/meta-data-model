@@ -55,21 +55,36 @@ AS BEGIN
       SET @tx_source_query = REPLACE(@tx_source_query, '<newline>', ' ');
       SET @tx_source_query = gnc_commen.svf_minify(@tx_source_query);
 
-			IF (@ip_is_debugging = 1) BEGIN
-				PRINT('')
-				PRINT('@nm_target_schema : "'+ @ip_nm_target_schema + '"')
-				PRINT('@nm_target_table  : "'+ @ip_nm_target_table  + '"') 
-				PRINT('@tx_source_query  : '); EXEC gnc_commen.to_concol_window @tx_source_query;
-			END
+      IF (@ip_is_debugging = 1) BEGIN
+	      PRINT('')
+	      PRINT('@nm_target_schema : "'+ @ip_nm_target_schema + '"')
+	      PRINT('@nm_target_table  : "'+ @ip_nm_target_table  + '"') 
+	      PRINT('@tx_source_query  : '); EXEC gnc_commen.to_concol_window @tx_source_query;
+      END
 
     END
   
-		IF (1=1 /* Check how many "Transformation-Part(s)" there are. */) BEGIN		  
+	  IF (1=1 /* Check how many "Transformation-Part(s)" there are. */) BEGIN
+      
+      /* Identify the UNION keywords in the "Source"-query. */
+      SET @tx_source_query = REPLACE(@tx_source_query, ' '      + 'UNION' + ' ',      ' '      + '<!-UNION-!>' + ' ');
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(10) + 'UNION' + ' ',      CHAR(10) + '<!-UNION-!>' + ' ');
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(10) + 'UNION' + CHAR(10), CHAR(10) + '<!-UNION-!>' + CHAR(10));
+      SET @tx_source_query = REPLACE(@tx_source_query, ' '      + 'UNION' + CHAR(10), ' '      + '<!-UNION-!>' + CHAR(10));
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(13) + 'UNION' + ' ',      CHAR(13) + '<!-UNION-!>' + ' ');
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(13) + 'UNION' + CHAR(13), CHAR(13) + '<!-UNION-!>' + CHAR(13));
+      SET @tx_source_query = REPLACE(@tx_source_query, ' '      + 'UNION' + CHAR(13), ' '      + '<!-UNION-!>' + CHAR(13));
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(13) + 'UNION' + ' ',      CHAR(13) + '<!-UNION-!>' + ' ');
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(13) + 'UNION' + CHAR(10), CHAR(13) + '<!-UNION-!>' + CHAR(10));
+      SET @tx_source_query = REPLACE(@tx_source_query, ' '      + 'UNION' + CHAR(10), ' '      + '<!-UNION-!>' + CHAR(10));
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(10) + 'UNION' + ' ',      CHAR(10) + '<!-UNION-!>' + ' ');
+      SET @tx_source_query = REPLACE(@tx_source_query, CHAR(10) + 'UNION' + CHAR(13), CHAR(10) + '<!-UNION-!>' + CHAR(13));
+      SET @tx_source_query = REPLACE(@tx_source_query, ' '      + 'UNION' + CHAR(13), ' '      + '<!-UNION-!>' + CHAR(13));
       
       SELECT @ni_union_used = COUNT(*) + 1 FROM ( 
         SELECT tx_sql_statement = TRIM(value), ni_dummy = 1 
         FROM STRING_SPLIT(@tx_source_query, ' ') 
-        WHERE UPPER(value) = 'UNION' 
+        WHERE UPPER(value) = '<!-UNION-!>' 
       ) AS s;
       
       IF (@ip_is_debugging = 1) BEGIN PRINT('@ni_union_used : ' + FORMAT(@ni_union_used, 'N0')); END
@@ -80,7 +95,7 @@ AS BEGIN
 
 	    IF (1=1 /* Determine the "Start"- and "Union"- positions. */) BEGIN
         SET @ni_position_start = CHARINDEX('SELECT', @tx_source_query, @ni_position_union);
-	      SET @ni_position_union = CHARINDEX('UNION',  @tx_source_query, @ni_position_start);
+	      SET @ni_position_union = CHARINDEX('<!-UNION-!>',  @tx_source_query, @ni_position_start);
 	      SET @ni_position_union = IIF(@ni_position_union=0, LEN(@tx_source_query)+1, @ni_position_union);
       END
 

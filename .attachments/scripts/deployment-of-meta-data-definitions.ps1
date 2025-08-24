@@ -10,6 +10,13 @@
 # 8. Build your `Meta-Data-Definitions` (dacpac).
 # 9. Publish `Meta-Data-Model` to database.
 
+#
+# Save this script as "inital-setup-<name-of-your-model>.ps1" in 
+# local folder (not in any git-folder) # and execute with
+# command `powershell -ExecutionPolicy Bypass -File "inital-setup-<name-of-your-model>.ps1"`
+# fron cmd-line window.
+#
+
 # Suppress warning
 $WarningPreference = "SilentlyContinue"
 
@@ -29,7 +36,7 @@ if ($true) { Write-Output "# 0. Setting local user specific variables.";
   # The script will need the URL to your git repository for the `Meta-Data-Model` so if can be cloned to the local git-folder.
   $ur_your_mdd = Read-Host "Please provide the URL to `your` git repository so it can be cloned (for example `https://github.com/Demo-Simple-Analytyic-Platform/meta-def-example.git`)" 
   # if you don`t want to type this every time you run the script, you can replace the above line with the following:
-  # $ur_your_mdD = "https://github.com/Demo-Simple-Analytyic-Platform/meta-def-example.git"
+  # $ur_your_mdd = "https://github.com/Demo-Simple-Analytyic-Platform/meta-def-example.git"
   $nm_your_mdd = $ur_your_mdd.Split("/")[-1] -replace "\.git$", "" # Extraction of "Own" meta-data-model repository name.
   $fp_your_mdd = "$fp_fldr_git\$nm_your_mdd"                       # path to (local) meta-data-model
 

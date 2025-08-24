@@ -514,7 +514,7 @@ BEGIN
   IF (1 = 1 /* All "Ingestion"-datasets are historized. */) BEGIN
             
     /* Build SQL Statement */
-    SET @sql  = @emp + '/* The `Target`-dataset(s) ARE historized. */'
+    SET @sql  = @emp + '/* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
     SET @sql += @nwl + 'SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
     SET @sql += @nwl + '     , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
     SET @sql += @nwl + 'FROM rdp.run AS run'
