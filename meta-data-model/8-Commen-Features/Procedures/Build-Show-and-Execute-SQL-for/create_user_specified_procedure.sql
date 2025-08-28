@@ -23,7 +23,7 @@ DECLARE
   @nm_target_column     NVARCHAR(128),
   @is_businesskey       BIT,
   @is_ingestion         BIT,
-  @nm_ingestion         NVARCHAR(128),
+  @nm_data_flow_type         NVARCHAR(128),
   @tx_query_source      NVARCHAR(MAX) = '',
   @tx_query_update      NVARCHAR(MAX) = '',
   @tx_query_insert      NVARCHAR(MAX) = '',
@@ -48,7 +48,6 @@ DECLARE
   
   @sqt NVARCHAR(1)   = '''',
   @ddl NVARCHAR(MAX) = '',
-  @ptp NVARCHAR(MAX) = '',
   @tb1 NVARCHAR(32)  = CHAR(10) + '  ',
   @tb2 NVARCHAR(32)  = CHAR(10) + '    ',
   @tb3 NVARCHAR(32)  = CHAR(10) + '      ',
@@ -101,12 +100,10 @@ BEGIN
     SELECT @tsa = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @src = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @tgt = '[' +     dst.nm_target_schema + '].['     + dst.nm_target_table + ']',
-           --@ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
-           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Fullload' END,
            @is_ingestion = dst.is_ingestion,
-           @nm_ingestion = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
+           @nm_data_flow_type = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
            @tx_query_source = REPLACE(dst.tx_source_query, '<newline>', @nwl),
-           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Fullload')),
+           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', etl.nm_processing_type),
            @tx_sql_for_meta_dt_valid_from = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_from,'n/a'), @sqt, '"'),
            @tx_sql_for_meta_dt_valid_till = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_till,'n/a'), @sqt, '"')
     FROM dta.dataset AS dst LEFT JOIN dta.ingestion_etl AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = dst.id_dataset AND etl.id_model = dst.id_model
@@ -499,7 +496,7 @@ BEGIN
     
     SET @sql += @nwl + 'FROM ' + @tgt + ' AS t LEFT JOIN ' + @src + ' AS s ON t.meta_ch_bk = s.meta_ch_bk';
     SET @sql += @nwl + 'WHERE t.meta_is_active = 1 AND t.meta_ch_rh != ISNULL(s.meta_ch_rh,"n/a")';
-    SET @sql += @nwl + IIF(@ptp='Incremental', 'AND t.meta_ch_bk IN (SELECT meta_ch_bk FROM ' + @src + ')',''); 
+    SET @sql += @nwl + IIF(@nm_processing_type='Incremental', 'AND t.meta_ch_bk IN (SELECT meta_ch_bk FROM ' + @src + ')',''); 
     SET @tx_query_update = REPLACE(@sql, '"', '''');
   END
   
@@ -560,7 +557,7 @@ BEGIN
     SET @tx_sql += @nwl + '/* !!!                                                                            !!! */'
     SET @tx_sql += @nwl + '/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */'
     SET @tx_sql += @nwl + '/* ' 
-    SET @tx_sql += @nwl + '-- Example for `Generation of ' + @nm_ingestion + ' Procedure`:'
+    SET @tx_sql += @nwl + '-- Example for `Generation of ' + @nm_data_flow_type + ' Procedure`:'
     SET @tx_sql += @nwl + 'EXEC mdm.create_user_specified_procedure'
     SET @tx_sql += @nwl + '  @ip_model            = "' + @ip_id_model         + '", '
     SET @tx_sql += @nwl + '  @ip_nm_target_schema = "' + @ip_nm_target_schema + '", '
@@ -569,7 +566,7 @@ BEGIN
     SET @tx_sql += @nwl + '  @ip_is_testing       = 0; '
     SET @tx_sql += @nwl + 'GO'
     SET @tx_sql += @nwl + ''
-    SET @tx_sql += @nwl + '-- Example for `Executing the ' + @nm_ingestion + ' Procedure`:'
+    SET @tx_sql += @nwl + '-- Example for `Executing the ' + @nm_data_flow_type + ' Procedure`:'
     SET @tx_sql += @nwl + 'EXEC ' + @ip_nm_target_schema +'.usp_' + @ip_nm_target_table +';'
     SET @tx_sql += @nwl + 'GO'
     SET @tx_sql += @nwl + ''

@@ -236,11 +236,6 @@
     <Build Include="8-Commen-Features\Procedures\Run\process_sql_to_execute.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="9-Publish\2-Depolyment\1-meta-data-model.synology.publish.xml" />
-    <None Include="9-Publish\2-Depolyment\1-meta-data-model-blank-profiel.publish.xml" />
-    <None Include="9-Publish\2-Depolyment\1-meta-data-model-localdb-profiel.publish.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac</HintPath>
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
