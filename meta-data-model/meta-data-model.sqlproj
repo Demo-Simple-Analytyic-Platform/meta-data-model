@@ -234,6 +234,7 @@
     <Build Include="8-Commen-Features\Procedures\Deployment\deploy_datasets.sql" />
     <Build Include="8-Commen-Features\Tables\sql_to_execute.sql" />
     <Build Include="8-Commen-Features\Procedures\Run\process_sql_to_execute.sql" />
+    <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\parallel_proces_group.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
