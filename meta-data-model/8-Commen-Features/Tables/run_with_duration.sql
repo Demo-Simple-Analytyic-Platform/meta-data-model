@@ -5,6 +5,8 @@ cte_run_with_tarteg_and_model AS (
 		   , id_dataset        = dst.id_dataset
 		   , nm_model          = mdl.nm_repository
 		   , nm_target_schema  = dst.nm_target_schema
+			 , dt_previous_stand = run.dt_previous_stand
+			 , dt_current_stand  = run.dt_current_stand
 		   , nm_target_table   = dst.nm_target_table 
 		   , dt_run_started    = run.dt_run_started  
 		   , dt_run_finished   = CASE WHEN run.dt_run_finished >= '9999-12-31' THEN GETDATE() ELSE CONVERT(DATETIME, ISNULL(run.dt_run_finished, GETDATE())) END
@@ -24,6 +26,8 @@ SELECT rtm.id_run
 		 , rtm.nm_model
      , rtm.nm_target_schema
      , rtm.nm_target_table
+		 , rtm.dt_previous_stand
+		 , rtm.dt_current_stand
      , rtm.dt_run_started
      , rtm.dt_run_finished
      , rtm.ni_before
