@@ -8,7 +8,10 @@ AS DECLARE
       
     /* Data Attributes */
     @id_dataset CHAR(32),
-    @id_model   CHAR(32);
+    @id_model   CHAR(32) = (SELECT id_model FROM mdm.current_model);
+
+  DECLARE /* Get the last deployment date for the current model. */
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model);
 
 BEGIN
     
@@ -16,7 +19,12 @@ BEGIN
 
     DROP TABLE IF EXISTS ##htm; SELECT dst.id_dataset, dst.id_model
     INTO ##htm FROM tsa_dta.tsa_dataset AS dst
-    WHERE NOT nm_target_schema IN ('dq_result', 'dq_totals', 'dta_dq_aggregates', 'dqm');
+    WHERE NOT nm_target_schema IN ('dq_result', 'dq_totals', 'dta_dq_aggregates', 'dqm')
+    --
+    -- Filter on Dataset that were cahnges sinds last deployment of the model.
+    AND dst.id_dataset IN (SELECT id_dataset FROM dta.dataset AS flt 
+                           WHERE  id_model           = @id_model 
+                           AND    meta_dt_valid_from > @meta_dt_valid_from );
 
   END
 

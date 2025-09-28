@@ -7,8 +7,12 @@
 AS DECLARE 
       
     /* Data Attributes */
+    @id_model         CHAR(32) = (SELECT id_model FROM mdm.current_model),
     @nm_target_schema NVARCHAR(128),
     @nm_target_table  NVARCHAR(128)
+
+  DECLARE /* Get the last deployment date for the current model. */
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model);
 
 BEGIN
     
@@ -20,8 +24,12 @@ BEGIN
       nm_target_table
     INTO ##dst FROM tsa_dta.tsa_dataset AS dst 
     WHERE dst.is_ingestion = 0
-    AND   ISNULL(dst.tx_source_query,'') != '';
-
+    AND   ISNULL(dst.tx_source_query,'') != ''
+    --
+    -- Filter on Dataset that were cahnges sinds last deployment of the model.
+    AND dst.id_dataset IN (SELECT id_dataset FROM dta.dataset AS flt 
+                           WHERE  id_model           = @id_model 
+                           AND    meta_dt_valid_from > @meta_dt_valid_from );
   END
 
   IF (1=1 /* Cleanup op "Transformation"-part that are no longer "Transformations". */) BEGIN

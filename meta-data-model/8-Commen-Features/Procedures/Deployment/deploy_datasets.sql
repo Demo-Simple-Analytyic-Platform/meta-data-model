@@ -7,10 +7,13 @@
 AS DECLARE 
       
     /* Data Attributes */
-    @id_model         CHAR(32) = (select id_model from mdm.current_model),
+    @id_model         CHAR(32) = (SELECT id_model FROM mdm.current_model),
     @id_dataset       CHAR(32),
     @nm_target_schema NVARCHAR(128),
-    @nm_target_table  NVARCHAR(128)
+    @nm_target_table  NVARCHAR(128);
+
+  DECLARE /* Get the last deployment date for the current model. */
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model)
 
 BEGIN
   
@@ -28,6 +31,12 @@ BEGIN
     /* Join on the Process Group (this is based on already loaded in metadata, at this point the information in the TSA-table should be. */
     JOIN dta.process_group as pgp  ON dst.id_dataset = pgp.id_dataset and pgp.id_model = dst.id_model
     WHERE nm_target_schema != 'mdm'
+    --
+    -- Filter on Dataset that were cahnges sinds last deployment of the model.
+    AND dst.id_dataset IN (SELECT id_dataset FROM dta.dataset AS flt 
+                           WHERE  id_model           = @id_model 
+                           AND    meta_dt_valid_from > @meta_dt_valid_from )
+    --
     ORDER BY pgp.ni_process_group ASC
            , dst.nm_target_schema ASC
            , dst.nm_target_table  ASC;        
