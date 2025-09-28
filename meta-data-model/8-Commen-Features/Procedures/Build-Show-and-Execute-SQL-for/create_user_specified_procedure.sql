@@ -512,7 +512,7 @@ BEGIN
             
     /* Build SQL Statement */
     SET @sql  = @emp + '/* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
-    SET @sql += @nwl + 'SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
+    SET @sql += @nwl + 'SELECT @dt_previous_stand = SELECT @dt_previous_stand = IIF(@ip_is_override_fullload=0, CONVERT(DATETIME2(7), MAX(run.dt_previous_stand)), CONVERT(DATETIME2(7), "1970-01-01"))'
     SET @sql += @nwl + '     , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
     SET @sql += @nwl + 'FROM rdp.run AS run'
     SET @sql += @nwl + 'WHERE run.id_model   = "' + @ip_id_model + '"'
@@ -545,7 +545,8 @@ BEGIN
     SET @tx_sql  = @emp + 'CREATE PROCEDURE ' + @ip_nm_target_schema +'.usp_' + @ip_nm_target_table + CASE WHEN (@is_ingestion = 1) THEN ' AS' 
       ELSE /* In case of "Transformation" */
         @nwl + '  /* Input Parameter(s) */' +
-        @nwl + '  @ip_ds_external_reference_id NVARCHAR(999) = "n/a"' +
+        @nwl + '  @ip_ds_external_reference_id NVARCHAR(999) = "n/a",' +
+        @nwl + '  @ip_is_override_fullload     BIT = 0' +
         @nwl + '  ' + 
         @nwl + 'AS' 
       END
