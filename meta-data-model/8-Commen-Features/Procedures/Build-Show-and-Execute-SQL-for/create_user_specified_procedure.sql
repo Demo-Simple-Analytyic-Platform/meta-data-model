@@ -512,7 +512,7 @@ BEGIN
             
     /* Build SQL Statement */
     SET @sql  = @emp + '/* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
-    SET @sql += @nwl + 'SELECT @dt_previous_stand = SELECT @dt_previous_stand = IIF(@ip_is_override_fullload=0, CONVERT(DATETIME2(7), MAX(run.dt_previous_stand)), CONVERT(DATETIME2(7), "1970-01-01"))'
+    SET @sql += @nwl + 'SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
     SET @sql += @nwl + '     , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
     SET @sql += @nwl + 'FROM rdp.run AS run'
     SET @sql += @nwl + 'WHERE run.id_model   = "' + @ip_id_model + '"'
@@ -545,8 +545,7 @@ BEGIN
     SET @tx_sql  = @emp + 'CREATE PROCEDURE ' + @ip_nm_target_schema +'.usp_' + @ip_nm_target_table + CASE WHEN (@is_ingestion = 1) THEN ' AS' 
       ELSE /* In case of "Transformation" */
         @nwl + '  /* Input Parameter(s) */' +
-        @nwl + '  @ip_ds_external_reference_id NVARCHAR(999) = "n/a",' +
-        @nwl + '  @ip_is_override_fullload     BIT = 0' +
+        @nwl + '  @ip_ds_external_reference_id NVARCHAR(999) = "n/a"' +
         @nwl + '  ' + 
         @nwl + 'AS' 
       END
@@ -575,21 +574,23 @@ BEGIN
     SET @tx_sql += @nwl + '/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */'
     SET @tx_sql += @nwl + ''
     SET @tx_sql += @nwl + 'DECLARE /* Local Variables */'
-    SET @tx_sql += @nwl + '  @id_dataset          CHAR(32)      = "' + @id_dataset + '", ' 
-    SET @tx_sql += @nwl + '  @nm_target_schema    NVARCHAR(128) = "' + @ip_nm_target_schema + '", '
-    SET @tx_sql += @nwl + '  @nm_target_table     NVARCHAR(128) = "' + @ip_nm_target_table + '", '
-    SET @tx_sql += @nwl + '  @tx_error_message    NVARCHAR(MAX),'
-    SET @tx_sql += @nwl + '  @dt_previous_stand   DATETIME2(7),'
-    SET @tx_sql += @nwl + '  @dt_current_stand    DATETIME2(7),'
-    SET @tx_sql += @nwl + '  @id_run              CHAR(32)       = NULL,'
-    SET @tx_sql += @nwl + '  @is_transaction      BIT            = 0, -- Helper to keep track if a transaction has been started.'
-    SET @tx_sql += @nwl + '  @ni_before           INT            = 0, -- # Record "Before" processing.'
-    SET @tx_sql += @nwl + '  @ni_ingested         INT            = 0, -- # Record that were "Ingested".'
-    SET @tx_sql += @nwl + '  @ni_inserted         INT            = 0, -- # Record that were "Inserted".'
-    SET @tx_sql += @nwl + '  @ni_updated          INT            = 0, -- # Record that were "Updated".'
-    SET @tx_sql += @nwl + '  @ni_after            INT            = 0, -- # Record "After" processing.'
-    SET @tx_sql += @nwl + '  @cd_procedure_step   NVARCHAR(32),'
-    SET @tx_sql += @nwl + '  @ds_procedure_step   NVARCHAR(999);'
+    SET @tx_sql += @nwl + '  @id_dataset           CHAR(32)      = "' + @id_dataset + '", ' 
+    SET @tx_sql += @nwl + '  @nm_target_schema     NVARCHAR(128) = "' + @ip_nm_target_schema + '", '
+    SET @tx_sql += @nwl + '  @nm_target_table      NVARCHAR(128) = "' + @ip_nm_target_table + '", '
+    SET @tx_sql += @nwl + '  @tx_error_message     NVARCHAR(MAX),'
+    SET @tx_sql += @nwl + '  @dt_previous_stand    DATETIME2(7),'
+    SET @tx_sql += @nwl + '  @dt_current_stand     DATETIME2(7),'
+    SET @tx_sql += @nwl + '  @id_run               CHAR(32)       = NULL,'
+    SET @tx_sql += @nwl + '  @is_transaction       BIT            = 0, -- Helper to keep track if a transaction has been started.'
+    SET @tx_sql += @nwl + '  @ni_before            INT            = 0, -- # Record "Before" processing.'
+    SET @tx_sql += @nwl + '  @ni_ingested          INT            = 0, -- # Record that were "Ingested".'
+    SET @tx_sql += @nwl + '  @ni_inserted          INT            = 0, -- # Record that were "Inserted".'
+    SET @tx_sql += @nwl + '  @ni_updated           INT            = 0, -- # Record that were "Updated".'
+    SET @tx_sql += @nwl + '  @ni_after             INT            = 0, -- # Record "After" processing.'
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '  @is_override_fullload INT            = 0,'; END;
+    SET @tx_sql += @nwl + '  @cd_procedure_step    NVARCHAR(32),'
+    SET @tx_sql += @nwl + '  @ds_procedure_step    NVARCHAR(999);'
     SET @tx_sql += @nwl + '  '
     SET @tx_sql += @nwl + 'BEGIN'
     SET @tx_sql += @nwl + '  ' 
@@ -604,11 +605,40 @@ BEGIN
     SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Transformations` needed, with `Ingestions` the `Run` is started via the `orchastration`-tool like `Azure Data Factory` for instance.)";'
     SET @tx_sql += @nwl + '    EXEC rdp.run_start "<id_model>", @id_dataset, @ip_ds_external_reference_id;'
     SET @tx_sql += @nwl + '  END'
-    SET @tx_sql += @nwl + '  '; END
+    SET @tx_sql += @nwl + '  '; END;
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '  IF (1=1 ) BEGIN SET @ds_procedure_step = "Set Override after Dataset has been modified on ider the Parameters or Source Query.";'
+    SET @tx_sql += @nwl + '    SET @is_override_fullload = ('
+    SET @tx_sql += @nwl + '      SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END' 
+    SET @tx_sql += @nwl + '      FROM dta.parameter_value AS pv'
+    SET @tx_sql += @nwl + '      WHERE pv.id_dataset     = "' + @id_dataset + '"'
+    SET @tx_sql += @nwl + '      AND   pv.meta_is_active = 1'
+    SET @tx_sql += @nwl + '      AND   pv.meta_dt_valid_from > (SELECT MAX(dt_previous_stand) FROM rdp.run WHERE id_dataset = pv.id_dataset)'
+    SET @tx_sql += @nwl + '    );'
+    SET @tx_sql += @nwl + '    IF (@is_override_fullload = 0) BEGIN'
+    SET @tx_sql += @nwl + '      SET @is_override_fullload = ('
+    SET @tx_sql += @nwl + '        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END '
+    SET @tx_sql += @nwl + '        FROM ('
+    SET @tx_sql += @nwl + '            SELECT id_dataset, meta_dt_valid_from, meta_is_active, tx_source_query AS tx_curr_source_query,'
+    SET @tx_sql += @nwl + '                   LEAD(tx_source_query) OVER (PARTITION BY id_dataset ORDER BY meta_dt_valid_from DESC) AS tx_prev_source_query'
+    SET @tx_sql += @nwl + '            FROM dta.dataset AS dst'
+    SET @tx_sql += @nwl + '        ) AS sq'
+    SET @tx_sql += @nwl + '        WHERE sq.id_dataset            = "' + @id_dataset + '"'
+    SET @tx_sql += @nwl + '        AND   sq.meta_is_active        = 1'
+    SET @tx_sql += @nwl + '        AND   sq.meta_dt_valid_from   >= (SELECT MAX(dt_previous_stand) FROM rdp.run WHERE run.id_dataset = sq.id_dataset)'
+    SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query IS NOT NULL'
+    SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query != sq.tx_curr_source_query'
+    SET @tx_sql += @nwl + '      );'
+    SET @tx_sql += @nwl + '    END IF;'
+    SET @tx_sql += @nwl + '  END'
+    SET @tx_sql += @nwl + '  '; END;
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
     SET @tx_sql += @nwl + '      '
     SET @tx_sql += @nwl + '      ' + REPLACE(@tx_query_calculation, @nwl, @tb2)
     SET @tx_sql += @nwl + '      '
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '      IF (@is_override_fullload <> 0) BEGIN SET @dt_previous_stand = CONVERT(DATETIME2(7), "1970-01-01"); END;'
+    SET @tx_sql += @nwl + '      '; END;
     SET @tx_sql += @nwl + '  END' 
     SET @tx_sql += @nwl + '  ' 
     SET @tx_sql += @nwl + '  /* Calculate # Records "before" Processing. */'
