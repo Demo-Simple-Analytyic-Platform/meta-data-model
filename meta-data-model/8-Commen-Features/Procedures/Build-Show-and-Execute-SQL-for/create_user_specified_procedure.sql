@@ -527,20 +527,20 @@ BEGIN
   IF (1 = 1 /* All "Ingestion"-datasets are historized. */) BEGIN
             
     /* Build SQL Statement */
-    SET @sql  = @emp + '/* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
-    SET @sql += @nwl + 'SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
-    SET @sql += @nwl + '     , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
-    SET @sql += @nwl + 'FROM rdp.run AS run'
-    SET @sql += @nwl + 'WHERE run.id_model   = "' + @ip_id_model + '"'
-    SET @sql += @nwl + 'AND   run.id_dataset = "' + @id_dataset + '"'
-    SET @sql += @nwl + 'AND   run.dt_run_started = ('
-    SET @sql += @nwl + '  /* Find the `Previous` run that NOT ended in `Failed`-status. */'
-    SET @sql += @nwl + '  SELECT MAX(dt_run_started)'
-    SET @sql += @nwl + '  FROM rdp.run'
-    SET @sql += @nwl + '  WHERE id_model             = "' + @ip_id_model + '"'
-    SET @sql += @nwl + '  AND   id_dataset           = "' + @id_dataset + '"'
-    SET @sql += @nwl + '  AND   id_processing_status = gnc_commen.id_processing_status("<id_model>", "Finished")'
-    SET @sql += @nwl + ')'
+    SET @sql  = @emp + '  /* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
+    SET @sql += @nwl + '  SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
+    SET @sql += @nwl + '       , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
+    SET @sql += @nwl + '  FROM rdp.run AS run'
+    SET @sql += @nwl + '  WHERE run.id_model   = "' + @ip_id_model + '"'
+    SET @sql += @nwl + '  AND   run.id_dataset = "' + @id_dataset + '"'
+    SET @sql += @nwl + '  AND   run.dt_run_started = ('
+    SET @sql += @nwl + '    /* Find the `Previous` run that NOT ended in `Failed`-status. */'
+    SET @sql += @nwl + '    SELECT MAX(dt_run_started)'
+    SET @sql += @nwl + '    FROM rdp.run'
+    SET @sql += @nwl + '    WHERE id_model             = "' + @ip_id_model + '"'
+    SET @sql += @nwl + '    AND   id_dataset           = "' + @id_dataset + '"'
+    SET @sql += @nwl + '    AND   id_processing_status = gnc_commen.id_processing_status("<id_model>", "Finished")'
+    SET @sql += @nwl + '  )'
 
     /* Set SQL Statement for "Calculation"-dates */
     SET @tx_query_calculation = @sql
@@ -645,7 +645,7 @@ BEGIN
     SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query IS NOT NULL'
     SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query != sq.tx_curr_source_query'
     SET @tx_sql += @nwl + '      );'
-    SET @tx_sql += @nwl + '    END IF;'
+    SET @tx_sql += @nwl + '    END;'
     SET @tx_sql += @nwl + '  END'
     SET @tx_sql += @nwl + '  '; END;
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
