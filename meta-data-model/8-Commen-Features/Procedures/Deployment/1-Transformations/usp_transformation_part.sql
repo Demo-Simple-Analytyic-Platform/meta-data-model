@@ -118,8 +118,8 @@ AS BEGIN
 
       IF (@ip_is_testing = 0 /* If NOT in Testing-mode */) BEGIN
         INSERT INTO tsa_dta.tsa_transformation_part 
-        ( id_model,  id_dataset, id_transformation_part, ni_transformation_part, tx_transformation_part) VALUES
-        (@id_model, @id_dataset,@id_transformation_part,@ni_transformation_part,@tx_transformation_part);
+        ( id_model,  id_dataset,  id_transformation_part,  ni_transformation_part,  tx_transformation_part) VALUES
+        (@id_model, @id_dataset, @id_transformation_part, @ni_transformation_part, @tx_transformation_part);
       END
 
     END /* WHILE */

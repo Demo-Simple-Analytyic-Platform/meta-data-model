@@ -38,6 +38,34 @@ BEGIN
     DELETE FROM tsa_dta.tsa_transformation_mapping;
     DELETE FROM tsa_dta.tsa_transformation_attribute;
   END;
+  IF (1=1 /* Cleanup op "Transformation"-part that are no longer "Transformations". */) BEGIN
+    
+    INSERT INTO tsa_dta.tsa_transformation_part (id_model, id_dataset, id_transformation_part, ni_transformation_part, tx_transformation_part) 
+    SELECT id_model, id_dataset, id_transformation_part, ni_transformation_part, tx_transformation_part
+    FROM dta.transformation_part WHERE id_model = @id_model AND meta_is_active = 1;
+    
+    INSERT INTO tsa_dta.tsa_transformation_dataset (id_model, id_transformation_part, id_transformation_dataset, ni_transformation_dataset, cd_join_type, id_source_model, id_dataset, cd_alias, tx_join_criteria)
+    SELECT id_model, id_transformation_part, id_transformation_dataset, ni_transformation_dataset, cd_join_type, id_source_model, id_dataset, cd_alias, tx_join_criteria
+    FROM dta.transformation_dataset WHERE id_model = @id_model AND meta_is_active = 1;
+
+    INSERT INTO tsa_dta.tsa_transformation_mapping (id_model, id_transformation_mapping, id_transformation_part, id_attribute, is_in_group_by, tx_transformation_mapping)
+    SELECT id_model, id_transformation_mapping, id_transformation_part, id_attribute, is_in_group_by, tx_transformation_mapping
+    FROM dta.transformation_mapping WHERE id_model = @id_model AND meta_is_active = 1;
+
+    INSERT INTO tsa_dta.tsa_transformation_attribute (id_model, id_transformation_attribute, id_transformation_mapping, id_source_model, id_attribute)
+    SELECT id_model, id_transformation_attribute, id_transformation_mapping, id_source_model, id_attribute
+    FROM dta.transformation_attribute WHERE id_model = @id_model AND meta_is_active = 1;
+
+  END;
+  IF (1=1 /* Remove all "Transformation"-parts/datasets/mappings/attributes that are no longer related to active dataset. */) BEGIN
+    DELETE FROM tsa_dta.tsa_transformation_part      WHERE id_model = @id_model AND id_dataset                NOT IN (SELECT id_dataset FROM ##dst); /* Remove all "Transformation"-parts that will be updated. */
+    DELETE FROM tsa_dta.tsa_transformation_part      WHERE id_model = @id_model AND id_dataset                NOT IN (SELECT id_dataset                FROM tsa_dta.tsa_dataset                WHERE id_model = @id_model);
+    DELETE FROM tsa_dta.tsa_transformation_dataset   WHERE id_model = @id_model AND id_transformation_part    NOT IN (SELECT id_transformation_part    FROM tsa_dta.tsa_transformation_part    WHERE id_model = @id_model);
+    DELETE FROM tsa_dta.tsa_transformation_mapping   WHERE id_model = @id_model AND id_transformation_part    NOT IN (SELECT id_transformation_part    FROM tsa_dta.tsa_transformation_part    WHERE id_model = @id_model);
+    DELETE FROM tsa_dta.tsa_transformation_attribute WHERE id_model = @id_model AND id_transformation_mapping NOT IN (SELECT id_transformation_mapping FROM tsa_dta.tsa_transformation_mapping WHERE id_model = @id_model);
+  END;
+
+  
 
   WHILE ((SELECT COUNT(*) FROM ##dst) > 0) BEGIN
 

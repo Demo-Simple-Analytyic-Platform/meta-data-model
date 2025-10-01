@@ -62,16 +62,6 @@ DECLARE
   @is_union_join_used           BIT,
   @tx_sql_main_where_statement  NVARCHAR(MAX),
 
-  /* "Transformation"-parts */
---  @tx_sql_attribute             NVARCHAR(MAX),
---  @is_aggregate_function_used   BIT,
-        
-  /* "Transformation"-datasets */
---  @id_transformation_dataset       CHAR(32),
---  @tx_sql_for_replace_from_dataset NVARCHAR(MAX),
---  @cd_alias_for_from               NVARCHAR(MAX),
---  @cd_alias_for_full_join          NVARCHAR(MAX),
-
   /* Local Variables for "Timestamp/Epoch". */
   @dt_previous_stand NVARCHAR(32),
   @dt_current_stand  NVARCHAR(32),
@@ -110,6 +100,17 @@ BEGIN
     WHERE dst.meta_is_active = 1 
     AND   dst.id_dataset     = @id_dataset
     AND   dst.id_model       = @ip_id_model;
+
+    IF (@ip_is_debugging=1) BEGIN 
+      PRINT('/* Extract schema and Table. */');
+      PRINT('@id_dataset                    : ' + ISNULL(@id_dataset, 'n/a'));
+      PRINT('@is_ingestion                  : ' + CONVERT(NVARCHAR(1), ISNULL(@is_ingestion, 0)));
+      PRINT('@nm_data_flow_type             : ' + ISNULL(@nm_data_flow_type, 'n/a'));
+      PRINT('@tx_query_source               : ' + ISNULL(@tx_query_source, 'n/a'));
+      PRINT('@nm_processing_type            : ' + ISNULL(@nm_processing_type, 'n/a'));
+      PRINT('@tx_sql_for_meta_dt_valid_from : ' + ISNULL(@tx_sql_for_meta_dt_valid_from, 'n/a'));
+      PRINT('@tx_sql_for_meta_dt_valid_till : ' + ISNULL(@tx_sql_for_meta_dt_valid_till, 'n/a'));
+    END;
 
   END
 
@@ -413,6 +414,21 @@ BEGIN
                 , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
           FROM #prt AS prt
           WHERE ni_transformation_part = @ni_prt;
+
+          IF (@ip_is_debugging=1) BEGIN 
+            PRINT('/* Show SQL Statement Parts */');
+            PRINT('/* Part ' + CONVERT(NVARCHAR(10), @ni_prt) + ' of ' + CONVERT(NVARCHAR(10), @mx_prt) + ' */');
+            PRINT('@tx_sql_select : ' + @tx_sql_select);
+            PRINT('@tx_sql_from   : ' + @tx_sql_from);
+            PRINT('@tx_sql_where  : ' + @tx_sql_where);
+            PRINT('@tx_sql_group_by : ' + @tx_sql_group_by);
+            PRINT('@tx_sql_having   : ' + @tx_sql_having);
+            PRINT('@is_aggregate_function_used : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used));
+            PRINT('@tx_sql_for_meta_dt_valid_from : ' + @tx_sql_for_meta_dt_valid_from);
+            PRINT('@tx_sql_for_meta_dt_valid_till : ' + @tx_sql_for_meta_dt_valid_till);
+            PRINT('@is_aggregate_function_used_valid_from : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_from));
+            PRINT('@is_aggregate_function_used_valid_till : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_till));
+          END
 
           /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
           SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
