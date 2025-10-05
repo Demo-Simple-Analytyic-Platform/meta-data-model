@@ -2,7 +2,8 @@
 
     /* Input Parameters */
     @ip_is_debugging     BIT = 1,
-    @ip_is_testing       BIT = 0
+    @ip_is_testing       BIT = 0,
+    @ip_is_override      BIT = 0 /* Is set to 1 to override re-build procedure for ever table. */
 
 AS DECLARE 
       
@@ -27,9 +28,11 @@ BEGIN
     AND   ISNULL(dst.tx_source_query,'') != ''
     --
     -- Filter on Dataset that were cahnges sinds last deployment of the model.
-    AND dst.id_dataset IN (SELECT id_dataset FROM dta.dataset AS flt 
-                           WHERE  id_model           = @id_model 
-                           AND    meta_dt_valid_from > @meta_dt_valid_from );
+    AND dst.id_dataset IN (
+      SELECT id_dataset FROM dta.dataset       AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1 UNION
+      SELECT id_dataset FROM dta.attribute     AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1 UNION
+      SELECT id_dataset FROM dta.ingestion_etl AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1
+    );
   END
 
   IF (1=1 /* Cleanup op "Transformation"-part that are no longer "Transformations". */) BEGIN

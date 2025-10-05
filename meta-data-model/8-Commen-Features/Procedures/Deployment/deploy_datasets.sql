@@ -34,7 +34,11 @@ BEGIN
     WHERE nm_target_schema != 'mdm'
     --
     -- Filter on Dataset that were cahnges sinds last deployment of the model.
-    AND dst.id_dataset IN (SELECT id_dataset FROM dta.dataset AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1)
+    AND dst.id_dataset IN (
+      SELECT id_dataset FROM dta.dataset       AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1 UNION
+      SELECT id_dataset FROM dta.attribute     AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1 UNION
+      SELECT id_dataset FROM dta.ingestion_etl AS flt WHERE id_model = @id_model AND CASE WHEN @ip_is_override = 1 THEN 1 WHEN meta_dt_valid_from > @meta_dt_valid_from THEN 1 ELSE 0 END = 1
+    )
     --
     ORDER BY pgp.ni_process_group ASC
            , dst.nm_target_schema ASC
