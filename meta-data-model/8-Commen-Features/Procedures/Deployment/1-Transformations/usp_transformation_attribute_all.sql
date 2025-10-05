@@ -7,7 +7,11 @@
 AS DECLARE 
       
     /* Data Attributes */
-    @id_transformation_mapping CHAR(32)
+    @id_model                  CHAR(32) = (SELECT id_model FROM mdm.current_model),
+    @id_transformation_mapping CHAR(32);
+
+  DECLARE /* Get the last deployment date for the current model. */
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model);
 
 BEGIN
     
@@ -16,7 +20,11 @@ BEGIN
     DROP TABLE IF EXISTS ##map; SELECT 
       map.id_transformation_mapping
     INTO ##map FROM tsa_dta.tsa_transformation_mapping AS map
-    ;
+    --
+    -- Filter on Dataset that were cahnges sinds last deployment of the model.
+    WHERE map.id_transformation_mapping IN (SELECT id_transformation_mapping FROM dta.transformation_mapping AS flt 
+                                             WHERE id_model           = @id_model 
+                                             AND   meta_dt_valid_from > @meta_dt_valid_from);
 
   END
 

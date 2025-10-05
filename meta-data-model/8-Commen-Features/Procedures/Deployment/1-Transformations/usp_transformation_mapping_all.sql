@@ -7,13 +7,17 @@
 AS DECLARE 
       
     /* Data Attributes */
+    @id_model               CHAR(32) = (SELECT id_model FROM mdm.current_model),
     @id_transformation_part CHAR(32),
     @tx_transformation_part NVARCHAR(MAX),
 
     /* Helper for Debugging */
     @sql NVARCHAR(MAX) = '',
     @emp NVARCHAR(1)   = '',
-    @nwl NVARCHAR(1)   = CHAR(10)
+    @nwl NVARCHAR(1)   = CHAR(10);
+
+  DECLARE /* Get the last deployment date for the current model. */
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model);
 
 BEGIN
     
@@ -22,7 +26,12 @@ BEGIN
     DROP TABLE IF EXISTS ##prt; SELECT 
       prt.id_transformation_part,
       prt.tx_transformation_part
-    INTO ##prt FROM tsa_dta.tsa_transformation_part AS prt;
+    INTO ##prt FROM tsa_dta.tsa_transformation_part AS prt
+    --
+    -- Filter on Dataset that were cahnges sinds last deployment of the model.
+    WHERE prt.id_transformation_part IN (SELECT id_transformation_part FROM dta.transformation_part AS flt 
+                                         WHERE  id_model           = @id_model 
+                                         AND    meta_dt_valid_from > @meta_dt_valid_from);
 
   END
 

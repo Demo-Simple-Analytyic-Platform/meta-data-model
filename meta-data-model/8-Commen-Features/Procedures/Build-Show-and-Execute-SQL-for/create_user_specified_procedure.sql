@@ -23,7 +23,7 @@ DECLARE
   @nm_target_column     NVARCHAR(128),
   @is_businesskey       BIT,
   @is_ingestion         BIT,
-  @nm_ingestion         NVARCHAR(128),
+  @nm_data_flow_type         NVARCHAR(128),
   @tx_query_source      NVARCHAR(MAX) = '',
   @tx_query_update      NVARCHAR(MAX) = '',
   @tx_query_insert      NVARCHAR(MAX) = '',
@@ -48,7 +48,6 @@ DECLARE
   
   @sqt NVARCHAR(1)   = '''',
   @ddl NVARCHAR(MAX) = '',
-  @ptp NVARCHAR(MAX) = '',
   @tb1 NVARCHAR(32)  = CHAR(10) + '  ',
   @tb2 NVARCHAR(32)  = CHAR(10) + '    ',
   @tb3 NVARCHAR(32)  = CHAR(10) + '      ',
@@ -62,16 +61,6 @@ DECLARE
   @is_full_join_used            BIT,
   @is_union_join_used           BIT,
   @tx_sql_main_where_statement  NVARCHAR(MAX),
-
-  /* "Transformation"-parts */
---  @tx_sql_attribute             NVARCHAR(MAX),
---  @is_aggregate_function_used   BIT,
-        
-  /* "Transformation"-datasets */
---  @id_transformation_dataset       CHAR(32),
---  @tx_sql_for_replace_from_dataset NVARCHAR(MAX),
---  @cd_alias_for_from               NVARCHAR(MAX),
---  @cd_alias_for_full_join          NVARCHAR(MAX),
 
   /* Local Variables for "Timestamp/Epoch". */
   @dt_previous_stand NVARCHAR(32),
@@ -101,18 +90,27 @@ BEGIN
     SELECT @tsa = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @src = '[tsa_' + dst.nm_target_schema + '].[tsa_' + dst.nm_target_table + ']',
            @tgt = '[' +     dst.nm_target_schema + '].['     + dst.nm_target_table + ']',
-           --@ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Incremental' END,
-           @ptp = CASE WHEN dst.is_ingestion = 1 THEN etl.nm_processing_type ELSE 'Fullload' END,
            @is_ingestion = dst.is_ingestion,
-           @nm_ingestion = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
+           @nm_data_flow_type = CASE WHEN dst.is_ingestion = 1 THEN 'Ingestion' ELSE 'Transformation' END,
            @tx_query_source = REPLACE(dst.tx_source_query, '<newline>', @nwl),
-           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', IIF(ISNULL(dst.is_ingestion, 0)=1, etl.nm_processing_type, 'Fullload')),
+           @nm_processing_type            = IIF(dst.nm_target_schema = 'dq_totals', 'Fullload', etl.nm_processing_type),
            @tx_sql_for_meta_dt_valid_from = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_from,'n/a'), @sqt, '"'),
            @tx_sql_for_meta_dt_valid_till = REPLACE(ISNULL(etl.tx_sql_for_meta_dt_valid_till,'n/a'), @sqt, '"')
     FROM dta.dataset AS dst LEFT JOIN dta.ingestion_etl AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = dst.id_dataset AND etl.id_model = dst.id_model
     WHERE dst.meta_is_active = 1 
     AND   dst.id_dataset     = @id_dataset
     AND   dst.id_model       = @ip_id_model;
+
+    IF (@ip_is_debugging=1) BEGIN 
+      PRINT('/* Extract schema and Table. */');
+      PRINT('@id_dataset                    : ' + ISNULL(@id_dataset, 'n/a'));
+      PRINT('@is_ingestion                  : ' + CONVERT(NVARCHAR(1), ISNULL(@is_ingestion, 0)));
+      PRINT('@nm_data_flow_type             : ' + ISNULL(@nm_data_flow_type, 'n/a'));
+      PRINT('@tx_query_source               : ' + ISNULL(@tx_query_source, 'n/a'));
+      PRINT('@nm_processing_type            : ' + ISNULL(@nm_processing_type, 'n/a'));
+      PRINT('@tx_sql_for_meta_dt_valid_from : ' + ISNULL(@tx_sql_for_meta_dt_valid_from, 'n/a'));
+      PRINT('@tx_sql_for_meta_dt_valid_till : ' + ISNULL(@tx_sql_for_meta_dt_valid_till, 'n/a'));
+    END;
 
   END
 
@@ -417,6 +415,21 @@ BEGIN
           FROM #prt AS prt
           WHERE ni_transformation_part = @ni_prt;
 
+          IF (@ip_is_debugging=1) BEGIN 
+            PRINT('/* Show SQL Statement Parts */');
+            PRINT('/* Part ' + CONVERT(NVARCHAR(10), @ni_prt) + ' of ' + CONVERT(NVARCHAR(10), @mx_prt) + ' */');
+            PRINT('@tx_sql_select : ' + @tx_sql_select);
+            PRINT('@tx_sql_from   : ' + @tx_sql_from);
+            PRINT('@tx_sql_where  : ' + @tx_sql_where);
+            PRINT('@tx_sql_group_by : ' + @tx_sql_group_by);
+            PRINT('@tx_sql_having   : ' + @tx_sql_having);
+            PRINT('@is_aggregate_function_used : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used));
+            PRINT('@tx_sql_for_meta_dt_valid_from : ' + @tx_sql_for_meta_dt_valid_from);
+            PRINT('@tx_sql_for_meta_dt_valid_till : ' + @tx_sql_for_meta_dt_valid_till);
+            PRINT('@is_aggregate_function_used_valid_from : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_from));
+            PRINT('@is_aggregate_function_used_valid_till : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_till));
+          END
+
           /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
           SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
                 , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
@@ -499,7 +512,7 @@ BEGIN
     
     SET @sql += @nwl + 'FROM ' + @tgt + ' AS t LEFT JOIN ' + @src + ' AS s ON t.meta_ch_bk = s.meta_ch_bk';
     SET @sql += @nwl + 'WHERE t.meta_is_active = 1 AND t.meta_ch_rh != ISNULL(s.meta_ch_rh,"n/a")';
-    SET @sql += @nwl + IIF(@ptp='Incremental', 'AND t.meta_ch_bk IN (SELECT meta_ch_bk FROM ' + @src + ')',''); 
+    SET @sql += @nwl + IIF(@nm_processing_type='Incremental', 'AND t.meta_ch_bk IN (SELECT meta_ch_bk FROM ' + @src + ')',''); 
     SET @tx_query_update = REPLACE(@sql, '"', '''');
   END
   
@@ -514,20 +527,20 @@ BEGIN
   IF (1 = 1 /* All "Ingestion"-datasets are historized. */) BEGIN
             
     /* Build SQL Statement */
-    SET @sql  = @emp + '/* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
-    SET @sql += @nwl + 'SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
-    SET @sql += @nwl + '     , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
-    SET @sql += @nwl + 'FROM rdp.run AS run'
-    SET @sql += @nwl + 'WHERE run.id_model   = "' + @ip_id_model + '"'
-    SET @sql += @nwl + 'AND   run.id_dataset = "' + @id_dataset + '"'
-    SET @sql += @nwl + 'AND   run.dt_run_started = ('
-    SET @sql += @nwl + '  /* Find the `Previous` run that NOT ended in `Failed`-status. */'
-    SET @sql += @nwl + '  SELECT MAX(dt_run_started)'
-    SET @sql += @nwl + '  FROM rdp.run'
-    SET @sql += @nwl + '  WHERE id_model             = "' + @ip_id_model + '"'
-    SET @sql += @nwl + '  AND   id_dataset           = "' + @id_dataset + '"'
-    SET @sql += @nwl + '  AND   id_processing_status = gnc_commen.id_processing_status("<id_model>", "Finished")'
-    SET @sql += @nwl + ')'
+    SET @sql  = @emp + '  /* Initialization of the `Run` in the `rdp.run_start`, the  `Previous Stand` is Determined based on meta_dt_valid_from and meta_dt_valid_till, hereby `9999-12-31` and greater are excluded. */'
+    SET @sql += @nwl + '  SELECT @dt_previous_stand = CONVERT(DATETIME2(7), MAX(run.dt_previous_stand))'
+    SET @sql += @nwl + '       , @dt_current_stand  = CONVERT(DATETIME2(7), MAX(run.dt_current_stand))'
+    SET @sql += @nwl + '  FROM rdp.run AS run'
+    SET @sql += @nwl + '  WHERE run.id_model   = "' + @ip_id_model + '"'
+    SET @sql += @nwl + '  AND   run.id_dataset = "' + @id_dataset + '"'
+    SET @sql += @nwl + '  AND   run.dt_run_started = ('
+    SET @sql += @nwl + '    /* Find the `Previous` run that NOT ended in `Failed`-status. */'
+    SET @sql += @nwl + '    SELECT MAX(dt_run_started)'
+    SET @sql += @nwl + '    FROM rdp.run'
+    SET @sql += @nwl + '    WHERE id_model             = "' + @ip_id_model + '"'
+    SET @sql += @nwl + '    AND   id_dataset           = "' + @id_dataset + '"'
+    SET @sql += @nwl + '    AND   id_processing_status = gnc_commen.id_processing_status("<id_model>", "Finished")'
+    SET @sql += @nwl + '  )'
 
     /* Set SQL Statement for "Calculation"-dates */
     SET @tx_query_calculation = @sql
@@ -560,7 +573,7 @@ BEGIN
     SET @tx_sql += @nwl + '/* !!!                                                                            !!! */'
     SET @tx_sql += @nwl + '/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */'
     SET @tx_sql += @nwl + '/* ' 
-    SET @tx_sql += @nwl + '-- Example for `Generation of ' + @nm_ingestion + ' Procedure`:'
+    SET @tx_sql += @nwl + '-- Example for `Generation of ' + @nm_data_flow_type + ' Procedure`:'
     SET @tx_sql += @nwl + 'EXEC mdm.create_user_specified_procedure'
     SET @tx_sql += @nwl + '  @ip_model            = "' + @ip_id_model         + '", '
     SET @tx_sql += @nwl + '  @ip_nm_target_schema = "' + @ip_nm_target_schema + '", '
@@ -569,7 +582,7 @@ BEGIN
     SET @tx_sql += @nwl + '  @ip_is_testing       = 0; '
     SET @tx_sql += @nwl + 'GO'
     SET @tx_sql += @nwl + ''
-    SET @tx_sql += @nwl + '-- Example for `Executing the ' + @nm_ingestion + ' Procedure`:'
+    SET @tx_sql += @nwl + '-- Example for `Executing the ' + @nm_data_flow_type + ' Procedure`:'
     SET @tx_sql += @nwl + 'EXEC ' + @ip_nm_target_schema +'.usp_' + @ip_nm_target_table +';'
     SET @tx_sql += @nwl + 'GO'
     SET @tx_sql += @nwl + ''
@@ -577,21 +590,23 @@ BEGIN
     SET @tx_sql += @nwl + '/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */'
     SET @tx_sql += @nwl + ''
     SET @tx_sql += @nwl + 'DECLARE /* Local Variables */'
-    SET @tx_sql += @nwl + '  @id_dataset          CHAR(32)      = "' + @id_dataset + '", ' 
-    SET @tx_sql += @nwl + '  @nm_target_schema    NVARCHAR(128) = "' + @ip_nm_target_schema + '", '
-    SET @tx_sql += @nwl + '  @nm_target_table     NVARCHAR(128) = "' + @ip_nm_target_table + '", '
-    SET @tx_sql += @nwl + '  @tx_error_message    NVARCHAR(MAX),'
-    SET @tx_sql += @nwl + '  @dt_previous_stand   DATETIME2(7),'
-    SET @tx_sql += @nwl + '  @dt_current_stand    DATETIME2(7),'
-    SET @tx_sql += @nwl + '  @id_run              CHAR(32)       = NULL,'
-    SET @tx_sql += @nwl + '  @is_transaction      BIT            = 0, -- Helper to keep track if a transaction has been started.'
-    SET @tx_sql += @nwl + '  @ni_before           INT            = 0, -- # Record "Before" processing.'
-    SET @tx_sql += @nwl + '  @ni_ingested         INT            = 0, -- # Record that were "Ingested".'
-    SET @tx_sql += @nwl + '  @ni_inserted         INT            = 0, -- # Record that were "Inserted".'
-    SET @tx_sql += @nwl + '  @ni_updated          INT            = 0, -- # Record that were "Updated".'
-    SET @tx_sql += @nwl + '  @ni_after            INT            = 0, -- # Record "After" processing.'
-    SET @tx_sql += @nwl + '  @cd_procedure_step   NVARCHAR(32),'
-    SET @tx_sql += @nwl + '  @ds_procedure_step   NVARCHAR(999);'
+    SET @tx_sql += @nwl + '  @id_dataset           CHAR(32)      = "' + @id_dataset + '", ' 
+    SET @tx_sql += @nwl + '  @nm_target_schema     NVARCHAR(128) = "' + @ip_nm_target_schema + '", '
+    SET @tx_sql += @nwl + '  @nm_target_table      NVARCHAR(128) = "' + @ip_nm_target_table + '", '
+    SET @tx_sql += @nwl + '  @tx_error_message     NVARCHAR(MAX),'
+    SET @tx_sql += @nwl + '  @dt_previous_stand    DATETIME2(7),'
+    SET @tx_sql += @nwl + '  @dt_current_stand     DATETIME2(7),'
+    SET @tx_sql += @nwl + '  @id_run               CHAR(32)       = NULL,'
+    SET @tx_sql += @nwl + '  @is_transaction       BIT            = 0, -- Helper to keep track if a transaction has been started.'
+    SET @tx_sql += @nwl + '  @ni_before            INT            = 0, -- # Record "Before" processing.'
+    SET @tx_sql += @nwl + '  @ni_ingested          INT            = 0, -- # Record that were "Ingested".'
+    SET @tx_sql += @nwl + '  @ni_inserted          INT            = 0, -- # Record that were "Inserted".'
+    SET @tx_sql += @nwl + '  @ni_updated           INT            = 0, -- # Record that were "Updated".'
+    SET @tx_sql += @nwl + '  @ni_after             INT            = 0, -- # Record "After" processing.'
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '  @is_override_fullload INT            = 0,'; END;
+    SET @tx_sql += @nwl + '  @cd_procedure_step    NVARCHAR(32),'
+    SET @tx_sql += @nwl + '  @ds_procedure_step    NVARCHAR(999);'
     SET @tx_sql += @nwl + '  '
     SET @tx_sql += @nwl + 'BEGIN'
     SET @tx_sql += @nwl + '  ' 
@@ -606,11 +621,40 @@ BEGIN
     SET @tx_sql += @nwl + '  IF (1=1) BEGIN SET @ds_procedure_step = "Start Run (only for `Transformations` needed, with `Ingestions` the `Run` is started via the `orchastration`-tool like `Azure Data Factory` for instance.)";'
     SET @tx_sql += @nwl + '    EXEC rdp.run_start "<id_model>", @id_dataset, @ip_ds_external_reference_id;'
     SET @tx_sql += @nwl + '  END'
-    SET @tx_sql += @nwl + '  '; END
+    SET @tx_sql += @nwl + '  '; END;
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '  IF (1=1 ) BEGIN SET @ds_procedure_step = "Set Override after Dataset has been modified on ider the Parameters or Source Query.";'
+    SET @tx_sql += @nwl + '    SET @is_override_fullload = ('
+    SET @tx_sql += @nwl + '      SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END' 
+    SET @tx_sql += @nwl + '      FROM dta.parameter_value AS pv'
+    SET @tx_sql += @nwl + '      WHERE pv.id_dataset     = "' + @id_dataset + '"'
+    SET @tx_sql += @nwl + '      AND   pv.meta_is_active = 1'
+    SET @tx_sql += @nwl + '      AND   pv.meta_dt_valid_from > (SELECT MAX(dt_previous_stand) FROM rdp.run WHERE id_dataset = pv.id_dataset)'
+    SET @tx_sql += @nwl + '    );'
+    SET @tx_sql += @nwl + '    IF (@is_override_fullload = 0) BEGIN'
+    SET @tx_sql += @nwl + '      SET @is_override_fullload = ('
+    SET @tx_sql += @nwl + '        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END '
+    SET @tx_sql += @nwl + '        FROM ('
+    SET @tx_sql += @nwl + '            SELECT id_dataset, meta_dt_valid_from, meta_is_active, tx_source_query AS tx_curr_source_query,'
+    SET @tx_sql += @nwl + '                   LEAD(tx_source_query) OVER (PARTITION BY id_dataset ORDER BY meta_dt_valid_from DESC) AS tx_prev_source_query'
+    SET @tx_sql += @nwl + '            FROM dta.dataset AS dst'
+    SET @tx_sql += @nwl + '        ) AS sq'
+    SET @tx_sql += @nwl + '        WHERE sq.id_dataset            = "' + @id_dataset + '"'
+    SET @tx_sql += @nwl + '        AND   sq.meta_is_active        = 1'
+    SET @tx_sql += @nwl + '        AND   sq.meta_dt_valid_from   >= (SELECT MAX(dt_previous_stand) FROM rdp.run WHERE run.id_dataset = sq.id_dataset)'
+    SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query IS NOT NULL'
+    SET @tx_sql += @nwl + '        AND   sq.tx_prev_source_query != sq.tx_curr_source_query'
+    SET @tx_sql += @nwl + '      );'
+    SET @tx_sql += @nwl + '    END;'
+    SET @tx_sql += @nwl + '  END'
+    SET @tx_sql += @nwl + '  '; END;
     SET @tx_sql += @nwl + '  IF (1=1 /* Extract `Last` calculation datetime. */) BEGIN'
     SET @tx_sql += @nwl + '      '
     SET @tx_sql += @nwl + '      ' + REPLACE(@tx_query_calculation, @nwl, @tb2)
     SET @tx_sql += @nwl + '      '
+    IF (@nm_processing_type = 'Incremental') BEGIN
+    SET @tx_sql += @nwl + '      IF (@is_override_fullload <> 0) BEGIN SET @dt_previous_stand = CONVERT(DATETIME2(7), "1970-01-01"); END;'
+    SET @tx_sql += @nwl + '      '; END;
     SET @tx_sql += @nwl + '  END' 
     SET @tx_sql += @nwl + '  ' 
     SET @tx_sql += @nwl + '  /* Calculate # Records "before" Processing. */'
@@ -699,7 +743,9 @@ BEGIN
     SET @tx_sql += @nwl + '      IF (1=1) BEGIN SET @ds_procedure_step = "Execute Check if `meta_ch_pk`-attribute values are unique.";'
     SET @tx_sql += @nwl + '        SELECT @ni_expected = COUNT(1), @ni_measured = COUNT(DISTINCT meta_ch_pk) FROM ' + @ip_nm_target_schema + '.' + @ip_nm_target_table
     SET @tx_sql += @nwl + '        IF (@ni_expected != @ni_measured) BEGIN'
-    SET @tx_sql += @nwl + '            SET @tx_error_message = "ERROR: meta_ch_pk NOT unique for ' + @ip_nm_target_schema + '.' + @ip_nm_target_table + '!"'
+    SET @tx_sql += @nwl + '            SET @tx_error_message  = "ERROR: meta_ch_pk NOT unique for ' + @ip_nm_target_schema + '.' + @ip_nm_target_table + '!" + CHAR(10) + "-- SQL Statement:"'
+    SET @tx_sql += @nwl + '            SET @tx_error_message += CHAR(10) + "SELECT * FROM ' + @tsa + '"'
+    SET @tx_sql += @nwl + '            SET @tx_error_message += CHAR(10) + "WHERE meta_ch_pk IN (SELECT meta_ch_pk FROM ' + @tsa + ' GROUP BY meta_ch_pk HAVING COUNT(*) > 1);"'
     SET @tx_sql += @nwl + '            RAISERROR(@tx_error_message, 18, 1)'
     SET @tx_sql += @nwl + '        END'
     SET @tx_sql += @nwl + '      END'
@@ -711,7 +757,7 @@ BEGIN
     SET @tx_sql += @nwl + '        FROM ' + @ip_nm_target_schema + '.' + @ip_nm_target_table + ' AS s'
     SET @tx_sql += @nwl + '        WHERE s.meta_is_active = 1' 
     SET @tx_sql += @nwl + '        IF (@ni_expected != @ni_measured) BEGIN'
-    SET @tx_sql += @nwl + '            SET @tx_error_message = "ERROR: There should only be 1 record per `Primarykey(s)` for ' + @ip_nm_target_schema + '.' + @ip_nm_target_table + '!"'
+    SET @tx_sql += @nwl + '            SET @tx_error_message  = "ERROR: There should only be 1 record per `Primarykey(s)` for ' + @ip_nm_target_schema + '.' + @ip_nm_target_table + '!"'
     SET @tx_sql += @nwl + '            RAISERROR(@tx_error_message, 18, 1)'
     SET @tx_sql += @nwl + '        END'
     SET @tx_sql += @nwl + '      END'
