@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.svf_strip_comments ( 
+﻿CREATE FUNCTION gnc.svf_strip_comments ( 
 
   /* Input Parameter(s) */
   @ip_tx_text_with_comments NVARCHAR(MAX)

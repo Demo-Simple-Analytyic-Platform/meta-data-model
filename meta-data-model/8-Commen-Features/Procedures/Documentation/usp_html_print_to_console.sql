@@ -25,7 +25,7 @@ BEGIN
             AND   id_dataset = @ip_id_dataset
         ) AS html
         ORDER BY ni_line ASC;
-        EXEC gnc_commen.to_concol_window @tx_lines;
+        EXEC gnc.to_concol_window @tx_lines;
     END
 END
 RETURN 0

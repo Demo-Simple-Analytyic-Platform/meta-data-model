@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [mdm].[json_value] (
+﻿CREATE FUNCTION gnc.json_value (
   
   /* Input Parameters */
   @ip_ni_json_array     INT,

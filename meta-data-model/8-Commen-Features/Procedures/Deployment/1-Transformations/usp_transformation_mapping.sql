@@ -25,7 +25,7 @@ BEGIN
   IF (1=1 /* Extraction of "SELECT"-clauses of "Transformation"-part. */) BEGIN
 		
 	  /* Minify "Query" and "escape"  the "<newline>". */
-	  SET @tx_sql_statement = gnc_commen.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
+	  SET @tx_sql_statement = gnc.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
 
 	  /* Find " Beginning" of the "FROM/JOIN"-clause. */ 
 	  SET @ni_position_begin = CHARINDEX('SELECT', UPPER(@tx_sql_statement), 1);
@@ -43,14 +43,14 @@ BEGIN
 	  SET @tx_sql_statement = SUBSTRING(@tx_sql_statement, 8, LEN(@tx_sql_statement)-7);
 
 	  /* Show extracted "FROM/JOIN"-clause. */
-	  IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc_commen.to_concol_window @tx_sql_statement; END
+	  IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc.to_concol_window @tx_sql_statement; END
 
   END;
 
   IF (CHARINDEX('GROUP BY', @ip_tx_transformation_part, 1) > 0 /* Extraction of "GROUP BY"-clauses of "Transformation"-part. */) BEGIN
 		
 	  /* Minify "Query" and "escape"  the "<newline>". */
-	  SET @tx_sql_group_by = gnc_commen.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
+	  SET @tx_sql_group_by = gnc.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
 
 	  /* Find " Beginning" of the "FROM/JOIN"-clause. */ 
 	  SET @ni_position_begin = CHARINDEX('GROUP BY', UPPER(@tx_sql_group_by), 1);
@@ -68,7 +68,7 @@ BEGIN
 	  SET @tx_sql_group_by = SUBSTRING(@tx_sql_group_by, 8, LEN(@tx_sql_group_by)-7);
 
 	  /* Show extracted "FROM/JOIN"-clause. */
-	  IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc_commen.to_concol_window @tx_sql_group_by; END
+	  IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc.to_concol_window @tx_sql_group_by; END
 
   END;
 

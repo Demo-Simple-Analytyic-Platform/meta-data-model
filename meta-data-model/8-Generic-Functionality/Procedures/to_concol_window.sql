@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE gnc_commen.to_concol_window
+﻿CREATE PROCEDURE gnc.to_concol_window
 
 	/* input Prarmeters */
 	@ip_tx_to_print  NVARCHAR(MAX)

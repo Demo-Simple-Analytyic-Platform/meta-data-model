@@ -30,7 +30,7 @@ BEGIN
   SET @tx_message = '-- SQL code for "Converting" table from "rowstore" to "columnstore".';
   
   /* Show and Execute SQL Statements */
-  EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+  EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
 END
 RETURN 0

@@ -28,7 +28,7 @@ AS BEGIN
     ORDER BY ORDINAL_POSITION ASC;
 
     SET @tx_sql = 'DROP VIEW IF EXISTS tsa_' + @ip_nm_schema + '.get_' + @ip_nm_table;
-    EXEC gnc_commen.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+    EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
 
     SET @tx_sql  = @tx_emp + 'CREATE VIEW tsa_' + @ip_nm_schema + '.get_' + @ip_nm_table + ' AS SELECT *, ';
     SET @tx_sql += @tx_nwl + '  meta_dt_valid_from = CONVERT(DATETIME, "' + @tx_now     + '"),';        
@@ -36,7 +36,7 @@ AS BEGIN
     SET @tx_sql += @tx_nwl + '  meta_is_active     = CONVERT(BIT,      1),';
     SET @tx_sql += @tx_nwl + '  meta_ch_rh         = CONVERT(CHAR(32), HASHBYTES("MD5", CONCAT(CONVERT(NVARCHAR(MAX),""),';
 
-    /* Add all "Columns" for the "rowhas"h". */
+    /* Add all "Columns" for the "rowhash"". */
     WHILE ((SELECT count(*) FROM ##columns) > 0) BEGIN
         SELECT @nm_column = nm_column FROM (SELECT TOP 1 nm_column FROM ##columns) AS nxt
         SET @tx_sql += @tx_nwl + '                       "|", ' + @nm_column + ',';
@@ -56,7 +56,7 @@ AS BEGIN
 
     /* Execute SQL Statement */
     SET @tx_sql = REPLACE(@tx_sql,'"', '''');
-    EXEC gnc_commen.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+    EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
     
     /* All done. */
     DROP TABLE IF EXISTS ##columns; 

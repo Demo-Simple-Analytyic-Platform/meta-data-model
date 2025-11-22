@@ -12,7 +12,7 @@ AS DECLARE
   
 	/* Local Variables for "Extraction" or " Processing Infromation". */
 	@is_ingestion     BIT = 0,
-	@is_sql_source    BIT = IIF(LOWER(gnc_commen.tx_parameter_value(@ip_id_model, @ip_id_dataset, 'adf_2_cd_source_dataset_type')) = 'sql', 1, 0),
+	@is_sql_source    BIT = IIF(LOWER(dta.tx_parameter_value(@ip_id_model, @ip_id_dataset, 'adf_2_cd_source_dataset_type')) = 'sql', 1, 0),
 
 	@sql_rst_parameters NVARCHAR(MAX) = '',
 	@nm_target_column   NVARCHAR(128),
@@ -472,11 +472,11 @@ BEGIN
 		
 		SET @message = '/* Drop table `rdp.dst_' + @ip_id_dataset + '` if already exits. */';
     SET @sql = 'DROP TABLE IF EXISTS rdp.dst_' + @ip_id_dataset + ''
-		EXEC gnc_commen.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
+		EXEC gnc.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
 
 		SET @message = '/* create table `rdp.dst_' + @ip_id_dataset + '`. */';
     SET @sql = REPLACE(@sql_rst_parameters, 'FROM', 'INTO rdp.dst_' + @ip_id_dataset + ' FROM');
-		EXEC gnc_commen.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
+		EXEC gnc.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
 	
 	END
 		
@@ -484,7 +484,7 @@ BEGIN
 		
 		SET @message = '/* return recordset of table `rdp.dst_' + @ip_id_dataset + '`. */';
     SET @sql = 'SELECT * FROM rdp.dst_' + @ip_id_dataset + '';
-		EXEC gnc_commen.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
+		EXEC gnc.show_and_execute_sql @message, @sql, @ip_is_debugging, @ip_is_testing;
 
 	END
 

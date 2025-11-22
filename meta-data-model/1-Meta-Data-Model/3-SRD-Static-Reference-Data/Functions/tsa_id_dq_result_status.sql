@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.tsa_id_dq_result_status (
+﻿CREATE FUNCTION srd.tsa_id_dq_result_status (
 
   /* Input Parameters */
   @ip_id_model            CHAR(32), 

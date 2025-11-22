@@ -24,7 +24,7 @@ AS BEGIN
 
     SET @tx_msg = '/* Build, Show and Execute  SQL-Statement for Drop "Procedure" if already exists. */';
     SET @tx_sql = 'DROP PROCEDURE IF EXISTS ' + @tx_prc + ''; 
-    EXEC gnc_commen.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
+    EXEC gnc.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
     
     /* Extract "temp"-table with Columns of "Target"-table, exclude the "meta-attributes. */
     DROP TABLE IF EXISTS ##columns; SELECT nm_column = COLUMN_NAME INTO ##columns FROM INFORMATION_SCHEMA.COLUMNS 
@@ -50,7 +50,7 @@ AS BEGIN
     SET @tx_sql += @tx_nwl + '  WHERE t.meta_ch_pk IS NULL;';
     SET @tx_sql += @tx_nwl + '  ';
     SET @tx_sql += @tx_nwl + 'END';
-    EXEC gnc_commen.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
+    EXEC gnc.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
 
   END
 

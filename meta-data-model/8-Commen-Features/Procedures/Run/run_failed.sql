@@ -23,7 +23,7 @@ BEGIN
 	/* Finish "run" as " Successfull" . */
   UPDATE rdp.run SET 
   
-    id_processing_status = gnc_commen.id_processing_status(@ip_id_model, 'Failed'),
+    id_processing_status = gnc.id_processing_status(@ip_id_model, 'Failed'),
     tx_message           = @tx_message,
     dt_run_finished      = GETDATE()
   

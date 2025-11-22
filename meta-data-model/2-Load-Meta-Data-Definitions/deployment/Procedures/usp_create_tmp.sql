@@ -25,7 +25,7 @@ AS BEGIN
       SELECT @nm_schema = nm_schema, @tx_sql = tx_sql FROM (SELECT TOP 1 * FROM #schemas) AS rec;
       DELETE FROM #schemas WHERE nm_schema = @nm_schema;
       SET @tx_msg = 'Create Temp Table : "' + @nm_schema + '"';
-      EXEC gnc_commen.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
+      EXEC gnc.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
     END /* WHILE */
   
     DROP TABLE IF EXISTS ##def; SELECT nm_schema = TABLE_SCHEMA, nm_table  = TABLE_NAME INTO ##def FROM INFORMATION_SCHEMA.TABLES 
@@ -41,7 +41,7 @@ AS BEGIN
 
       /* Fetch next nm_schema and nm_table */
       SELECT @nm_schema = nm_schema, @nm_table  = nm_table FROM (SELECT TOP 1 * FROM ##def) AS rec;
-      EXEC gnc_commen.show_and_execute_sql @tx_msg, '', @ip_is_debugging;
+      EXEC gnc.show_and_execute_sql @tx_msg, '', @ip_is_debugging;
 
       /* Create temp-table */
       EXEC deployment.usp_create_tsa @nm_schema, @nm_table, @ip_is_debugging;

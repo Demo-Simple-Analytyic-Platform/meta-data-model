@@ -230,7 +230,7 @@ BEGIN
       /* Show SQL Statement for "Ingestion" if in Debugging mode. */
       IF (@ip_is_debugging=1) BEGIN 
         PRINT('/* Extent the "Source"-query */');
-        EXEC gnc_commen.to_concol_window @qry;
+        EXEC gnc.to_concol_window @qry;
       END
     END
     IF (@is_ingestion = 0 /* Extent the "Transformation"-query */) BEGIN 
@@ -475,7 +475,7 @@ BEGIN
 
         IF (@ip_is_debugging=1) BEGIN 
           PRINT('/* Build SQL Statement for the "Source" query */');
-          EXEC gnc_commen.to_concol_window @qry;
+          EXEC gnc.to_concol_window @qry;
         END
 
      END
@@ -539,7 +539,7 @@ BEGIN
     SET @sql += @nwl + '    FROM rdp.run'
     SET @sql += @nwl + '    WHERE id_model             = "' + @ip_id_model + '"'
     SET @sql += @nwl + '    AND   id_dataset           = "' + @id_dataset + '"'
-    SET @sql += @nwl + '    AND   id_processing_status = gnc_commen.id_processing_status("<id_model>", "Finished")'
+    SET @sql += @nwl + '    AND   id_processing_status = gnc.id_processing_status("<id_model>", "Finished")'
     SET @sql += @nwl + '  )'
 
     /* Set SQL Statement for "Calculation"-dates */
@@ -552,7 +552,7 @@ BEGIN
     /* Build SQL Statement for drop of "Stored Procedure" */
     SET @tx_message = '-- Dropping procedure if exists "'+ @ip_nm_target_schema +'"."' + @ip_nm_target_table + '"';
     SET @tx_sql     = 'DROP PROCEDURE IF EXISTS [' + @ip_nm_target_schema +'].[usp_' + @ip_nm_target_table + ']'; 
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
     PRINT('GO');
     PRINT('');
 
@@ -795,7 +795,7 @@ BEGIN
     SET @tx_sql += @nwl + 'END'
     SET @tx_sql = REPLACE(@tx_sql, '<id_model>', @ip_id_model);
     SET @tx_sql = REPLACE(@tx_sql, '"', '''');
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
     PRINT('GO');
     PRINT('');
 

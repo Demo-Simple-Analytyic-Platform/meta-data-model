@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.id_dq_result_status ( @ip_id_model CHAR(32), @ip_fn_dq_result_status NVARCHAR(128) ) RETURNS CHAR(32) AS BEGIN
+﻿CREATE FUNCTION gnc.id_dq_result_status ( @ip_id_model CHAR(32), @ip_fn_dq_result_status NVARCHAR(128) ) RETURNS CHAR(32) AS BEGIN
   
   /* ----------------------------------------------------------------------- */
   /* This function will return "id_dq_result_status" based on the input of   */

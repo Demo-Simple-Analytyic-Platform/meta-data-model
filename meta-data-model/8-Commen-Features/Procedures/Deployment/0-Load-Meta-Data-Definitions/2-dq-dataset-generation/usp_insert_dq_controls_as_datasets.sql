@@ -46,9 +46,9 @@ BEGIN
       /* Extent "DQ Control"-query. */
       SET @tx_dq_control_query = REPLACE(@tx_dq_control_query, '''', '"');
   
-      SET @id_dq_result_status_oke = '"' + gnc_commen.tsa_id_dq_result_status(@id_model, 'OKE') + '"';
-      SET @id_dq_result_status_nok = '"' + gnc_commen.tsa_id_dq_result_status(@id_model, 'NOK') + '"';
-      SET @id_dq_result_status_oos = '"' + gnc_commen.tsa_id_dq_result_status(@id_model, 'OOS') + '"';
+      SET @id_dq_result_status_oke = '"' + srd.tsa_id_dq_result_status(@id_model, 'OKE') + '"';
+      SET @id_dq_result_status_nok = '"' + srd.tsa_id_dq_result_status(@id_model, 'NOK') + '"';
+      SET @id_dq_result_status_oos = '"' + srd.tsa_id_dq_result_status(@id_model, 'OOS') + '"';
 
       IF (1=1 /* Convert "OKE" to "ID". */) BEGIN
         SET @tx_dq_control_query = REPLACE(@tx_dq_control_query, '"OK"',  @id_dq_result_status_oke);

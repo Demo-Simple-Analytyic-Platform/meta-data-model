@@ -53,13 +53,13 @@ AS BEGIN
 
       /* Minify "SQL"-source query. */
       SET @tx_source_query = REPLACE(@tx_source_query, '<newline>', ' ');
-      SET @tx_source_query = gnc_commen.svf_minify(@tx_source_query);
+      SET @tx_source_query = gnc.svf_minify(@tx_source_query);
 
       IF (@ip_is_debugging = 1) BEGIN
 	      PRINT('')
 	      PRINT('@nm_target_schema : "'+ @ip_nm_target_schema + '"')
 	      PRINT('@nm_target_table  : "'+ @ip_nm_target_table  + '"') 
-	      PRINT('@tx_source_query  : '); EXEC gnc_commen.to_concol_window @tx_source_query;
+	      PRINT('@tx_source_query  : '); EXEC gnc.to_concol_window @tx_source_query;
       END
 
     END

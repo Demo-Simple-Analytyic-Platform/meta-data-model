@@ -53,7 +53,7 @@ BEGIN
       SET @sql += @nwl + '	  @ip_is_debugging           = 1;'
       SET @sql += @nwl + 'END'
       SET @sql = REPLACE(@sql, '"', '''');
-      EXEC gnc_commen.to_concol_window @sql;
+      EXEC gnc.to_concol_window @sql;
     END
 
 	  /* Extract all "Transformation"-parts from "source"-query. */

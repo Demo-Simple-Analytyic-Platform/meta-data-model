@@ -116,18 +116,18 @@ BEGIN
         
         SET @ni_grp = 0; 
         SET @tx_grp = (SELECT * FROM ##html_grp WHERE id_group IN (SELECT id_group FROM ##html_dst WHERE is_ingestion = @is_ingestion) ORDER BY fn_group ASC FOR JSON AUTO);
-        SET @mx_grp = mdm.json_count(@tx_grp); 
+        SET @mx_grp = gnc.json_count(@tx_grp); 
         WHILE (@ni_grp < @mx_grp) BEGIN 
         
-          EXEC f @ml, @id, @tx;   SET @tx = N'              <li class="details" id="group/' + ISNULL(mdm.json_value(@ni_grp, @tx_grp, 'id_group'),'n/a') + N'"><span class="folder">📁 ' + ISNULL(mdm.json_value(@ni_grp, @tx_grp, 'fn_group'),'n/a') + N'</span>';
+          EXEC f @ml, @id, @tx;   SET @tx = N'              <li class="details" id="group/' + ISNULL(gnc.json_value(@ni_grp, @tx_grp, 'id_group'),'n/a') + N'"><span class="folder">📁 ' + ISNULL(gnc.json_value(@ni_grp, @tx_grp, 'fn_group'),'n/a') + N'</span>';
           EXEC f @ml, @id, @tx;   SET @tx = N'                <ul class="nested">'; 
           
           SET @ni_dst = 0;
-          SET @tx_dst = (SELECT * FROM ##html_dst WHERE id_group = mdm.json_value(@ni_grp, @tx_grp, 'id_group') ORDER BY fn_dataset ASC FOR JSON AUTO);
-          SET @mx_dst = mdm.json_count(@tx_dst);
+          SET @tx_dst = (SELECT * FROM ##html_dst WHERE id_group = gnc.json_value(@ni_grp, @tx_grp, 'id_group') ORDER BY fn_dataset ASC FOR JSON AUTO);
+          SET @mx_dst = gnc.json_count(@tx_dst);
           WHILE (@ni_dst < @mx_dst) BEGIN
             
-            EXEC f @ml, @id, @tx; SET @tx = N'                  <li class="dataset" id="datasets/' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'id_dataset'),'n/a') + N'.html">📄 ' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'fn_dataset'),'n/a') + N'</li>'; 
+            EXEC f @ml, @id, @tx; SET @tx = N'                  <li class="dataset" id="datasets/' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'id_dataset'),'n/a') + N'.html">📄 ' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'fn_dataset'),'n/a') + N'</li>'; 
             
           SET @ni_dst += 1; END
           
@@ -151,18 +151,18 @@ BEGIN
         
         SET @ni_grp = 0; 
         SET @tx_grp = (SELECT * FROM ##html_grp WHERE id_group IN (SELECT id_group FROM ##html_dst WHERE is_ingestion = @is_ingestion) ORDER BY fn_group ASC FOR JSON AUTO);
-        SET @mx_grp = mdm.json_count(@tx_grp); 
+        SET @mx_grp = gnc.json_count(@tx_grp); 
         WHILE (@ni_grp < @mx_grp) BEGIN 
         
-          EXEC f @ml, @id, @tx;   SET @tx = N'              <li class="details" id="group/' + ISNULL(mdm.json_value(@ni_grp, @tx_grp, 'id_group'),'n/a') + N'"><span class="folder">📁 ' + ISNULL(mdm.json_value(@ni_grp, @tx_grp, 'fn_group'),'n/a') + N'</span>';
+          EXEC f @ml, @id, @tx;   SET @tx = N'              <li class="details" id="group/' + ISNULL(gnc.json_value(@ni_grp, @tx_grp, 'id_group'),'n/a') + N'"><span class="folder">📁 ' + ISNULL(gnc.json_value(@ni_grp, @tx_grp, 'fn_group'),'n/a') + N'</span>';
           EXEC f @ml, @id, @tx;   SET @tx = N'                <ul class="nested">'; 
           
           SET @ni_dst = 0;
-          SET @tx_dst = (SELECT * FROM ##html_dst WHERE id_group = mdm.json_value(@ni_grp, @tx_grp, 'id_group') ORDER BY fn_dataset ASC FOR JSON AUTO);
-          SET @mx_dst = mdm.json_count(@tx_dst);
+          SET @tx_dst = (SELECT * FROM ##html_dst WHERE id_group = gnc.json_value(@ni_grp, @tx_grp, 'id_group') ORDER BY fn_dataset ASC FOR JSON AUTO);
+          SET @mx_dst = gnc.json_count(@tx_dst);
           WHILE (@ni_dst < @mx_dst) BEGIN
             
-            EXEC f @ml, @id, @tx; SET @tx = N'                  <li class="dataset" id="datasets/' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'id_dataset'),'n/a') + N'.html">📄 ' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'fn_dataset'),'n/a') + N'</li>'; 
+            EXEC f @ml, @id, @tx; SET @tx = N'                  <li class="dataset" id="datasets/' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'id_dataset'),'n/a') + N'.html">📄 ' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'fn_dataset'),'n/a') + N'</li>'; 
             
           SET @ni_dst += 1; END
           
@@ -217,7 +217,7 @@ BEGIN
             FROM mdm.html_file_text
             WHERE id_dataset = @id
             ORDER BY ni ASC
-        ) AS html; EXEC gnc_commen.to_concol_window @tx;
+        ) AS html; EXEC gnc.to_concol_window @tx;
     END
   
   END

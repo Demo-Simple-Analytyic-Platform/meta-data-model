@@ -36,7 +36,7 @@ BEGIN
     /* Finish "runs" that are NOT "finished". */
     UPDATE rdp.run SET 
       dt_run_finished      = @dt_run_started, 
-      id_processing_status = gnc_commen.id_processing_status(@ip_id_model, 'Unfinished')
+      id_processing_status = gnc.id_processing_status(@ip_id_model, 'Unfinished')
     WHERE id_model         = @ip_id_model
     AND   id_dataset       = @id_dataset
     AND   id_dq_control    = @id_dq_control 
@@ -76,7 +76,7 @@ BEGIN
       SET @tx_sql = REPLACE(@tx_sql, '<@nm_target_schema>', @nm_target_schema);
       SET @tx_sql = REPLACE(@tx_sql, '<@nm_target_table>',  @nm_target_table);
       SET @tx_sql = REPLACE(@tx_sql, '"', '''');
-      EXEC gnc_commen.show_and_execute_sql 
+      EXEC gnc.show_and_execute_sql 
         @ip_tx_message   = '/* Build and Execute SQL Statment to "Create" ##dt. */',
         @ip_tx_sql       = @tx_sql,
         @ip_is_debugging = @ip_is_debugging;
@@ -112,7 +112,7 @@ BEGIN
       dt_current_stand         = @dt_run_started,
       ni_previous_epoch        = DATEDIFF(SECOND, CONVERT(DATETIME, '1970-01-01'), @dt_previous_stand),
       ni_current_epoch         = DATEDIFF(SECOND, CONVERT(DATETIME, '1970-01-01'), @dt_run_started),
-      id_processing_status     = gnc_commen.id_processing_status(@ip_id_model, 'Started'),
+      id_processing_status     = gnc.id_processing_status(@ip_id_model, 'Started'),
       dt_run_started           = @dt_run_started,
       dt_run_finished          = CONVERT(DATETIME, '9999-12-31')
 
@@ -127,7 +127,7 @@ BEGIN
       WHERE id_model             = @ip_id_model
       AND   id_dataset           = @id_dataset
       AND   id_dq_control        = @id_dq_control
-      AND   id_processing_status = gnc_commen.id_processing_status(@ip_id_model, 'Finished')
+      AND   id_processing_status = gnc.id_processing_status(@ip_id_model, 'Finished')
     );
 
   END

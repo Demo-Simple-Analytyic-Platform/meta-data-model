@@ -58,15 +58,15 @@ AS BEGIN
             @mg NVARCHAR(999);
     BEGIN
 
-      SET @mx = mdm.json_count(@tx); SET @ni = 0; WHILE (@ni < @mx) BEGIN 
+      SET @mx = gnc.json_count(@tx); SET @ni = 0; WHILE (@ni < @mx) BEGIN 
       
-        SET @mg  = CHAR(10) + 'id_dataset          : ' + ISNULL(mdm.json_value(@ni, @tx, 'id_dataset'),          'n/a')
-        SET @mg += CHAR(10) + 'nm_dataset          : ' + ISNULL(mdm.json_value(@ni, @tx, 'nm_dataset'),          'n/a')
-        SET @mg += CHAR(10) + 'id_attribute        : ' + ISNULL(mdm.json_value(@ni, @tx, 'id_attribute'),        'n/a')
-        SET @mg += CHAR(10) + 'nm_attribute        : ' + ISNULL(mdm.json_value(@ni, @tx, 'nm_attribute'),        'n/a')
-        SET @mg += CHAR(10) + 'nm_validation_issue : ' + ISNULL(mdm.json_value(@ni, @tx, 'nm_validation_issue'), 'n/a')
-        SET @mg += CHAR(10) + 'ds_validation_issue : ' + ISNULL(mdm.json_value(@ni, @tx, 'ds_validation_issue'), 'n/a')
-        EXEC gnc_commen.to_concol_window @mg;
+        SET @mg  = CHAR(10) + 'id_dataset          : ' + ISNULL(gnc.json_value(@ni, @tx, 'id_dataset'),          'n/a')
+        SET @mg += CHAR(10) + 'nm_dataset          : ' + ISNULL(gnc.json_value(@ni, @tx, 'nm_dataset'),          'n/a')
+        SET @mg += CHAR(10) + 'id_attribute        : ' + ISNULL(gnc.json_value(@ni, @tx, 'id_attribute'),        'n/a')
+        SET @mg += CHAR(10) + 'nm_attribute        : ' + ISNULL(gnc.json_value(@ni, @tx, 'nm_attribute'),        'n/a')
+        SET @mg += CHAR(10) + 'nm_validation_issue : ' + ISNULL(gnc.json_value(@ni, @tx, 'nm_validation_issue'), 'n/a')
+        SET @mg += CHAR(10) + 'ds_validation_issue : ' + ISNULL(gnc.json_value(@ni, @tx, 'ds_validation_issue'), 'n/a')
+        EXEC gnc.to_concol_window @mg;
       
       SET @ni += 1; END    
 

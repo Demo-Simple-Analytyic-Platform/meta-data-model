@@ -33,12 +33,12 @@ AS BEGIN
 	    DELETE FROM ##tobe_dropped WHERE tx_tsa = @tx_tsa;
 
       /* Create temp-table */
-      EXEC gnc_commen.show_and_execute_sql '', @tx_prc, @ip_is_debugging;
-      EXEC gnc_commen.show_and_execute_sql '', @tx_get, @ip_is_debugging;
-      EXEC gnc_commen.show_and_execute_sql '', @tx_tsa, @ip_is_debugging;
+      EXEC gnc.show_and_execute_sql '', @tx_prc, @ip_is_debugging;
+      EXEC gnc.show_and_execute_sql '', @tx_get, @ip_is_debugging;
+      EXEC gnc.show_and_execute_sql '', @tx_tsa, @ip_is_debugging;
 
       BEGIN TRY /* Drop Record from temp-table. */
-        EXEC gnc_commen.show_and_execute_sql '', @tx_shm, @ip_is_debugging;
+        EXEC gnc.show_and_execute_sql '', @tx_shm, @ip_is_debugging;
       END TRY
 	    BEGIN CATCH 
 		    /* Print error message */

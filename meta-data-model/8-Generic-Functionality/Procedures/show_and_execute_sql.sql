@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE gnc_commen.show_and_execute_sql
+﻿CREATE PROCEDURE gnc.show_and_execute_sql
 
   /* Input Parameters */
   @ip_tx_message NVARCHAR(999) = '',
@@ -16,8 +16,8 @@ AS BEGIN
   /* the execution of the SQL code is controlled by @ip_is_testing.          */ 
   /* ----------------------------------------------------------------------- */
   
-  IF (@ip_is_debugging = 1 AND @ip_tx_message != '') BEGIN EXEC gnc_commen.to_concol_window @ip_tx_message; END;
-  IF (@ip_is_debugging = 1 AND @ip_tx_sql     != '') BEGIN EXEC gnc_commen.to_concol_window @ip_tx_sql; END;
+  IF (@ip_is_debugging = 1 AND @ip_tx_message != '') BEGIN EXEC gnc.to_concol_window @ip_tx_message; END;
+  IF (@ip_is_debugging = 1 AND @ip_tx_sql     != '') BEGIN EXEC gnc.to_concol_window @ip_tx_sql; END;
   IF (@ip_is_testing   = 0) BEGIN EXEC sp_executesql @ip_tx_sql; END;
 
 END

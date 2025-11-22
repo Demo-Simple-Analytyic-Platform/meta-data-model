@@ -30,9 +30,9 @@ BEGIN
     IF (1=1 /* Extraction of "FROM/JOIN"-clauses of "Transformation"-part. */) BEGIN
       
       /* Minify "Query" and "escape"  the "<newline>". */
-      SET @tx_sql_statement = gnc_commen.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
+      SET @tx_sql_statement = gnc.svf_minify(replace(@ip_tx_transformation_part, '<newline>', CHAR(10)));
       IF (SUBSTRING(@tx_sql_statement, 1, len('--- Warning ')) = '--- Warning ') BEGIN
-        EXEC gnc_commen.to_concol_window @tx_sql_statement;
+        EXEC gnc.to_concol_window @tx_sql_statement;
         RAISERROR('Error in SQL Statement. Please check "Transformation"-part.', 16, 1);
       END
 
@@ -52,7 +52,7 @@ BEGIN
       SET @tx_sql_statement = TRIM(SUBSTRING(@tx_sql_statement, @ni_position_begin, @ni_position_length));
 
       /* Show extracted "FROM/JOIN"-clause. */
-      IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc_commen.to_concol_window @tx_sql_statement; END
+      IF (@ip_is_debugging = 1 ) BEGIN EXEC gnc.to_concol_window @tx_sql_statement; END
 
     END;
 

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.id_processing_step (@ip_id_model CHAR(32), @ip_fn_processing_step NVARCHAR(128) ) RETURNS CHAR(32) AS BEGIN
+﻿CREATE FUNCTION gnc.id_processing_step (@ip_id_model CHAR(32), @ip_fn_processing_step NVARCHAR(128) ) RETURNS CHAR(32) AS BEGIN
 
   /* ----------------------------------------------------------------------- */
   /* This function will return "id_processing_step" based on the input of    */

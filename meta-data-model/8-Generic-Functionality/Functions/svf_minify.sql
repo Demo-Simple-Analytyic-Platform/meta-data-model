@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.svf_minify ( 
+﻿CREATE FUNCTION gnc.svf_minify ( 
 
     /* Input Parameter(s) */
     @ip_tx_text_with_comments NVARCHAR(MAX)
@@ -9,7 +9,7 @@
   /* This function will remove all non essential elements from a "query".    */ 
   /* ----------------------------------------------------------------------- */
   
- DECLARE @tx_minified NVARCHAR(MAX) = TRIM(gnc_commen.svf_strip_comments(@ip_tx_text_with_comments));
+ DECLARE @tx_minified NVARCHAR(MAX) = TRIM(gnc.svf_strip_comments(@ip_tx_text_with_comments));
  
  DECLARE @cp INT  = 1
  DECLARE @np INT  = 0
@@ -54,7 +54,7 @@
 
  IF (@i = @m) BEGIN
    SET @e     = '--- Warning --------------------------------------------------------------'
-   + CHAR(10) + '  Function gnc_commen.svf_minify reached maximum iterations (' + CAST(@m AS NVARCHAR(10)) + ').'
+   + CHAR(10) + '  Function gnc.svf_minify reached maximum iterations (' + CAST(@m AS NVARCHAR(10)) + ').'
    + CHAR(10) + '  Please check input for irregularities.'
    + CHAR(10) + '---------------------------------------------------------------------------'
    SET @tx_minified = @e;

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [mdm].[json_count] (
+﻿CREATE FUNCTION gnc.json_count (
   
   /* Input Parameters */
   @ip_tx_json_array NVARCHAR(MAX)

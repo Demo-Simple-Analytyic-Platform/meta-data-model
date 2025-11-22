@@ -1,9 +1,9 @@
-﻿CREATE SCHEMA gnc_commen;
+﻿CREATE SCHEMA gnc;
 GO
 
 /* Metadata Definitinions: */
 EXEC sp_addextendedproperty  @name = N'metadata', @value = N'{
     "fn" : "Generic Commen Functions",
     "fd" : "This Schema is used to add Procedures en Function that execute generic commen things."
-}', @level0type = N'SCHEMA',@level0name = N'gnc_commen';
+}', @level0type = N'SCHEMA',@level0name = N'gnc';
 GO

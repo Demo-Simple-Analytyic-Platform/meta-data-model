@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION gnc_commen.tx_parameter_value (@ip_id_model CHAR(32), @ip_id_dataset NVARCHAR(128), @ip_nm_parameter NVARCHAR(128)) RETURNS NVARCHAR(MAX) AS BEGIN RETURN (
+﻿CREATE FUNCTION dta.tx_parameter_value (@ip_id_model CHAR(32), @ip_id_dataset NVARCHAR(128), @ip_nm_parameter NVARCHAR(128)) RETURNS NVARCHAR(MAX) AS BEGIN RETURN (
   
   /* ----------------------------------------------------------------------- */
   /* This function will return the value of a parameter registered to a      */

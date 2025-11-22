@@ -13,7 +13,7 @@
 AS DECLARE
 
   @is_dataset_found BIT           = ISNULL((SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @ip_nm_target_schema AND TABLE_NAME = @ip_nm_target_table), 0),
-  @is_sql_source    BIT           = IIF(LOWER(gnc_commen.tx_parameter_value(@ip_id_model, @ip_id_dataset, 'adf_2_cd_source_dataset_type')) = 'sql', 1, 0),
+  @is_sql_source    BIT           = IIF(LOWER(dta.tx_parameter_value(@ip_id_model, @ip_id_dataset, 'adf_2_cd_source_dataset_type')) = 'sql', 1, 0),
   @tx_sql           NVARCHAR(MAX) = '',
   @tx_etl           NVARCHAR(MAX) = '',
   @tx_ddl           NVARCHAR(MAX) = '',
@@ -73,7 +73,7 @@ BEGIN
     /* Show and Execute SQL Statements */
     SET @tx_message = '-- SQL code for "Creating" table "' + @ip_nm_target_schema + '"."' + @ip_nm_target_table + '".';
     SET @tx_sql = 'CREATE TABLE [' + @ip_nm_target_schema + '].[' + @ip_nm_target_table + '] (' + CHAR(10) + @tx_ddl + @tx_etl + ')';
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
     /* Make the table Columnstore */
     EXEC mdm.create_column_store_index @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
@@ -85,12 +85,12 @@ BEGIN
     /* Build SQL "Creation" of " Dataset. */
     SET @tx_message = '-- SQL code for "Dropping" previous version of "Temporal Staging Area"-table of ' + @ip_nm_target_schema + '"."' + @ip_nm_target_table + '".';
     SET @tx_sql     = 'DROP TABLE IF EXISTS [tsa_' + @ip_nm_target_schema + '].[tsa_' + @ip_nm_target_table + ']';
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
     
     /* Build SQL "Creation" of " Dataset. */
     SET @tx_message = '-- SQL code for "Creating" a "Temporal Staging Area"-table for' + @ip_nm_target_schema + '"."' + @ip_nm_target_table + '".';
     SET @tx_sql = 'CREATE TABLE [tsa_' + @ip_nm_target_schema + '].[tsa_' + @ip_nm_target_table + '] ('+ @tx_ddl + @tx_etl + ')'; 
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
   END
 
@@ -99,13 +99,13 @@ BEGIN
     /* Build SQL "Creation" of " Dataset. */
     SET @tx_message = '-- SQL code for "Dropping" previous version of "Temporal Staging Landing"-table of ' + @ip_nm_target_schema + '"."' + @ip_nm_target_table + '".';
     SET @tx_sql     = 'DROP TABLE IF EXISTS [tsl_' + @ip_nm_target_schema + '].[tsl_' + @ip_nm_target_table + ']';
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
     
     /* Build SQL "Creation" of " Dataset. */
     SET @tx_message = '-- SQL code for "Creating" a "Temporal Staging Landing"-table for' + @ip_nm_target_schema + '"."' + @ip_nm_target_table + '".';
     SET @tx_sql = CHAR(10) + SUBSTRING(@tx_ddl, 1, (LEN(@tx_ddl)-2)) + CHAR(10); -- removing the "last" ","-character.
     SET @tx_sql = 'CREATE TABLE [tsl_' + @ip_nm_target_schema + '].[tsl_' + @ip_nm_target_table + '] ('+ @tx_sql + ')'; 
-    EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+    EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
   END
   RETURN 0

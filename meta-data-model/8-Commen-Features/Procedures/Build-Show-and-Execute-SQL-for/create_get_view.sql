@@ -89,7 +89,7 @@ BEGIN
 
   SET @tx_message = '-- Drop view for gathering "metadata"-attributes.';
   SET @tx_sql = 'DROP VIEW IF EXISTS tsa_' + @ip_nm_target_schema + '.get_' + @ip_nm_target_table;
-  EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+  EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
   
   SET @tx_message = '-- Create view for gathering "metadata"-attributes.';
   SET @tx_sql  = @emp + 'CREATE VIEW tsa_' + @ip_nm_target_schema + '.get_' + @ip_nm_target_table + ' AS SELECT *, ';
@@ -101,7 +101,7 @@ BEGIN
   SET @tx_sql += @nwl + '  meta_ch_pk         = CONVERT(CHAR(32), HASHBYTES("MD5", ' + @pks + ', 2)';
   SET @tx_sql += @nwl + 'FROM tsa_' + @ip_nm_target_schema + '.tsa_' + @ip_nm_target_table + ' AS src';
   SET @tx_sql = REPLACE(@tx_sql,'"', '''');
-  EXEC gnc_commen.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
+  EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
 END
 GO

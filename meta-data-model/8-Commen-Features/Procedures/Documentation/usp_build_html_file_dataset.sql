@@ -71,7 +71,7 @@ BEGIN
       EXEC f @ml, @id, @tx; SET @tx = N'<!DOCTYPE html>';
       EXEC f @ml, @id, @tx; SET @tx = N'<html lang="en-US" content="charset=UTF-8">';
       EXEC f @ml, @id, @tx; SET @tx = N'  ';
-      EXEC f @ml, @id, @tx; SET @tx = N'  <title>Definitions of "' + mdm.json_value(0, @tx_json_dataset, 'fn_dataset') + '"</title>';
+      EXEC f @ml, @id, @tx; SET @tx = N'  <title>Definitions of "' + gnc.json_value(0, @tx_json_dataset, 'fn_dataset') + '"</title>';
       EXEC f @ml, @id, @tx; SET @tx = N'    ';
       EXEC f @ml, @id, @tx; SET @tx = N'    <head>';
       EXEC f @ml, @id, @tx; SET @tx = N'      ';
@@ -96,7 +96,7 @@ BEGIN
     IF (1=1 /* Build <body> part of file. */) BEGIN
       
       /* Determine the Color of the Status. */
-      SET @st = mdm.json_value(0, @tx_json_development_status, 'nm_development_status')
+      SET @st = gnc.json_value(0, @tx_json_development_status, 'nm_development_status')
       SET @cl = CASE 
          WHEN @st = 'Acceptance'   THEN 'orange'
          WHEN @st = 'Ad Hoc'       THEN 'blue'
@@ -108,16 +108,16 @@ BEGIN
       IF (1=1 /* "Dataset"-name and desctiption */) BEGIN
         EXEC f @ml, @id, @tx; SET @tx = N'    <body>';
         EXEC f @ml, @id, @tx; SET @tx = N'    ';
-        EXEC f @ml, @id, @tx; SET @tx = N'      <h2>Dataset : ' + mdm.json_value(0, @tx_json_dataset, 'fn_dataset')  + '</h2>';
+        EXEC f @ml, @id, @tx; SET @tx = N'      <h2>Dataset : ' + gnc.json_value(0, @tx_json_dataset, 'fn_dataset')  + '</h2>';
         EXEC f @ml, @id, @tx; SET @tx = N'      '
         EXEC f @ml, @id, @tx; SET @tx = N'      <p><u><b>Status :</b></u><i><b style="color:' + @cl +';">' + @st + '</b></i></p>'
         EXEC f @ml, @id, @tx; SET @tx = N'      '
-        EXEC f @ml, @id, @tx; SET @tx = N'      <p><u><b>Group :</b></u><i>' + ISNULL(mdm.json_value(0, @tx_json_group, 'fn_group'), 'n/a') + '</b></i></p>'
+        EXEC f @ml, @id, @tx; SET @tx = N'      <p><u><b>Group :</b></u><i>' + ISNULL(gnc.json_value(0, @tx_json_group, 'fn_group'), 'n/a') + '</b></i></p>'
         EXEC f @ml, @id, @tx; SET @tx = N'      '
         EXEC f @ml, @id, @tx; SET @tx = N'      <h4><u>Description</u></h4>'
-        EXEC f @ml, @id, @tx; SET @tx = N'      <p>' + ISNULL(mdm.json_value(0, @tx_json_dataset, 'fd_dataset'), '/n/a') + '</p>';
+        EXEC f @ml, @id, @tx; SET @tx = N'      <p>' + ISNULL(gnc.json_value(0, @tx_json_dataset, 'fd_dataset'), '/n/a') + '</p>';
         EXEC f @ml, @id, @tx; SET @tx = N'      '
-        EXEC f @ml, @id, @tx; SET @tx = N'      ' + mdm.html_code_block_body_part (mdm.json_value(0, @tx_json_dataset, 'tx_source_query'));
+        EXEC f @ml, @id, @tx; SET @tx = N'      ' + mdm.html_code_block_body_part (gnc.json_value(0, @tx_json_dataset, 'tx_source_query'));
         EXEC f @ml, @id, @tx; SET @tx = N'      ';
       END
 
@@ -164,18 +164,18 @@ BEGIN
           ORDER BY dt_run_started DESC
           FOR JSON AUTO
         );
-        SET @mx_run = mdm.json_count(@tx_run); WHILE (@ni_run < @mx_run) BEGIN
+        SET @mx_run = gnc.json_count(@tx_run); WHILE (@ni_run < @mx_run) BEGIN
           EXEC f @ml, @id, @tx; SET @tx = N'        <tr>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'dt_run_started'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'dt_run_finished'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'dt_previous_stand'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'dt_current_stand'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ds_run_status'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ni_before'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ni_ingested'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ni_inserted'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ni_updated'), 'n/a') + '</td>'
-          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_run, @tx_run, 'ni_after'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'dt_run_started'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'dt_run_finished'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'dt_previous_stand'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'dt_current_stand'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ds_run_status'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ni_before'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ni_ingested'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ni_inserted'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ni_updated'), 'n/a') + '</td>'
+          EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_run, @tx_run, 'ni_after'), 'n/a') + '</td>'
           EXEC f @ml, @id, @tx; SET @tx = N'        </tr>'
         SET @ni_run += 1; END
         EXEC f @ml, @id, @tx; SET @tx = N'      </table>'
@@ -184,7 +184,7 @@ BEGIN
       END
 
       IF (1=1 /* Build HTML table for "Attributes". */) BEGIN
-        EXEC f @ml, @id, @tx; SET @tx = N'      <b><i>Target : <b><i>' + mdm.json_value(0, @tx_json_dataset, 'nm_target_schema') + '.' + mdm.json_value(0, @tx_json_dataset, 'nm_target_table')
+        EXEC f @ml, @id, @tx; SET @tx = N'      <b><i>Target : <b><i>' + gnc.json_value(0, @tx_json_dataset, 'nm_target_schema') + '.' + gnc.json_value(0, @tx_json_dataset, 'nm_target_table')
         EXEC f @ml, @id, @tx; SET @tx = N'      <table>'
         EXEC f @ml, @id, @tx; SET @tx = N'        <tr><b><i>'
         EXEC f @ml, @id, @tx; SET @tx = N'          <th>#          </th>'
@@ -195,31 +195,31 @@ BEGIN
         EXEC f @ml, @id, @tx; SET @tx = N'          <th>Datatype   </th>'
         EXEC f @ml, @id, @tx; SET @tx = N'          <th>Description</th>'
         EXEC f @ml, @id, @tx; SET @tx = N'        </b></i></tr>'           
-        SET @mx_json_array_index = mdm.json_count(@tx_json_attribute); SET @ni_json_array_index = 0; WHILE (@ni_json_array_index < @mx_json_array_index) BEGIN 
+        SET @mx_json_array_index = gnc.json_count(@tx_json_attribute); SET @ni_json_array_index = 0; WHILE (@ni_json_array_index < @mx_json_array_index) BEGIN 
             EXEC f @ml, @id, @tx; SET @tx = N'        <tr>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'ni_ordering'),                      '0') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' +    IIF(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'is_businesskey') = 'false', 'No', 'Yes') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' +    IIF(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'is_nullable')    = 'false', 'No', 'Yes') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'fn_attribute'),                   'n/a') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'nm_target_column'),               'n/a') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'cd_datatype'),                    'n/a') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_attribute, 'fd_attribute'),                   'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'ni_ordering'),                      '0') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' +    IIF(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'is_businesskey') = 'false', 'No', 'Yes') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' +    IIF(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'is_nullable')    = 'false', 'No', 'Yes') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'fn_attribute'),                   'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'nm_target_column'),               'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'cd_datatype'),                    'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_attribute, 'fd_attribute'),                   'n/a') + '</td>'
             EXEC f @ml, @id, @tx; SET @tx = N'        </tr>'
           SET @ni_json_array_index += 1; END
         EXEC f @ml, @id, @tx; SET @tx = N'      </table>'
       END       
       
-      IF (mdm.json_value(0, @tx_json_dataset, 'is_ingestion') = 'true' /* The Parameters, Processing Type and SQL statemenets ETL of "Ingestion"-dataset. */) BEGIN
+      IF (gnc.json_value(0, @tx_json_dataset, 'is_ingestion') = 'true' /* The Parameters, Processing Type and SQL statemenets ETL of "Ingestion"-dataset. */) BEGIN
         EXEC f @ml, @id, @tx; SET @tx = N'      <h3>Technical Properties :</h3>'
         EXEC f @ml, @id, @tx; SET @tx = N'      <p>The list of properties below is used by Azure Data Factory (ADF) select the correct `Copy Activity` and provide the correct `Parameters`.</p>'
         IF (1=1 /* List of "Parameter" */) BEGIN
           EXEC f @ml, @id, @tx; SET @tx = N'      <table>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <tr><b><i><th>Property Name</th><th>Properyt Value</th></b></i></tr>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>Is Ingestion Dataset</b></i></td><td>Yes</td></tr>'
-          SET @mx_json_array_index = mdm.json_count(@tx_json_parameter_value); SET @ni_json_array_index = 0; WHILE (@ni_json_array_index < @mx_json_array_index) BEGIN 
+          SET @mx_json_array_index = gnc.json_count(@tx_json_parameter_value); SET @ni_json_array_index = 0; WHILE (@ni_json_array_index < @mx_json_array_index) BEGIN 
             EXEC f @ml, @id, @tx; SET @tx = N'        <tr>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_parameter_value, 'nm_parameter'),       'n/a') + '</td>'
-            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(mdm.json_value(@ni_json_array_index, @tx_json_parameter_value, 'tx_parameter_value'), 'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_parameter_value, 'nm_parameter'),       'n/a') + '</td>'
+            EXEC f @ml, @id, @tx; SET @tx = N'          <td>' + ISNULL(gnc.json_value(@ni_json_array_index, @tx_json_parameter_value, 'tx_parameter_value'), 'n/a') + '</td>'
             EXEC f @ml, @id, @tx; SET @tx = N'        </tr>'
           SET @ni_json_array_index += 1; END          
           EXEC f @ml, @id, @tx; SET @tx = N'      </table>'
@@ -229,26 +229,26 @@ BEGIN
         EXEC f @ml, @id, @tx; SET @tx = N'      <p>These properties determine which "source"-attribute if any is used for calculatie the "Technical Valid"-from and till values.</p>'
         EXEC f @ml, @id, @tx; SET @tx = N'      <table>'
         EXEC f @ml, @id, @tx; SET @tx = N'        <tr><b><i><th>Property Name</th><th>Properyt Value</th></b></i></tr>'
-        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>ELT Processing Type</b></i></td>         <td>' + ISNULL(mdm.json_value(0, @tx_json_ingestion_etl, 'nm_processing_type'), 'n/a' )            + '</td></tr>'
-        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>SQL for Technical Valid From</b></i></td><td>' + ISNULL(mdm.json_value(0, @tx_json_ingestion_etl, 'tx_sql_for_meta_dt_valid_from'), 'n/a' ) + '</td></tr>'
-        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>SQL for Technical Valid Till</b></i></td><td>' + ISNULL(mdm.json_value(0, @tx_json_ingestion_etl, 'tx_sql_for_meta_dt_valid_till'), 'n/a' ) + '</td></tr>'
+        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>ELT Processing Type</b></i></td>         <td>' + ISNULL(gnc.json_value(0, @tx_json_ingestion_etl, 'nm_processing_type'), 'n/a' )            + '</td></tr>'
+        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>SQL for Technical Valid From</b></i></td><td>' + ISNULL(gnc.json_value(0, @tx_json_ingestion_etl, 'tx_sql_for_meta_dt_valid_from'), 'n/a' ) + '</td></tr>'
+        EXEC f @ml, @id, @tx; SET @tx = N'        <tr><td><b><i>SQL for Technical Valid Till</b></i></td><td>' + ISNULL(gnc.json_value(0, @tx_json_ingestion_etl, 'tx_sql_for_meta_dt_valid_till'), 'n/a' ) + '</td></tr>'
         EXEC f @ml, @id, @tx; SET @tx = N'      </table>'
       END      
 
-      IF (mdm.json_value(0, @tx_json_dataset, 'is_ingestion') = 'false' /* Transformation consist of "Transformation"-part, per part a utilized mapping of columns and utilized datasets. */) BEGIN
+      IF (gnc.json_value(0, @tx_json_dataset, 'is_ingestion') = 'false' /* Transformation consist of "Transformation"-part, per part a utilized mapping of columns and utilized datasets. */) BEGIN
 
         EXEC f @ml, @id, @tx; SET @tx = N'      <h2>Transformations</h2>';
-        EXEC f @ml, @id, @tx; SET @tx = N'      <p>This Transformations has # ' + CONVERT(NVARCHAR(4), mdm.json_count(@tx_prt)) + ' Part(s). Ever part in the SQL code UNION-ed together, this way <b><i>Data</b></i> or <b><i>Information</b></i> from two or more source or transformation logic can be combined into a new <b><i>Dataset</b></i>. Per <b><i>Union</b></i> the <b><i>Mapping of the "<b><i>Attributes</b></i>" are listed and the the "<b><i>Source</b></i>"-datasts. Also the SQL query for technical reference is documented here.</p>';
+        EXEC f @ml, @id, @tx; SET @tx = N'      <p>This Transformations has # ' + CONVERT(NVARCHAR(4), gnc.json_count(@tx_prt)) + ' Part(s). Ever part in the SQL code UNION-ed together, this way <b><i>Data</b></i> or <b><i>Information</b></i> from two or more source or transformation logic can be combined into a new <b><i>Dataset</b></i>. Per <b><i>Union</b></i> the <b><i>Mapping of the "<b><i>Attributes</b></i>" are listed and the the "<b><i>Source</b></i>"-datasts. Also the SQL query for technical reference is documented here.</p>';
 
         /* Build HTML for "Transformation Part(s)" */
-        SET @ni_prt = 0; SET @mx_prt = mdm.json_count(@tx_prt); WHILE (@ni_prt < @mx_prt) BEGIN 
+        SET @ni_prt = 0; SET @mx_prt = gnc.json_count(@tx_prt); WHILE (@ni_prt < @mx_prt) BEGIN 
           
-          --PRINT('id_transformation_part : "' + mdm.json_value(@ni_prt, @tx_prt, 'id_transformation_part') + '"');            
+          --PRINT('id_transformation_part : "' + gnc.json_value(@ni_prt, @tx_prt, 'id_transformation_part') + '"');            
 
           EXEC f @ml, @id, @tx; SET @tx = N'      <div>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <h3>SQL Query of "Transformation"-part:</h3>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <p>The below SQL-query can be parsed into "Utilized"-mappings and -datasets.</p>'  
-          EXEC f @ml, @id, @tx; SET @tx = N'        ' + mdm.html_code_block_body_part(mdm.json_value(@ni_prt, @tx_prt, 'tx_transformation_part'));
+          EXEC f @ml, @id, @tx; SET @tx = N'        ' + mdm.html_code_block_body_part(gnc.json_value(@ni_prt, @tx_prt, 'tx_transformation_part'));
           
           IF (1=1 /* Build HTML for "Utilized Mapping(s)". */) BEGIN 
             EXEC f @ml, @id, @tx; SET @tx = N'        <h3>Utilized Mappings:</h3>'
@@ -272,14 +272,14 @@ BEGIN
                   AND att.id_attribute   = map.id_attribute
                   WHERE map.meta_is_active         = 1 
                   AND   map.id_model               = @ip_id_model
-                  AND   map.id_transformation_part = mdm.json_value(@ni_prt, @tx_prt, 'id_transformation_part') 
+                  AND   map.id_transformation_part = gnc.json_value(@ni_prt, @tx_prt, 'id_transformation_part') 
                  ) AS map ORDER BY ni_ordering FOR JSON AUTO);
-            SET @ni_map = 0; SET @mx_map = mdm.json_count(@tx_map); WHILE (@ni_map < @mx_map) BEGIN 
+            SET @ni_map = 0; SET @mx_map = gnc.json_count(@tx_map); WHILE (@ni_map < @mx_map) BEGIN 
               EXEC f @ml, @id, @tx; SET @tx = N'          <tr>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_map, @tx_map, 'ni_ordering'),              'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_map, @tx_map, 'nm_target_column'),         'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_map, @tx_map, 'tx_transformation_mapping'),'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' +    IIF(mdm.json_value(@ni_map, @tx_map, 'is_in_group_by') = '0', 'No', 'Yes') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_map, @tx_map, 'ni_ordering'),              'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_map, @tx_map, 'nm_target_column'),         'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_map, @tx_map, 'tx_transformation_mapping'),'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' +    IIF(gnc.json_value(@ni_map, @tx_map, 'is_in_group_by') = '0', 'No', 'Yes') + '</td>'
               EXEC f @ml, @id, @tx; SET @tx = N'          </tr>'
             SET @ni_map += 1; END
             EXEC f @ml, @id, @tx; SET @tx = N'        </table>'
@@ -312,16 +312,16 @@ BEGIN
                   AND dst.meta_is_active = 1
                   WHERE uds.meta_is_active         = 1 
                   AND   uds.id_model               = @ip_id_model 
-                  AND   uds.id_transformation_part = mdm.json_value(@ni_prt, @tx_prt, 'id_transformation_part') 
+                  AND   uds.id_transformation_part = gnc.json_value(@ni_prt, @tx_prt, 'id_transformation_part') 
                  ) AS uds ORDER BY ni_transformation_dataset ASC FOR JSON AUTO);
-            SET @ni_dst = 0; SET @mx_dst = mdm.json_count(@tx_dst); WHILE (@ni_dst < @mx_dst) BEGIN 
+            SET @ni_dst = 0; SET @mx_dst = gnc.json_count(@tx_dst); WHILE (@ni_dst < @mx_dst) BEGIN 
               EXEC f @ml, @id, @tx; SET @tx = N'          <tr>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'ni_transformation_dataset'), 'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'cd_join_type'),              'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'nm_target_schema'),          'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'nm_target_table'),           'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'cd_alias'),                  'n/a') + '</td>'
-              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(mdm.json_value(@ni_dst, @tx_dst, 'tx_join_criteria'),          'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'ni_transformation_dataset'), 'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'cd_join_type'),              'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'nm_target_schema'),          'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'nm_target_table'),           'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'cd_alias'),                  'n/a') + '</td>'
+              EXEC f @ml, @id, @tx; SET @tx = N'            <td>' + ISNULL(gnc.json_value(@ni_dst, @tx_dst, 'tx_join_criteria'),          'n/a') + '</td>'
               EXEC f @ml, @id, @tx; SET @tx = N'         </tr>'
             SET @ni_dst += 1; END
             EXEC f @ml, @id, @tx; SET @tx = N'       </table>'
