@@ -15,14 +15,16 @@ n AS ( /* Node */
 
 e AS ( /* Edge */
   SELECT DISTINCT
-         tds.id_model   AS id_model,
-         tds.id_dataset AS id_dataset_source,
-         prt.id_dataset AS id_dataset_target
-  FROM dta.transformation_part AS prt
-    LEFT JOIN dta.transformation_dataset AS tds 
-    ON  tds.meta_is_active         = 1 
-    AND tds.id_model               = prt.id_model
-    AND tds.id_transformation_part = prt.id_transformation_part
+         prt.id_model          AS id_model_target,
+         prt.id_dataset        AS id_dataset_target,
+         tds.id_source_model   AS id_model_source,
+         tds.id_source_dataset AS id_dataset_source
+  
+  FROM      dta.transformation_part    AS prt
+  LEFT JOIN dta.transformation_dataset AS tds 
+  ON  tds.meta_is_active         = 1 
+  AND tds.id_model               = prt.id_model
+  AND tds.id_transformation_part = prt.id_transformation_part
   WHERE prt.meta_is_active = 1 
 )
 
@@ -47,16 +49,16 @@ SELECT d00.id_model
 
 FROM n AS d00
 
-  LEFT JOIN e AS d01 ON d01.id_dataset_target = d00.id_dataset        AND d01.id_model = d00.id_model 
-  LEFT JOIN e AS d02 ON d02.id_dataset_target = d01.id_dataset_source AND d02.id_model = d01.id_model
-  LEFT JOIN e AS d03 ON d03.id_dataset_target = d02.id_dataset_source AND d03.id_model = d02.id_model
-  LEFT JOIN e AS d04 ON d04.id_dataset_target = d03.id_dataset_source AND d04.id_model = d03.id_model
-  LEFT JOIN e AS d05 ON d05.id_dataset_target = d04.id_dataset_source AND d05.id_model = d04.id_model
-  LEFT JOIN e AS d06 ON d06.id_dataset_target = d05.id_dataset_source AND d06.id_model = d05.id_model
-  LEFT JOIN e AS d07 ON d07.id_dataset_target = d06.id_dataset_source AND d07.id_model = d06.id_model
-  LEFT JOIN e AS d08 ON d08.id_dataset_target = d07.id_dataset_source AND d08.id_model = d07.id_model
-  LEFT JOIN e AS d09 ON d09.id_dataset_target = d08.id_dataset_source AND d09.id_model = d08.id_model
-  LEFT JOIN e AS d10 ON d10.id_dataset_target = d09.id_dataset_source AND d10.id_model = d09.id_model
+  LEFT JOIN e AS d01 ON d01.id_dataset_target = d00.id_dataset        AND d01.id_model_target = d00.id_model 
+  LEFT JOIN e AS d02 ON d02.id_dataset_target = d01.id_dataset_source AND d02.id_model_target = d01.id_model_source
+  LEFT JOIN e AS d03 ON d03.id_dataset_target = d02.id_dataset_source AND d03.id_model_target = d02.id_model_source
+  LEFT JOIN e AS d04 ON d04.id_dataset_target = d03.id_dataset_source AND d04.id_model_target = d03.id_model_source
+  LEFT JOIN e AS d05 ON d05.id_dataset_target = d04.id_dataset_source AND d05.id_model_target = d04.id_model_source
+  LEFT JOIN e AS d06 ON d06.id_dataset_target = d05.id_dataset_source AND d06.id_model_target = d05.id_model_source
+  LEFT JOIN e AS d07 ON d07.id_dataset_target = d06.id_dataset_source AND d07.id_model_target = d06.id_model_source
+  LEFT JOIN e AS d08 ON d08.id_dataset_target = d07.id_dataset_source AND d08.id_model_target = d07.id_model_source
+  LEFT JOIN e AS d09 ON d09.id_dataset_target = d08.id_dataset_source AND d09.id_model_target = d08.id_model_source
+  LEFT JOIN e AS d10 ON d10.id_dataset_target = d09.id_dataset_source AND d10.id_model_target = d09.id_model_source
 
 
 GROUP BY d00.id_model

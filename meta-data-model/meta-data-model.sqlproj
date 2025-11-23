@@ -63,37 +63,14 @@
     <Folder Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area" />
     <Folder Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model" />
     <Folder Include="1-Meta-Data-Model\9-Schemas" />
-    <Folder Include="8-Commen-Features" />
-    <Folder Include="8-Commen-Features\Functions" />
-    <Folder Include="8-Commen-Features\Procedures" />
-    <Folder Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for" />
-    <Folder Include="8-Commen-Features\Procedures\Documentation" />
-    <Folder Include="8-Commen-Features\Procedures\Generic" />
-    <Folder Include="8-Commen-Features\Procedures\Run" />
-    <Folder Include="8-Commen-Features\Schemas" />
-    <Folder Include="8-Commen-Features\Synonyms" />
-    <Folder Include="8-Commen-Features\Tables" />
-    <Folder Include="8-Commen-Features\Views" />
     <Folder Include="9-Publish" />
-    <Folder Include="9-Publish\2-Depolyment" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment" />
     <Folder Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa" />
     <Folder Include="1-Meta-Data-Model\9-Schemas\tsa" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions" />
     <Folder Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\tsa" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation" />
     <Folder Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment\1-Transformations" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment\2-Validation" />
     <Folder Include="1-Meta-Data-Model\2-OHG-Organisation-Hierarchy-Group\tsa" />
-    <Folder Include="8-Commen-Features\Procedures\Deployment\3-Documentation" />
     <Folder Include="9-Publish\1-Scripts" />
     <Folder Include="2-Load-Meta-Data-Definitions" />
-    <Folder Include="2-Load-Meta-Data-Definitions\deployment" />
-    <Folder Include="2-Load-Meta-Data-Definitions\deployment\Tables" />
-    <Folder Include="2-Load-Meta-Data-Definitions\deployment\Procedures" />
-    <Folder Include="2-Load-Meta-Data-Definitions\deployment\Views" />
-    <Folder Include="2-Load-Meta-Data-Definitions\deployment\Functions" />
     <Folder Include="8-Generic-Functionality" />
     <Folder Include="8-Generic-Functionality\Functions" />
     <Folder Include="8-Generic-Functionality\Procedures" />
@@ -101,11 +78,20 @@
     <Folder Include="8-Generic-Functionality\Views" />
     <Folder Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\Functions" />
     <Folder Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\Functions" />
+    <Folder Include="9-Publish\2-Deployment\" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Functions" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Procedures" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Tables" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Views" />
+    <Folder Include="3-Documentation" />
+    <Folder Include="3-Documentation\Functions" />
+    <Folder Include="3-Documentation\Procedures" />
+    <Folder Include="3-Documentation\Tables" />
+    <Folder Include="3-Documentation\Views" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\current_model.sql" />
-    <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\html_file_name.sql" />
-    <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\html_file_text.sql" />
     <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\meta_attributes.sql" />
     <Build Include="1-Meta-Data-Model\2-OHG-Organisation-Hierarchy-Group\group.sql" />
     <Build Include="1-Meta-Data-Model\2-OHG-Organisation-Hierarchy-Group\hierarchy.sql" />
@@ -143,34 +129,6 @@
     <Build Include="1-Meta-Data-Model\9-Schemas\dta.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\ohg.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\srd.sql" />
-    <Build Include="8-Commen-Features\Functions\get_id_run.sql" />
-    <Build Include="8-Commen-Features\Functions\id_dq_result_status.sql" />
-    <Build Include="8-Commen-Features\Functions\id_processing_status.sql" />
-    <Build Include="8-Commen-Features\Functions\id_processing_step.sql" />
-    <Build Include="8-Commen-Features\Functions\tvf_get_parameters.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\create_column_store_index.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\create_get_view.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\create_schema.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\create_temporal_staging_area_table.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\create_user_specified_procedure.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\deploy_dataset.sql" />
-    <Build Include="8-Commen-Features\Procedures\Build-Show-and-Execute-SQL-for\run_info.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\html_code_block_body_part.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\html_code_block_body_script.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\html_code_block_head_part.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\usp_build_html_file_dataset.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\usp_build_html_main_file.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\usp_html_file_name.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\usp_html_file_text.sql" />
-    <Build Include="8-Commen-Features\Procedures\Documentation\usp_html_print_to_console.sql" />
-    <Build Include="8-Commen-Features\Procedures\Run\run_failed.sql" />
-    <Build Include="8-Commen-Features\Procedures\Run\run_finish.sql" />
-    <Build Include="8-Commen-Features\Procedures\Run\run_start.sql" />
-    <Build Include="8-Commen-Features\Schemas\rdp.sql" />
-    <Build Include="8-Commen-Features\Synonyms\f.sql" />
-    <Build Include="8-Commen-Features\Tables\run.sql" />
-    <Build Include="8-Commen-Features\Views\data_lineage_utilized_dataset.sql" />
-    <Build Include="8-Commen-Features\Views\data_lineage_utilized_mapping.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\tsa\tsa_dqm.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\tsa\tsa_dta.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\tsa\tsa_ohg.sql" />
@@ -179,24 +137,7 @@
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_attributes.sql" />
     <Build Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\tsa\tsa_datatype.sql" />
     <Build Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\tsa\tsa_dq_result_status.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_insert_dq_controls_as_datasets.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_insert_all_current_dq_datasets.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_insert_all_current_aggregate_dq_datasets.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_delete_all_current_aggregate_dq_datasets.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_dq_aggregates_as_datasets_for_results.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\usp_dq_aggregates_as_datasets_for_totals.sql" />
     <Build Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa\tsa_dq_control.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\0-Load-Meta-Data-Definitions\2-dq-dataset-generation\insert_meta_attributes_into_dataset_attributes.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_attribute.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_attribute_all.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_dataset.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_dataset_all.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_mapping.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_mapping_all.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_part.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\1-Transformations\usp_transformation_part_all.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\2-Validation\usp_validation_of_definitions.sql" />
-    <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\validation_issues.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_database.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_ingestion_etl.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_model.sql" />
@@ -220,13 +161,7 @@
     <Build Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa\tsa_dq_requirement.sql" />
     <Build Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa\tsa_dq_involved_attribute.sql" />
     <Build Include="1-Meta-Data-Model\5-DQM-Data-Quality-Model\tsa\tsa_dq_criteria.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\3-Documentation\build_html_file_dataset_all.sql" />
-    <Build Include="8-Commen-Features\Procedures\Deployment\deploy_datasets.sql" />
-    <Build Include="8-Commen-Features\Tables\sql_to_execute.sql" />
-    <Build Include="8-Commen-Features\Procedures\Run\process_sql_to_execute.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\parallel_proces_group.sql" />
-    <Build Include="8-Commen-Features\Tables\run_with_duration.sql" />
-    <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\last_deployment.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\transformation_part_attribute.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\transformation_column_mapping_attribute.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\transformation_dataset_attribute.sql" />
@@ -236,7 +171,6 @@
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_transformation_dataset_attribute.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_transformation_part.sql" />
     <Build Include="1-Meta-Data-Model\4-DTA-Data-Transformation-Area\tsa\tsa_transformation_part_attribute.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\deployment.sql" />
     <Build Include="8-Generic-Functionality\gnc.sql" />
     <Build Include="8-Generic-Functionality\Procedures\show_and_execute_sql.sql" />
     <Build Include="8-Generic-Functionality\Procedures\to_concol_window.sql" />
@@ -245,14 +179,27 @@
     <Build Include="8-Generic-Functionality\Functions\svf_strip_comments.sql" />
     <Build Include="8-Generic-Functionality\Functions\json_count.sql" />
     <Build Include="8-Generic-Functionality\Functions\json_value.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_clean_up.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_create_get.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_create_tmp.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_create_tsa.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_create_ups.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\deployment\Procedures\usp_execute_all_usp.sql" />
     <Build Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\Functions\tsa_id_dq_result_status.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\mdm.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_clean_up.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_get.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tmp.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tsa.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_ups.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_execute_all_usp.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_column_store_index.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_schema.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_temporal_staging_area_table.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_user_specified_procedure.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\deploy_dataset.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\deploy_datasets.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\deployment.sql" />
+    <Build Include="3-Documentation\documentation.sql" />
+    <Build Include="3-Documentation\Tables\html_file_name.sql" />
+    <Build Include="3-Documentation\Tables\html_file_text.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Tables\current_model.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Tables\last_deployment.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Tables\validation_issues.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
@@ -263,5 +210,8 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="9-Publish\1-Scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="9-Publish\2-Deployment\meta-data-model.publish.xml" />
   </ItemGroup>
 </Project>

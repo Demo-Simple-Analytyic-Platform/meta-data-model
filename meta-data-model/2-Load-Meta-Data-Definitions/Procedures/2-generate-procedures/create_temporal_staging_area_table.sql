@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.create_temporal_staging_area_table
+﻿CREATE PROCEDURE deployment.create_temporal_staging_area_table
 
   /* Input Parameters */
   @ip_id_model         CHAR(32),
@@ -76,7 +76,7 @@ BEGIN
     EXEC gnc.show_and_execute_sql @tx_message, @tx_sql, @ip_is_debugging, @ip_is_testing;
 
     /* Make the table Columnstore */
-    EXEC mdm.create_column_store_index @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
+    EXEC deployment.create_column_store_index @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
 
   END
 

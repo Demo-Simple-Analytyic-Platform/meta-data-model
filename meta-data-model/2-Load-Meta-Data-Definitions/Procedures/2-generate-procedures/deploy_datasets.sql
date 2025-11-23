@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [deployment].[deploy_datasets]
+﻿CREATE PROCEDURE deployment.all_datasets
 
     /* Input Parameters */
     @ip_is_debugging     BIT = 0,
@@ -8,13 +8,13 @@
 AS DECLARE 
       
     /* Data Attributes */
-    @id_model         CHAR(32) = (SELECT id_model FROM mdm.current_model),
+    @id_model         CHAR(32) = (SELECT id_model FROM deployment.current_model),
     @id_dataset       CHAR(32),
     @nm_target_schema NVARCHAR(128),
     @nm_target_table  NVARCHAR(128);
 
   DECLARE /* Get the last deployment date for the current model. */
-    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM mdm.last_deployment WHERE id_model = @id_model)
+    @meta_dt_valid_from DATETIME = (SELECT dt_deployment FROM deployment.last_deployment WHERE id_model = @id_model)
 
 BEGIN
   
@@ -56,7 +56,7 @@ BEGIN
     DELETE FROM ##to_deploy WHERE id_dataset = @id_dataset;
 
 	  BEGIN TRY /* Deploy Dataset. */
-      EXEC mdm.deploy_dataset
+      EXEC deployment.dataset
         @ip_id_model         = @id_model,
         @ip_id_dataset       = @id_dataset,
         @ip_nm_target_schema = @nm_target_schema,

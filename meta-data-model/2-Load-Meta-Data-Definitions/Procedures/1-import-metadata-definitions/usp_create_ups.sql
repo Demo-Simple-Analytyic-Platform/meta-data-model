@@ -42,11 +42,11 @@ AS BEGIN
     SET @tx_sql += @tx_nwl + '  ';
     SET @tx_sql += @tx_nwl + '  UPDATE t SET t.meta_is_active = 0, t.meta_dt_valid_till = ISNULL((SELECT MAX(meta_dt_valid_from) FROM ' + @tx_src + '), GETDATE())';
     SET @tx_sql += @tx_nwl + '  FROM ' + @tx_tgt + ' AS t LEFT JOIN ' + @tx_src + ' AS s ON t.meta_ch_rh = s.meta_ch_rh';
-    SET @tx_sql += @tx_nwl + '  WHERE t.meta_is_active = 1 AND t.id_model IN (SELECT id_model FROM mdm.current_model) AND s.meta_ch_pk IS NULL ;';
+    SET @tx_sql += @tx_nwl + '  WHERE t.meta_is_active = 1 AND t.id_model IN (SELECT id_model FROM deployment.current_model) AND s.meta_ch_pk IS NULL ;';
     SET @tx_sql += @tx_nwl + '  ';
     SET @tx_sql += @tx_nwl + '  INSERT INTO ' + @tx_tgt + ' (' + REPLACE(@tx_col, 's.', '') + ' meta_dt_valid_from, meta_dt_valid_till, meta_is_active, meta_ch_rh, meta_ch_bk, meta_ch_pk)';
     SET @tx_sql += @tx_nwl + '  SELECT ' + @tx_col + ' s.meta_dt_valid_from, s.meta_dt_valid_till, s.meta_is_active, s.meta_ch_rh, s.meta_ch_bk, s.meta_ch_pk';
-    SET @tx_sql += @tx_nwl + '  FROM ' + @tx_src + ' AS s LEFT JOIN ' + @tx_tgt + ' AS t ON t.meta_is_active = 1 AND t.meta_ch_rh = s.meta_ch_rh AND t.id_model IN (SELECT id_model FROM mdm.current_model)';
+    SET @tx_sql += @tx_nwl + '  FROM ' + @tx_src + ' AS s LEFT JOIN ' + @tx_tgt + ' AS t ON t.meta_is_active = 1 AND t.meta_ch_rh = s.meta_ch_rh AND t.id_model IN (SELECT id_model FROM deployment.current_model)';
     SET @tx_sql += @tx_nwl + '  WHERE t.meta_ch_pk IS NULL;';
     SET @tx_sql += @tx_nwl + '  ';
     SET @tx_sql += @tx_nwl + 'END';

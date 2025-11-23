@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.create_column_store_index
+﻿CREATE PROCEDURE deployment.create_column_store_index
 
   /* Input Parameters */
   @ip_nm_target_schema NVARCHAR(128),

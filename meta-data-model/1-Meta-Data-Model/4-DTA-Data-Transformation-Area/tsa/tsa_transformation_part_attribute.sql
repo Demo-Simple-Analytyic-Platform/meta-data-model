@@ -1,4 +1,4 @@
-﻿CREATE TABLE dta.transformation_part_attribute (
+﻿CREATE TABLE tsa_dta.tsa_transformation_part_attribute (
 
     /* Data Attributes */
     id_model                            CHAR(32)      NULL,

@@ -52,7 +52,7 @@ AS BEGIN
     SET @tx_sql += @tx_nwl + '                       "|", CONVERT(DATETIME, "' + @tx_now + '"),';
     SET @tx_sql += @tx_nwl + '                       "|")), 2)';
     SET @tx_sql += @tx_nwl + 'FROM tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table;
-    SET @tx_sql += @tx_nwl + 'WHERE id_model IN (SELECT id_model FROM mdm.current_model)';
+    SET @tx_sql += @tx_nwl + 'WHERE id_model IN (SELECT id_model FROM deployment.current_model)';
 
     /* Execute SQL Statement */
     SET @tx_sql = REPLACE(@tx_sql,'"', '''');

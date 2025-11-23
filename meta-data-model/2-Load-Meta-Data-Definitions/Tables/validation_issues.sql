@@ -1,4 +1,4 @@
-﻿CREATE TABLE mdm.validation_issues (
+﻿CREATE TABLE deployment.validation_issues (
   id_model            CHAR(32)      NULL,
   id_dataset          CHAR(32)      NULL,
   nm_dataset          NVARCHAR(128) NULL,

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.create_schema
+﻿CREATE PROCEDURE deployment.create_scehma
   
   /* Input Parameters */
   @ip_id_model         CHAR(32),
