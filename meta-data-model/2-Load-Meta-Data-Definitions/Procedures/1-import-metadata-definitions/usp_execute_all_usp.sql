@@ -1,8 +1,5 @@
 ﻿CREATE PROCEDURE deployment.usp_execute_all_usp 
 
-  /* Input Parameters */
-  @ip_is_only_metadata BIT = 1,
-
   /* Input Paramter(s) */
   @ip_is_debugging BIT = 0
 

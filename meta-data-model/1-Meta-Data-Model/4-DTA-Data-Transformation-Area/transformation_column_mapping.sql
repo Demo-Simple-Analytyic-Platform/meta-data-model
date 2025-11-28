@@ -1,4 +1,4 @@
-﻿CREATE TABLE dta.transformation_mapping (
+﻿CREATE TABLE dta.transformation_column_mapping (
 
     /* Data Attributes */
     id_model                                CHAR(32)      NULL,

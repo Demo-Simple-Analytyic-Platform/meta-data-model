@@ -81,7 +81,6 @@
     <Folder Include="9-Publish\2-Deployment\" />
     <Folder Include="2-Load-Meta-Data-Definitions\Functions" />
     <Folder Include="2-Load-Meta-Data-Definitions\Procedures" />
-    <Folder Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions" />
     <Folder Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures" />
     <Folder Include="2-Load-Meta-Data-Definitions\Tables" />
     <Folder Include="2-Load-Meta-Data-Definitions\Views" />
@@ -90,6 +89,7 @@
     <Folder Include="3-Documentation\Procedures" />
     <Folder Include="3-Documentation\Tables" />
     <Folder Include="3-Documentation\Views" />
+    <Folder Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\meta_attributes.sql" />
@@ -181,16 +181,10 @@
     <Build Include="8-Generic-Functionality\Functions\json_value.sql" />
     <Build Include="1-Meta-Data-Model\3-SRD-Static-Reference-Data\Functions\tsa_id_dq_result_status.sql" />
     <Build Include="1-Meta-Data-Model\9-Schemas\mdm.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_clean_up.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_get.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tmp.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tsa.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_ups.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_execute_all_usp.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_column_store_index.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_schema.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_temporal_staging_area_table.sql" />
-    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_user_specified_procedure.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\create_dataset_specified_procedure.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\deploy_dataset.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\deploy_datasets.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\deployment.sql" />
@@ -200,6 +194,13 @@
     <Build Include="2-Load-Meta-Data-Definitions\Tables\current_model.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Tables\last_deployment.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Tables\validation_issues.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\2-generate-procedures\usp_add_all_meta_attributes.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_clean_up.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_get.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tmp.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tsa.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_ups.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_execute_all_usp.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">

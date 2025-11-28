@@ -434,7 +434,7 @@ BEGIN
           SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
                 , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
           FROM      dta.transformation_part      AS prt
-          LEFT JOIN dta.transformation_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
+          LEFT JOIN dta.transformation_column_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
           LEFT JOIN dta.transformation_column_mapping_attribute AS att ON att.meta_is_active = 1 AND att.id_transformation_column_mapping = map.id_transformation_column_mapping
           LEFT JOIN dta.attribute                AS col ON col.meta_is_active = 1 AND col.id_attribute = att.id_source_attribute AND col.id_model = att.id_source_model
           LEFT JOIN dta.ingestion_etl            AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = prt.id_dataset AND etl.id_model = prt.id_model
