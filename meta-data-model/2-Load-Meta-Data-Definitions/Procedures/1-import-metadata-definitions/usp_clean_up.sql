@@ -14,9 +14,9 @@ AS BEGIN
   BEGIN
 
     DROP TABLE IF EXISTS ##tobe_dropped; SELECT 
-      tx_prc = 'DROP PROCEDURE IF EXISTS ' + TABLE_SCHEMA + '.usp_' + TABLE_NAME,
-      tx_get = 'DROP VIEW      IF EXISTS ' + TABLE_SCHEMA + '.get_' + TABLE_NAME,
-      tx_tsa = 'DROP TABLE     IF EXISTS ' + TABLE_SCHEMA + '.tsa_' + TABLE_NAME,
+      tx_prc = 'DROP PROCEDURE IF EXISTS ' + TABLE_SCHEMA + '.usp_' + SUBSTRING(TABLE_NAME,5, LEN(TABLE_NAME)-4),
+      tx_get = 'DROP VIEW      IF EXISTS ' + TABLE_SCHEMA + '.get_' + SUBSTRING(TABLE_NAME,5, LEN(TABLE_NAME)-4),
+      tx_tsa = 'DROP TABLE     IF EXISTS ' + TABLE_SCHEMA + '.tsa_' + SUBSTRING(TABLE_NAME,5, LEN(TABLE_NAME)-4),
       tx_shm = 'DROP SCHEMA              ' + TABLE_SCHEMA
     INTO ##tobe_dropped FROM INFORMATION_SCHEMA.TABLES 
     WHERE TABLE_SCHEMA IN ('tsa_srd' , 'tsa_ohg', 'tsa_dta', 'tsa_dqm');

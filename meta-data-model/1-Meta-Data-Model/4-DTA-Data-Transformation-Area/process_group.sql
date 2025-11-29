@@ -8,7 +8,11 @@ n AS ( /* Node */
          CASE WHEN dst.is_ingestion = 1 THEN 'tsl_'+ dst.nm_target_schema ELSE 'n/a' END AS nm_tsl_schema,
          CASE WHEN dst.is_ingestion = 1 THEN 'tsl_'+ dst.nm_target_table  ELSE 'n/a' END AS nm_tsl_table,
          dst.nm_target_schema                                                            AS nm_tgt_schema,
-         dst.nm_target_table                                                             AS nm_tgt_table
+         dst.nm_target_table                                                             AS nm_tgt_table,
+         CASE WHEN nm_target_schema IN ('dqm', 'dq_result', 'dq_result_agg', 'dq_totals', 'dq_totals_agg') 
+              THEN 1 
+              ELSE 0 
+         END AS is_dq_releated
   FROM dta.dataset AS dst
   WHERE dst.meta_is_active = 1
 ),
@@ -31,6 +35,7 @@ e AS ( /* Edge */
 SELECT d00.id_model
      , d00.id_dataset
      , d00.is_ingestion
+     , d00.is_dq_releated
      , d00.nm_procedure
      , d00.nm_tsl_schema
      , d00.nm_tsl_table     
@@ -64,6 +69,7 @@ FROM n AS d00
 GROUP BY d00.id_model
        , d00.id_dataset
        , d00.is_ingestion
+       , d00.is_dq_releated
        , d00.nm_procedure
        , d00.nm_tsl_schema
        , d00.nm_tsl_table     

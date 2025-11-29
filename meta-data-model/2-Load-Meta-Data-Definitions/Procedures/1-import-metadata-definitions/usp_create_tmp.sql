@@ -28,14 +28,10 @@ AS BEGIN
       EXEC gnc.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
     END /* WHILE */
   
-    DROP TABLE IF EXISTS ##def; SELECT nm_schema = TABLE_SCHEMA, nm_table  = TABLE_NAME INTO ##def FROM INFORMATION_SCHEMA.TABLES 
-    WHERE TABLE_SCHEMA IN ('srd' , 'ohg', 'dta', 'dqm') AND TABLE_NAME NOT LIKE 'get_%' AND TABLE_NAME NOT LIKE 'tsa_%' AND TABLE_TYPE = 'BASE TABLE'
-    AND   TABLE_NAME   IN (
-      'transformation_attribute', 'transformation_dataset', 'transformation_mapping', 'transformation_part',
-      'dq_involved_attribute', 'dq_control', 'dq_requirement', 'dq_threshold', 
-      'model', 'database', 'attribute', 'dataset', 'ingestion_etl', 'parameter_value', 'schedule',
-      'datatype', 'development_status', 'dq_dimension', 'dq_result_status', 'dq_review_status', 'dq_risk_level', 'parameter', 'parameter_group', 'processing_status', 'processing_step',
-      'group', 'hierarchy', 'related');
+    DROP TABLE IF EXISTS ##def; 
+    SELECT nm_schema, nm_table 
+    INTO ##def 
+    FROM deployment.mdm_objects;
     
     WHILE ((SELECT COUNT(*) FROM ##def) > 0) BEGIN
 

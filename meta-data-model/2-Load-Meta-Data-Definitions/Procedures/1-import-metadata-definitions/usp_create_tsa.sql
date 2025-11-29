@@ -20,19 +20,21 @@ BEGIN
 
   SET @tx_msg = '/* Copy Table "' + @ip_nm_schema + '.tsa_' + @ip_nm_table + '" to "Temporal Staging Area". */';
   SET @tx_sql = 'SELECT * INTO        tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' '
-           + 'FROM [' + @ip_nm_schema + '].[' + @ip_nm_table + '] ' 
-           + 'WHERE ' + CASE WHEN @ip_nm_table LIKE 'transformation_%'      THEN 'meta_is_active = 1'
-                             WHEN @ip_nm_table    = 'dq_involved_attribute' THEN 'meta_is_active = 1'
-                             ELSE '1 = 2'
-                        END; 
+              + 'FROM [' + @ip_nm_schema + '].[' + @ip_nm_table + '] ' 
+              + 'WHERE ' + CASE WHEN @ip_nm_table LIKE 'transformation_%'      THEN 'meta_is_active = 1'
+                                WHEN @ip_nm_table    = 'dq_involved_attribute' THEN 'meta_is_active = 1'
+                                ELSE '1 = 2'
+                           END;
+                           
   EXEC gnc.show_and_execute_sql @tx_msg, @tx_sql, @ip_is_debugging;
   
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_valid_from'; EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_valid_till'; EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_is_active';     EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_rh';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_bk';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_pk';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
-  SET @tx_sql = 'ALTER TABLE          tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_created';    EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_valid_from'; EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_valid_till'; EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_is_active';     EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_rh';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_bk';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_ch_pk';         EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+  SET @tx_sql = 'ALTER TABLE tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' DROP COLUMN meta_dt_created';    EXEC gnc.show_and_execute_sql '', @tx_sql, @ip_is_debugging;
+
 END
 GO

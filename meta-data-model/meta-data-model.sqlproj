@@ -202,6 +202,7 @@
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_tsa.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_ups.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_execute_all_usp.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Views\mdm_objects.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
