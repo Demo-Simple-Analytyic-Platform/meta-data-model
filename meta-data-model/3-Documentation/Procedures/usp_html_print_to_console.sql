@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.usp_html_print_to_console
+﻿CREATE PROCEDURE documentation.usp_html_print_to_console
   
   @ip_id_model     CHAR(32),
   @ip_id_dataset   CHAR(32),
@@ -20,7 +20,7 @@ BEGIN
         SELECT @tx_lines += html.tx_line + CHAR(10) 
         FROM (
             SELECT tx_line, ni_line
-            FROM mdm.html_file_text
+            FROM documentation.html_file_text
             WHERE id_model   = @ip_id_model
             AND   id_dataset = @ip_id_dataset
         ) AS html

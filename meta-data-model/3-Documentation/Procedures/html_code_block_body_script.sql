@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [mdm].[html_code_block_body_script] (
+﻿CREATE FUNCTION documentation.html_code_block_body_script (
 
 ) RETURNS NVARCHAR(MAX) AS BEGIN 
   

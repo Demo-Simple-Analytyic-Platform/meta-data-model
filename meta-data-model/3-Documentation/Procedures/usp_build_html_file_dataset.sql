@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [mdm].[usp_build_html_file_dataset]
+﻿CREATE PROCEDURE documentation.usp_build_html_file_dataset
   
   @ip_id_model     CHAR(32),
   @ip_id_dataset   CHAR(32),
@@ -63,7 +63,7 @@ BEGIN
   IF (1=1 /* Build HTML-file */) BEGIN
     
     /* Clean out existing Text */
-    DELETE FROM mdm.html_file_text 
+    DELETE FROM documentation.html_file_text 
     WHERE id_dataset = @ip_id_dataset
     AND   id_model   = @ip_id_model;
 
@@ -88,7 +88,7 @@ BEGIN
       EXEC f @ml, @id, @tx; SET @tx = N'      ';
       EXEC f @ml, @id, @tx; SET @tx = N'      <script type="text/javascript" src="../../js/mermaid.js"></script>';
       EXEC f @ml, @id, @tx; SET @tx = N'      <script type="text/javascript" src="../../js/jquery-2.1.1.min.js"></script>';
-      EXEC f @ml, @id, @tx; SET @tx = N'      ' + mdm.html_code_block_head_part();
+      EXEC f @ml, @id, @tx; SET @tx = N'      ' + documentation.html_code_block_head_part();
       EXEC f @ml, @id, @tx; SET @tx = N'      ';
       EXEC f @ml, @id, @tx; SET @tx = N'    </head>';
       EXEC f @ml, @id, @tx; SET @tx = N'    ';
@@ -117,7 +117,7 @@ BEGIN
         EXEC f @ml, @id, @tx; SET @tx = N'      <h4><u>Description</u></h4>'
         EXEC f @ml, @id, @tx; SET @tx = N'      <p>' + ISNULL(gnc.json_value(0, @tx_json_dataset, 'fd_dataset'), '/n/a') + '</p>';
         EXEC f @ml, @id, @tx; SET @tx = N'      '
-        EXEC f @ml, @id, @tx; SET @tx = N'      ' + mdm.html_code_block_body_part (gnc.json_value(0, @tx_json_dataset, 'tx_source_query'));
+        EXEC f @ml, @id, @tx; SET @tx = N'      ' + documentation.html_code_block_body_part (gnc.json_value(0, @tx_json_dataset, 'tx_source_query'));
         EXEC f @ml, @id, @tx; SET @tx = N'      ';
       END
 
@@ -248,7 +248,7 @@ BEGIN
           EXEC f @ml, @id, @tx; SET @tx = N'      <div>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <h3>SQL Query of "Transformation"-part:</h3>'
           EXEC f @ml, @id, @tx; SET @tx = N'        <p>The below SQL-query can be parsed into "Utilized"-mappings and -datasets.</p>'  
-          EXEC f @ml, @id, @tx; SET @tx = N'        ' + mdm.html_code_block_body_part(gnc.json_value(@ni_prt, @tx_prt, 'tx_transformation_part'));
+          EXEC f @ml, @id, @tx; SET @tx = N'        ' + documentation.html_code_block_body_part(gnc.json_value(@ni_prt, @tx_prt, 'tx_transformation_part'));
           
           IF (1=1 /* Build HTML for "Utilized Mapping(s)". */) BEGIN 
             EXEC f @ml, @id, @tx; SET @tx = N'        <h3>Utilized Mappings:</h3>'
@@ -260,12 +260,12 @@ BEGIN
             EXEC f @ml, @id, @tx; SET @tx = N'            <th>Is Group By  </th>';
             EXEC f @ml, @id, @tx; SET @tx = N'          </b></i></tr>';
             SET @tx_map = (SELECT /* Extract "Mapping" for "Transformation"-part. */
-              ni_ordering, nm_target_column, tx_transformation_mapping, is_in_group_by 
+              ni_ordering, nm_target_column, tx_transformation_column_mapping, is_in_group_by 
             FROM (SELECT att.ni_ordering
                        , att.nm_target_column
-                       , map.tx_transformation_mapping
+                       , map.tx_transformation_column_mapping
                        , map.is_in_group_by 
-                  FROM dta.transformation_mapping AS map 
+                  FROM dta.transformation_column_mapping AS map 
                   JOIN dta.attribute              AS att 
                   ON  att.meta_is_active = 1 
                   AND att.id_model       = map.id_model 
@@ -307,8 +307,8 @@ BEGIN
                        , uds.tx_join_criteria
                   FROM dta.transformation_dataset AS uds 
                   JOIN dta.dataset                AS dst 
-                  ON  dst.id_dataset     = uds.id_dataset
-                  AND dst.id_model       = uds.id_model
+                  ON  dst.id_dataset     = uds.id_source_dataset
+                  AND dst.id_model       = uds.id_source_model
                   AND dst.meta_is_active = 1
                   WHERE uds.meta_is_active         = 1 
                   AND   uds.id_model               = @ip_id_model 
@@ -335,7 +335,7 @@ BEGIN
     
     END
 
-    EXEC f @ml, @id, @tx; SET @tx = N'    ' + mdm.html_code_block_body_script();
+    EXEC f @ml, @id, @tx; SET @tx = N'    ' + documentation.html_code_block_body_script();
     EXEC f @ml, @id, @tx; SET @tx = N'  </body>'
     EXEC f @ml, @id, @tx; SET @tx = N'</html>'
     EXEC f @ml, @id, @tx; /* Write last line. */
@@ -343,7 +343,7 @@ BEGIN
   END
 
   /* Print text html file to Console. */
-  EXEC mdm.usp_html_print_to_console @ip_id_dataset, @ip_is_debugging;
+  EXEC documentation.usp_html_print_to_console @ip_id_dataset, @ip_is_debugging;
 
 END
 GO

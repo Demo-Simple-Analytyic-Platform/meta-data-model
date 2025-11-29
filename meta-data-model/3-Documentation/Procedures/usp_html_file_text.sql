@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.usp_html_file_text
+﻿CREATE PROCEDURE documentation.usp_html_file_text
   
   @ip_id_model     CHAR(32),
   @ip_id_dataset   CHAR(32),
@@ -11,17 +11,17 @@ AS DECLARE
   /* purposes. It will also ensure the is overarching "file"-record          */ 
   /* ----------------------------------------------------------------------- */
   
-  @ni_line INT = ISNULL((SELECT COUNT(*) FROM mdm.html_file_text WHERE id_dataset = @ip_id_dataset),0);
+  @ni_line INT = ISNULL((SELECT COUNT(*) FROM documentation.html_file_text WHERE id_dataset = @ip_id_dataset),0);
   
 BEGIN
 
   IF @ni_line = 0 BEGIN
-     EXEC mdm.usp_html_file_name @ip_id_model, @ip_id_dataset;
+     EXEC documentation.usp_html_file_name @ip_id_model, @ip_id_dataset;
   END;
 
   --PRINT(@ip_tx_line);
 
-  INSERT INTO mdm.html_file_text (
+  INSERT INTO documentation.html_file_text (
     id_model, 
     id_dataset, 
     ni_line, 

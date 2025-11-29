@@ -91,6 +91,12 @@
     <Folder Include="3-Documentation\Tables" />
     <Folder Include="3-Documentation\Views" />
     <Folder Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions" />
+    <Folder Include="7-Run-Data-Proces" />
+    <Folder Include="7-Run-Data-Proces\Procedures" />
+    <Folder Include="7-Run-Data-Proces\Schemas" />
+    <Folder Include="7-Run-Data-Proces\Tables" />
+    <Folder Include="7-Run-Data-Proces\Functions" />
+    <Folder Include="3-Documentation\Synonyms" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="1-Meta-Data-Model\1-MDM-Meta-Data-Model\meta_attributes.sql" />
@@ -203,6 +209,23 @@
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_create_ups.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Procedures\1-import-metadata-definitions\usp_execute_all_usp.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Views\mdm_objects.sql" />
+    <Build Include="7-Run-Data-Proces\Procedures\run_failed.sql" />
+    <Build Include="7-Run-Data-Proces\Procedures\run_finish.sql" />
+    <Build Include="7-Run-Data-Proces\Procedures\run_start.sql" />
+    <Build Include="7-Run-Data-Proces\Schemas\rdp.sql" />
+    <Build Include="7-Run-Data-Proces\Tables\run.sql" />
+    <Build Include="7-Run-Data-Proces\Tables\run_with_duration.sql" />
+    <Build Include="8-Generic-Functionality\Functions\id_processing_status.sql" />
+    <Build Include="7-Run-Data-Proces\Functions\get_id_run.sql" />
+    <Build Include="3-Documentation\Procedures\html_code_block_body_part.sql" />
+    <Build Include="3-Documentation\Procedures\html_code_block_body_script.sql" />
+    <Build Include="3-Documentation\Procedures\html_code_block_head_part.sql" />
+    <Build Include="3-Documentation\Procedures\usp_build_html_file_dataset.sql" />
+    <Build Include="3-Documentation\Procedures\usp_build_html_main_file.sql" />
+    <Build Include="3-Documentation\Procedures\usp_html_file_name.sql" />
+    <Build Include="3-Documentation\Procedures\usp_html_file_text.sql" />
+    <Build Include="3-Documentation\Procedures\usp_html_print_to_console.sql" />
+    <Build Include="3-Documentation\Synonyms\f.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">

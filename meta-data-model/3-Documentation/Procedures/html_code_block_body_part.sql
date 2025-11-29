@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [mdm].[html_code_block_body_part] (
+﻿CREATE FUNCTION documentation.html_code_block_body_part (
 
   @ip_tx_sql_code_block NVARCHAR(MAX)
 

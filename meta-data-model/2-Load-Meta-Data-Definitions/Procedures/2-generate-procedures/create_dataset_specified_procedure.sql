@@ -790,7 +790,7 @@ BEGIN
     SET @tx_sql += @nwl + '  END CATCH'
     SET @tx_sql += @nwl + '  '
     SET @tx_sql += @nwl + '  /* Update "Documentation" */'
-    SET @tx_sql += @nwl + '  EXEC mdm.usp_build_html_file_dataset @ip_id_model = "<id_model>", @ip_id_dataset = @id_dataset;'
+    SET @tx_sql += @nwl + '  EXEC documentation.usp_build_html_file_dataset @ip_id_model = "<id_model>", @ip_id_dataset = @id_dataset;'
     SET @tx_sql += @nwl + '  '
     SET @tx_sql += @nwl + 'END'
     SET @tx_sql = REPLACE(@tx_sql, '<id_model>', @ip_id_model);

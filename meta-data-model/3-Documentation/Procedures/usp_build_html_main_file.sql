@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE mdm.usp_build_html_page_main
+﻿CREATE PROCEDURE documentation.usp_build_html_page_main
 
   /* Input Parameter(s) */
   @ip_is_debugging BIT = 0,
@@ -18,7 +18,7 @@ AS DECLARE /* Local Variable(s) : Converted from */
   @is_ingestion BIT,
 
   /* Helpers File Text*/
-  @ml CHAR(32)      = (SELECT id_model FROM mdm.current_model),
+  @ml CHAR(32)      = (SELECT id_model FROM deployment.current_model),
   @id NVARCHAR(32)  = '-1',
   @db BIT           = @ip_is_debugging,
   @tx NVARCHAR(MAX) = '',
@@ -53,7 +53,7 @@ BEGIN
   IF (1=1 /* Build HTML-file */) BEGIN
     
     /* Clean out existing Text */
-    DELETE FROM mdm.html_file_text WHERE id_model = @ml AND id_dataset = @id;
+    DELETE FROM documentation.html_file_text WHERE id_model = @ml AND id_dataset = @id;
 
     IF (1=1 /* Build <head> part of file. */) BEGIN
       EXEC f @ml, @id, @tx;   SET @tx = N'<!DOCTYPE html>';
@@ -214,7 +214,7 @@ BEGIN
     IF (@ip_is_debugging = 1 /* Output HTML */ ) BEGIN
         SET @tx = ''; SELECT @tx += @nl + html.tx FROM (
             SELECT TOP 1000 tx = tx_line, ni = ni_line
-            FROM mdm.html_file_text
+            FROM documentation.html_file_text
             WHERE id_dataset = @id
             ORDER BY ni ASC
         ) AS html; EXEC gnc.to_concol_window @tx;
