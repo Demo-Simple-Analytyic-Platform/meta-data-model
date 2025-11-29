@@ -117,11 +117,11 @@ BEGIN
   IF (1=1 /* Extract Column information */) BEGIN
   
     /* Extract "temp"-table with Columns of "Target"-table, exclude the "meta-attributes. */
-    DROP TABLE IF EXISTS ##columns; 
+    DROP TABLE IF EXISTS ##columns_col; 
     SELECT ni_ordering, 
            is_businesskey, 
            nm_target_column
-    INTO ##columns 
+    INTO ##columns_col 
     FROM dta.attribute
     WHERE meta_is_active = 1 AND nm_target_column NOT IN ('meta_dt_valid_from', 'meta_dt_valid_till', 'meta_is_active', 'meta_ch_rh', 'meta_ch_bk', 'meta_ch_pk')
     AND   id_dataset = @id_dataset 
@@ -129,12 +129,12 @@ BEGIN
     ORDER BY ni_ordering ASC;
 
     /* String all the "Colums" in the "temp"-table together with "s."-alias, after drop the "temp"-table. */
-    WHILE ((SELECT COUNT(*) FROM ##columns) > 0) BEGIN 
+    WHILE ((SELECT COUNT(*) FROM ##columns_col) > 0) BEGIN 
       SELECT @ni_ordering      = ni_ordering,
              @is_businesskey   = is_businesskey,
              @nm_target_column = nm_target_column
-      FROM (SELECT TOP 1 * FROM ##columns ORDER BY ni_ordering ASC) AS rec; 
-      DELETE FROM ##columns WHERE ni_ordering = @ni_ordering; 
+      FROM (SELECT TOP 1 ni_ordering, is_businesskey, nm_target_column FROM ##columns_col ORDER BY ni_ordering ASC) AS rec; 
+      DELETE FROM ##columns_col WHERE ni_ordering = @ni_ordering; 
       SET @tx_attributes += 's.[' + @nm_target_column + '], '; 
       SET @tx_pk_fields  += IIF(@is_businesskey = 1, ', s.[' + @nm_target_column + '], "|"', ''); 
     END /* WHILE */ DROP TABLE IF EXISTS ##columns; 
