@@ -137,7 +137,7 @@ BEGIN
       DELETE FROM ##columns_col WHERE ni_ordering = @ni_ordering; 
       SET @tx_attributes += 's.[' + @nm_target_column + '], '; 
       SET @tx_pk_fields  += IIF(@is_businesskey = 1, ', s.[' + @nm_target_column + '], "|"', ''); 
-    END /* WHILE */ DROP TABLE IF EXISTS ##columns; 
+    END /* WHILE */ DROP TABLE IF EXISTS ##columns
 
   END
 
@@ -403,38 +403,38 @@ BEGIN
 
           /* Extract the "Transformation"-part */
           SELECT @tx_sql_select                         = prt.tx_sql_select 
-                , @tx_sql_from                           = prt.tx_sql_from 
-                , @tx_sql_where                          = prt.tx_sql_where
-                , @tx_sql_group_by                       = prt.tx_sql_group_by 
-                , @tx_sql_having                         = prt.tx_sql_having
-                , @is_aggregate_function_used            = prt.is_aggregate_function_used
-                , @tx_sql_for_meta_dt_valid_from         = prt.tx_sql_for_meta_dt_valid_from
-                , @tx_sql_for_meta_dt_valid_till         = prt.tx_sql_for_meta_dt_valid_till
-                , @is_aggregate_function_used_valid_from = prt.is_aggregate_function_used_valid_from
-                , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
+               , @tx_sql_from                           = prt.tx_sql_from 
+               , @tx_sql_where                          = prt.tx_sql_where
+               , @tx_sql_group_by                       = prt.tx_sql_group_by 
+               , @tx_sql_having                         = prt.tx_sql_having
+               , @is_aggregate_function_used            = prt.is_aggregate_function_used
+               , @tx_sql_for_meta_dt_valid_from         = prt.tx_sql_for_meta_dt_valid_from
+               , @tx_sql_for_meta_dt_valid_till         = prt.tx_sql_for_meta_dt_valid_till
+               , @is_aggregate_function_used_valid_from = prt.is_aggregate_function_used_valid_from
+               , @is_aggregate_function_used_valid_till = prt.is_aggregate_function_used_valid_till
           FROM #prt AS prt
           WHERE ni_transformation_part = @ni_prt;
 
           IF (@ip_is_debugging=1) BEGIN 
             PRINT('/* Show SQL Statement Parts */');
             PRINT('/* Part ' + CONVERT(NVARCHAR(10), @ni_prt) + ' of ' + CONVERT(NVARCHAR(10), @mx_prt) + ' */');
-            PRINT('@tx_sql_select : ' + @tx_sql_select);
-            PRINT('@tx_sql_from   : ' + @tx_sql_from);
-            PRINT('@tx_sql_where  : ' + @tx_sql_where);
-            PRINT('@tx_sql_group_by : ' + @tx_sql_group_by);
-            PRINT('@tx_sql_having   : ' + @tx_sql_having);
-            PRINT('@is_aggregate_function_used : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used));
-            PRINT('@tx_sql_for_meta_dt_valid_from : ' + @tx_sql_for_meta_dt_valid_from);
-            PRINT('@tx_sql_for_meta_dt_valid_till : ' + @tx_sql_for_meta_dt_valid_till);
-            PRINT('@is_aggregate_function_used_valid_from : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_from));
-            PRINT('@is_aggregate_function_used_valid_till : ' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_till));
+            PRINT('@tx_sql_select                         : "' + @tx_sql_select + '"');
+            PRINT('@tx_sql_from                           : "' + @tx_sql_from + '"');
+            PRINT('@tx_sql_where                          : "' + @tx_sql_where + '"');
+            PRINT('@tx_sql_group_by                       : "' + @tx_sql_group_by + '"');
+            PRINT('@tx_sql_having                         : "' + @tx_sql_having + '"');
+            PRINT('@is_aggregate_function_used            : "' + CONVERT(NVARCHAR(1), @is_aggregate_function_used) + '"');
+            PRINT('@tx_sql_for_meta_dt_valid_from         : "' + @tx_sql_for_meta_dt_valid_from + '"');
+            PRINT('@tx_sql_for_meta_dt_valid_till         : "' + @tx_sql_for_meta_dt_valid_till + '"');
+            PRINT('@is_aggregate_function_used_valid_from : "' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_from) + '"');
+            PRINT('@is_aggregate_function_used_valid_till : "' + CONVERT(NVARCHAR(1), @is_aggregate_function_used_valid_till) + '"');
           END
 
           /* Determing if the "Transformation"-part is using a "Source"-attributes in ETL valid from/till definitons. */
           SELECT @is_utilized_column_used_in_valid_from = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_from LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
-                , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
+               , @is_utilized_column_used_in_valid_till = SUM(CASE WHEN etl.tx_sql_for_meta_dt_valid_till LIKE '%' + col.nm_target_column + '%' THEN 1 ELSE 0 END) 
           FROM      dta.transformation_part      AS prt
-          LEFT JOIN dta.transformation_column_mapping   AS map ON map.meta_is_active = 1 AND map.id_transformation_part    = prt.id_transformation_part
+          LEFT JOIN dta.transformation_column_mapping           AS map ON map.meta_is_active = 1 AND map.id_transformation_part           = prt.id_transformation_part
           LEFT JOIN dta.transformation_column_mapping_attribute AS att ON att.meta_is_active = 1 AND att.id_transformation_column_mapping = map.id_transformation_column_mapping
           LEFT JOIN dta.attribute                AS col ON col.meta_is_active = 1 AND col.id_attribute = att.id_source_attribute AND col.id_model = att.id_source_model
           LEFT JOIN dta.ingestion_etl            AS etl ON etl.meta_is_active = 1 AND etl.id_dataset = prt.id_dataset AND etl.id_model = prt.id_model
@@ -517,8 +517,8 @@ BEGIN
   END
   
   IF (1=1 /* Add "SQL" for "Insert"-query for "Target processing type is "Fullload". */) BEGIN
-    SET @sql  = @emp + 'INSERT INTO ' + @tgt + ' (' + REPLACE(@tx_attributes, 's.[', '[') + 'meta_dt_valid_from, meta_dt_valid_till, meta_is_active, meta_ch_rh, meta_ch_bk, meta_ch_pk)';
-    SET @sql += @nwl + 'SELECT ' + @tx_attributes + ' s.meta_dt_valid_from, s.meta_dt_valid_till, s.meta_is_active, s.meta_ch_rh, s.meta_ch_bk, s.meta_ch_pk';
+    SET @sql  = @emp + 'INSERT INTO ' + @tgt + ' (' + REPLACE(ISNULL(@tx_attributes,'N/A'), 's.[', '[') + 'meta_dt_valid_from, meta_dt_valid_till, meta_is_active, meta_ch_rh, meta_ch_bk, meta_ch_pk)';
+    SET @sql += @nwl + 'SELECT ' + ISNULL(@tx_attributes,'N/A') + ' s.meta_dt_valid_from, s.meta_dt_valid_till, s.meta_is_active, s.meta_ch_rh, s.meta_ch_bk, s.meta_ch_pk';
     SET @sql += @nwl + 'FROM ' + @src + ' AS s LEFT JOIN ' + @tgt + ' AS t ON t.meta_is_active = 1 AND t.meta_ch_rh = s.meta_ch_rh';
     SET @sql += @nwl + 'WHERE t.meta_ch_pk IS NULL'
     SET @tx_query_insert = REPLACE(@sql, '"', '''');

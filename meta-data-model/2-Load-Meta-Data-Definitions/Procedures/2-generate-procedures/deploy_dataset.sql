@@ -22,14 +22,14 @@ AS BEGIN
 
 	  IF (@ip_id_dataset != 'n/a' /* Generate "Presisten/Temporal Staging Area"- or "Data Transformation Area"-tables, -Views and -Procedures. */) BEGIN
 
-		  IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Schemas" if needed. */'); END;
-		  EXEC deployment.create_scehma @ip_id_model, @ip_nm_target_schema, @ip_is_debugging, @ip_is_testing;
+		IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Schemas" if needed. */'); END;
+		EXEC deployment.create_scehma @ip_id_model, @ip_nm_target_schema, @ip_is_debugging, @ip_is_testing;
 
-      IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Presisten/Temporal Staging Area"- or "Data Transformation Area"-tables. */'); END;
-		  EXEC deployment.create_temporal_staging_area_table @ip_id_model, @ip_id_dataset, @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
+		IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Presisten/Temporal Staging Area"- or "Data Transformation Area"-tables. */'); END;
+		EXEC deployment.create_temporal_staging_area_table @ip_id_model, @ip_id_dataset, @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
 
-      IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Procedures" for processing data changes. */'); END;
-		  EXEC deployment.create_dataset_specified_procedure @ip_id_model, @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
+        IF (@ip_is_debugging=1) BEGIN PRINT('/* Create "Procedures" for processing data changes. */'); END;
+		EXEC deployment.create_dataset_specified_procedure @ip_id_model, @ip_nm_target_schema, @ip_nm_target_table, @ip_is_debugging, @ip_is_testing;
 
 	  END
   END

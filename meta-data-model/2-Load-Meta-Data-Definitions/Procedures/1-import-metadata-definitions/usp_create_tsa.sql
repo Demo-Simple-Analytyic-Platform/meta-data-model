@@ -21,8 +21,7 @@ BEGIN
   SET @tx_msg = '/* Copy Table "' + @ip_nm_schema + '.tsa_' + @ip_nm_table + '" to "Temporal Staging Area". */';
   SET @tx_sql = 'SELECT * INTO        tsa_' + @ip_nm_schema + '.tsa_' + @ip_nm_table + ' '
               + 'FROM [' + @ip_nm_schema + '].[' + @ip_nm_table + '] ' 
-              + 'WHERE ' + CASE WHEN @ip_nm_table LIKE 'transformation_%'      THEN 'meta_is_active = 1'
-                                WHEN @ip_nm_table    = 'dq_involved_attribute' THEN 'meta_is_active = 1'
+              + 'WHERE ' + CASE WHEN @ip_nm_table    = 'dq_involved_attribute' THEN 'meta_is_active = 1'
                                 ELSE '1 = 2'
                            END;
                            
