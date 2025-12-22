@@ -211,7 +211,7 @@ BEGIN
 
       /* Build SQL Statment for "Ingestion"  to handle the "TSL"-table. in correct and desired way. */
       SET @qry = REPLACE(@tx_query_source, @nwl, @tb1);
-      SET @idx = CHARINDEX('FROM', @tx_query_source, 1);
+      SET @idx = CHARINDEX(' FROM ', @tx_query_source, 1);
       SET @qry  = @emp + 'SELECT';
       SET @qry += @nwl + '  ' + REPLACE(@att, @nwl, @tb1);
       SET @qry += @emp +   '[main].[meta_dt_valid_from] AS [meta_dt_valid_from],';
@@ -221,10 +221,10 @@ BEGIN
       SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @bks + ', 2) AS [meta_ch_bk],';
       SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @pks + ', 2) AS [meta_ch_pk]';
       SET @qry += @nwl + 'FROM (';
-      SET @qry += @nwl + '  ' + SUBSTRING(@tx_query_source, 1, @idx-1);
-      SET @qry += @nwl + '  , meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')';
-      SET @qry += @nwl + '  , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')';
-      SET @qry += @nwl + '  ' + SUBSTRING(@tx_query_source, @idx, LEN(@tx_query_source));
+      SET @qry += @nwl + '  ' + REPLACE(@tx_query_source, 'SELECT ', 
+                  @nwl + 'SELECT' +
+                  @nwl + '    meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')' +
+                  @nwl + '  , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')');
       SET @qry += @nwl + ') AS [main]';
 
       /* Show SQL Statement for "Ingestion" if in Debugging mode. */
