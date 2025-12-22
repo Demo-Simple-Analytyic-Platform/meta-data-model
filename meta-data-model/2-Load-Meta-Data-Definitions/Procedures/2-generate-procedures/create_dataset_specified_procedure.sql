@@ -337,10 +337,10 @@ BEGIN
                   ELSE 0 
             END,
             /* Calculating postion on FROM, WHERE, GROUP BY and/or HAVING. */
-            ni_pos_from     = CHARINDEX('FROM',      tx_transformation_part, 1),
-            ni_pos_where    = CHARINDEX('WHERE',     tx_transformation_part, 1),
-            ni_pos_group_by = CHARINDEX('GROUP BY',  tx_transformation_part, 1),
-            ni_pos_having   = CHARINDEX('HAVING',    tx_transformation_part, 1),
+            ni_pos_from     = CHARINDEX(' FROM ',    tx_transformation_part, 1),
+            ni_pos_where    = CHARINDEX('WHERE ',    tx_transformation_part, 1),
+            ni_pos_group_by = CHARINDEX('GROUP BY ', tx_transformation_part, 1),
+            ni_pos_having   = CHARINDEX('HAVING ',   tx_transformation_part, 1),
             ni_length       = LEN(tx_transformation_part) + 1 /* !!! Otherwise the substring at the end will miss 1 character !!! */
           FROM dta.transformation_part
           WHERE meta_is_active = 1 
@@ -802,4 +802,3 @@ BEGIN
   END  
 
 END
-GO
