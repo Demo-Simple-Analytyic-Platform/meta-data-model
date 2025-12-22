@@ -23,7 +23,7 @@ DECLARE
   @nm_target_column     NVARCHAR(128),
   @is_businesskey       BIT,
   @is_ingestion         BIT,
-  @nm_data_flow_type         NVARCHAR(128),
+  @nm_data_flow_type    NVARCHAR(128),
   @tx_query_source      NVARCHAR(MAX) = '',
   @tx_query_update      NVARCHAR(MAX) = '',
   @tx_query_insert      NVARCHAR(MAX) = '',
