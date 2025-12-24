@@ -8,6 +8,7 @@
     id_dataset_3_bk      CHAR(32) NULL,
     id_dataset_4_bk      CHAR(32) NULL,
     id_dataset_5_bk      CHAR(32) NULL,
+    dt_dq_result         DATETIME NULL,
     id_dq_result_status  CHAR(32) NULL,
     
     /* Metadata dq_requirements */
@@ -29,7 +30,7 @@ GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fn" : "DQ Threshold",
     "fd" : "List of \"Thresholds\" of a \"DQ Control\".",
-    "bk" : ["id_model", "id_dq_control", "id_dataset_1_bk", "id_dataset_2_bk", "id_dataset_3_bk", "id_dataset_4_bk", "id_dataset_5_bk"]
+    "bk" : ["id_model", "id_dq_control", "id_dataset_1_bk", "id_dataset_2_bk", "id_dataset_3_bk", "id_dataset_4_bk", "id_dataset_5_bk", "dt_dq_result"]
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
 @level1type = N'TABLE',  @level1name = N'dq_result';

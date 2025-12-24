@@ -8,7 +8,7 @@
     id_dataset_3_bk      CHAR(32) NULL,
     id_dataset_4_bk      CHAR(32) NULL,
     id_dataset_5_bk      CHAR(32) NULL,
+    dt_dq_result         DATETIME NULL,
     id_dq_result_status  CHAR(32) NULL,
-
 );
 GO

@@ -23,7 +23,7 @@ DECLARE
   @nm_target_column     NVARCHAR(128),
   @is_businesskey       BIT,
   @is_ingestion         BIT,
-  @nm_data_flow_type    NVARCHAR(128),
+  @nm_data_flow_type         NVARCHAR(128),
   @tx_query_source      NVARCHAR(MAX) = '',
   @tx_query_update      NVARCHAR(MAX) = '',
   @tx_query_insert      NVARCHAR(MAX) = '',
@@ -222,9 +222,9 @@ BEGIN
       SET @qry += @nwl + '  CONVERT(CHAR(32), HASHBYTES("MD5", ' + @pks + ', 2) AS [meta_ch_pk]';
       SET @qry += @nwl + 'FROM (';
       SET @qry += @nwl + '  ' + REPLACE(@tx_query_source, 'SELECT ', 
-                  @nwl + 'SELECT' +
-                  @nwl + '    meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')' +
-                  @nwl + '  , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')');
+                  @nwl + '  SELECT meta_dt_valid_from = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_from + ')' +
+                  @nwl + '       , meta_dt_valid_till = CONVERT(DATETIME, ' + @tx_sql_for_meta_dt_valid_till + ')' +
+                  @nwl + '       , ');
       SET @qry += @nwl + ') AS [main]';
 
       /* Show SQL Statement for "Ingestion" if in Debugging mode. */
