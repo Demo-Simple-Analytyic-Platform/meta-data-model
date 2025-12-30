@@ -1,4 +1,4 @@
-﻿CREATE TABLE dqm.dq_total (
+﻿CREATE TABLE dqm.dq_totals (
 
     /* Data dq_requirements */
     id_model                  CHAR(32)  NULL,
@@ -35,7 +35,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "bk" : ["id_model", "id_dq_control", "dt_dq_result", "id_dq_risk_level"]
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total';
+@level1type = N'TABLE',  @level1name = N'dq_totals';
 GO
 
 /*  Column Metadata Definitinions: */
@@ -44,7 +44,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "Date for the \"Totals\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'dt_dq_result';
 GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
@@ -52,7 +52,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "Reference to \"DQ Control\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'id_dq_control';
 GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
@@ -60,7 +60,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "Reference to \"DQ Result Status\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'id_dq_risk_level';
 GO
 
@@ -69,7 +69,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Total\" number of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_total';
 GO
 
@@ -78,7 +78,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Compliant\" (Compliant) number of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_oke';
 GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
@@ -86,7 +86,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Compliant\" percentage of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'pr_oke';
 GO
 
@@ -95,7 +95,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Not Oke\" number of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_nok';
 GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
@@ -103,7 +103,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Not Oke\" percentage of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'pr_nok';
 GO
 
@@ -112,7 +112,7 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Ou\" number of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_oos';
 GO
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
@@ -120,6 +120,6 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fd" : "The \"Out of Scope\" percentage of \"Records\"."
 }',
 @level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_total',
+@level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'pr_oos';
 GO
