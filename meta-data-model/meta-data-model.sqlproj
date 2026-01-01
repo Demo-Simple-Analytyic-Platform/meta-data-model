@@ -226,6 +226,7 @@
     <Build Include="3-Documentation\Procedures\usp_html_file_text.sql" />
     <Build Include="3-Documentation\Procedures\usp_html_print_to_console.sql" />
     <Build Include="3-Documentation\Synonyms\f.sql" />
+    <Build Include="2-Load-Meta-Data-Definitions\Views\expected_objects.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">
@@ -238,6 +239,6 @@
     <PostDeploy Include="9-Publish\1-Scripts\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="9-Publish\2-Deployment\meta-data-model.publish.xml" />
+    <None Include="9-Publish\2-Deployment\my-stock-info.publish.xml" />
   </ItemGroup>
 </Project>

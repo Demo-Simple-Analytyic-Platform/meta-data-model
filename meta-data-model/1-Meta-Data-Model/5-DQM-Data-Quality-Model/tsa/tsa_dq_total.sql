@@ -1,4 +1,4 @@
-﻿CREATE TABLE tsa_dqm.tsa_dq_total (
+﻿CREATE TABLE tsa_dqm.tsa_dq_totals (
 
     /* Data dq_requirements */
     id_model                  CHAR(32)  NULL,
