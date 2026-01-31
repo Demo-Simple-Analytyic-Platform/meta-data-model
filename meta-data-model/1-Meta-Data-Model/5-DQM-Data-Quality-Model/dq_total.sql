@@ -7,11 +7,10 @@
     id_dq_risk_level          CHAR(32)  NULL,
     ni_total                  INT       NULL,
     ni_oke                    INT       NULL,
-    pr_oke                    DEC(24,6) NULL,
     ni_nok                    INT       NULL,
-    pr_nok                    DEC(24,6) NULL,
     ni_oos                    INT       NULL,
-    pr_oos                    DEC(24,6) NULL,
+    ni_total_excl_oos         INT       NULL,
+    ni_total_incl_oos         INT       NULL,
     
     /* Metadata dq_requirements */
     meta_dt_valid_from DATETIME NOT NULL,
@@ -73,22 +72,6 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
 @level2type = N'COLUMN', @level2name = N'ni_total';
 GO
 
-EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
-    "fn" : "# Compliant",
-    "fd" : "The \"Compliant\" (Compliant) number of \"Records\"."
-}',
-@level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_totals',
-@level2type = N'COLUMN', @level2name = N'ni_oke';
-GO
-EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
-    "fn" : "% Compliant",
-    "fd" : "The \"Compliant\" percentage of \"Records\"."
-}',
-@level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_totals',
-@level2type = N'COLUMN', @level2name = N'pr_oke';
-GO
 
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fn" : "# Exception",
@@ -98,14 +81,6 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
 @level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_nok';
 GO
-EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
-    "fn" : "% Exception",
-    "fd" : "The \"Not Oke\" percentage of \"Records\"."
-}',
-@level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_totals',
-@level2type = N'COLUMN', @level2name = N'pr_nok';
-GO
 
 EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
     "fn" : "# Out of Scope",
@@ -114,12 +89,4 @@ EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
 @level0type = N'SCHEMA', @level0name = N'dqm',
 @level1type = N'TABLE',  @level1name = N'dq_totals',
 @level2type = N'COLUMN', @level2name = N'ni_oos';
-GO
-EXEC sp_addextendedproperty @name = N'metadata', @value = N'{
-    "fn" : "% Out of Scope",
-    "fd" : "The \"Out of Scope\" percentage of \"Records\"."
-}',
-@level0type = N'SCHEMA', @level0name = N'dqm',
-@level1type = N'TABLE',  @level1name = N'dq_totals',
-@level2type = N'COLUMN', @level2name = N'pr_oos';
 GO

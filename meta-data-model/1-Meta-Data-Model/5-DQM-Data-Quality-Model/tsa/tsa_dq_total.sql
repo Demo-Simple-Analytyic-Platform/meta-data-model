@@ -7,11 +7,10 @@
     id_dq_risk_level          CHAR(32)  NULL,
     ni_total                  INT       NULL,
     ni_oke                    INT       NULL,
-    pr_oke                    DEC(24,6) NULL,
     ni_nok                    INT       NULL,
-    pr_nok                    DEC(24,6) NULL,
     ni_oos                    INT       NULL,
-    pr_oos                    DEC(24,6) NULL,
+    ni_total_excl_oos         INT       NULL,
+    ni_total_incl_oos         INT       NULL,
 
     /* Metadata dq_requirements */
     meta_dt_valid_from DATETIME NOT NULL,
