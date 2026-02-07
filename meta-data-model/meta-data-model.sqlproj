@@ -227,6 +227,8 @@
     <Build Include="3-Documentation\Procedures\usp_html_print_to_console.sql" />
     <Build Include="3-Documentation\Synonyms\f.sql" />
     <Build Include="2-Load-Meta-Data-Definitions\Views\expected_objects.sql" />
+    <Build Include="7-Run-Data-Proces\Functions\tvf_get_parameters.sql" />
+    <Build Include="7-Run-Data-Proces\Functions\run_info.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\150\SqlSchemas\master.dacpac">

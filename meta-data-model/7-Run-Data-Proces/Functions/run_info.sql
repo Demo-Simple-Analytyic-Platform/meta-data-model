@@ -311,7 +311,7 @@ BEGIN
 				FROM dta.transformation_dataset AS tds
 				JOIN dta.dataset AS dst 
 				ON  dst.id_model   = tds.id_source_model
-				AND dst.id_dataset = tds.id_dataset 
+				AND dst.id_dataset = tds.id_source_dataset 
 				AND dst.meta_is_active = 1 
 				AND tds.meta_is_active = 1 
         AND tds.id_model = @ip_id_model
